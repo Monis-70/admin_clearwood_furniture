@@ -7,7 +7,7 @@
 ## 1. Summary
 
 318 admin routes are mounted under `/api/v1/admin`; every one is classified. 282 have a screen, 36 are deliberately screen-less (§4).
-Implemented through phase **P7**: routes marked ✓ are wired in the endpoint registry.
+Implemented through phase **P8**: routes marked ✓ are wired in the endpoint registry.
 
 | Status | Meaning | Routes |
 | --- | --- | --- |
@@ -403,20 +403,20 @@ Implemented through phase **P7**: routes marked ✓ are wired in the endpoint re
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
 | GET | `/enquiries` | Enquiry queue (status, form, category, assignee, search) | `lead.enquiry.read` | — | /enquiries → Queue | SA AD OM CO | — | L | **P8** ✓ | Also: Dashboard "New enquiries" |
-| GET | `/enquiries/assignees` | Admins an enquiry can be assigned to (id and name only) | `lead.enquiry.assign` | — | /enquiries?id= → Assignee picker | SA AD CO | — | L | **P8** | Requires lead.enquiry.assign; the same rule PATCH applies to assignedToId |
+| GET | `/enquiries/assignees` | Admins an enquiry can be assigned to (id and name only) | `lead.enquiry.assign` | — | /enquiries?id= → Assignee picker | SA AD CO | — | L | **P8** ✓ | Requires lead.enquiry.assign; the same rule PATCH applies to assignedToId |
 | GET | `/enquiries/{id}` | One enquiry with details and context | `lead.enquiry.read` | — | /enquiries?id= → Enquiry drawer | SA AD OM CO | — | G | **P8** ✓ |  |
-| PATCH | `/enquiries/{id}` | Move status, assign, add note (version) | `lead.enquiry.update` | yes | /enquiries?id= → Update status / Assign / Note | SA AD CO | — | U | **P8** | Changing the assignee needs lead.enquiry.assign; pick from GET /enquiries/assignees (eligible admins only, else 422) |
+| PATCH | `/enquiries/{id}` | Move status, assign, add note (version) | `lead.enquiry.update` | yes | /enquiries?id= → Update status / Assign / Note | SA AD CO | — | U | **P8** ✓ | Changing the assignee needs lead.enquiry.assign; pick from GET /enquiries/assignees (eligible admins only, else 422) |
 
 ### Carts & wishlists (6)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/carts` | Browse carts incl. abandoned | `order.customer.read` | — | /carts → Carts table | SA AD OM | — | L | **P8** |  |
-| GET | `/carts/stats` | Abandonment rate, average value, top abandoned products | `order.customer.read` | — | /carts → Stats header | SA AD OM | — | G | **P8** |  |
-| GET | `/carts/{id}` | Cart with event timeline and live re-quote | `order.customer.read` | — | /carts?id= → Cart drawer | SA AD OM | — | G | **P8** |  |
-| POST | `/carts/cleanup` | Mark abandoned and expire stale carts | `order.customer.update` | yes | /carts → Run cart cleanup | SA AD OM | Irreversible | A | **P8** |  |
-| GET | `/customers/{id}/cart` | A customer's active cart | `order.customer.read` | — | /carts?customer= → Customer cart | SA AD OM | — | G | **P8** |  |
-| GET | `/wishlists/stats` | Most-wishlisted products and price-drop candidates | `order.customer.read` | — | /carts?tab=wishlists → Wishlist insights | SA AD OM | — | G | **P8** |  |
+| GET | `/carts` | Browse carts incl. abandoned | `order.customer.read` | — | /carts → Carts table | SA AD OM | — | L | **P8** ✓ |  |
+| GET | `/carts/stats` | Abandonment rate, average value, top abandoned products | `order.customer.read` | — | /carts → Stats header | SA AD OM | — | G | **P8** ✓ |  |
+| GET | `/carts/{id}` | Cart with event timeline and live re-quote | `order.customer.read` | — | /carts?id= → Cart drawer | SA AD OM | — | G | **P8** ✓ |  |
+| POST | `/carts/cleanup` | Mark abandoned and expire stale carts | `order.customer.update` | yes | /carts → Run cart cleanup | SA AD OM | Irreversible | A | **P8** ✓ |  |
+| GET | `/customers/{id}/cart` | A customer's active cart | `order.customer.read` | — | /carts?customer= → Customer cart | SA AD OM | — | G | **P8** ✓ |  |
+| GET | `/wishlists/stats` | Most-wishlisted products and price-drop candidates | `order.customer.read` | — | /carts?tab=wishlists → Wishlist insights | SA AD OM | — | G | **P8** ✓ |  |
 
 ### Orders (limited verification) (25)
 

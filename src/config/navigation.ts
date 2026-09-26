@@ -366,11 +366,11 @@ export const NAVIGATION: readonly NavGroup[] = [
       {
         id: 'carts',
         label: 'Carts & wishlists',
-        href: '/customers/carts',
-        // icon: ShoppingCart
+        href: '/carts',
+        icon: 'ShoppingCart',
         requires: { all: ['order.customer.read'] },
         phase: 8,
-        // description: 'Open carts and wishlist activity.'
+        description: 'Open and abandoned carts, and wishlist activity.',
       },
     ],
   },

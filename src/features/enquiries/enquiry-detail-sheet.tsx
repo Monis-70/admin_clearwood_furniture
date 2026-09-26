@@ -6,7 +6,6 @@ import { useEffect, useRef } from 'react';
 import { KeyValueList } from '@/components/patterns/key-value-list';
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { StatusBadge } from '@/components/patterns/status-badge';
-import { Alert } from '@/components/ui/alert';
 import {
   Sheet,
   SheetContent,
@@ -21,9 +20,12 @@ import { cachePolicy } from '@/lib/query/policies';
 import { formatRupees } from '../catalog/model';
 
 import { enquiriesApi, enquiryKeys } from './api';
+import { assigneeName, useAssignees } from './assignees';
+import { EnquiryActions } from './enquiry-actions';
 import { ENQUIRY_STATUS, formLabel } from './model';
 
 function EnquiryDetail({ id }: { id: string }) {
+  const assignees = useAssignees();
   const enquiry = useQuery({
     queryKey: enquiryKeys.detail(id),
     queryFn: ({ signal }) => enquiriesApi.get(id, signal),
@@ -99,7 +101,7 @@ function EnquiryDetail({ id }: { id: string }) {
             { label: 'About', value: e.productName ?? e.categoryName ?? '—' },
             { label: 'Quantity', value: e.quantity ?? '—' },
             { label: 'Budget', value: e.budgetPaise === null ? '—' : formatRupees(e.budgetPaise) },
-            { label: 'Assigned', value: e.assignedToId ? 'Assigned to a colleague' : 'Nobody yet' },
+            { label: 'Assigned', value: assigneeName(e.assignedToId, assignees.data) },
             { label: 'Source', value: e.source },
           ]}
         />
@@ -126,9 +128,11 @@ function EnquiryDetail({ id }: { id: string }) {
             <p className="text-sm whitespace-pre-wrap">{e.adminNote}</p>
           </div>
         ) : null}
-        <Alert tone="info" title="Replying and assigning">
-          Changing the status, assigning a colleague and adding notes arrive in the Enquiries phase.
-        </Alert>
+        <EnquiryActions enquiry={e} />
+        <p className="text-xs text-muted-foreground">
+          An enquiry is never an order: prices, quotes and any order are handled outside it. The API
+          keeps status, assignment and one internal note; it has no quote or conversation history.
+        </p>
       </div>
     </>
   );

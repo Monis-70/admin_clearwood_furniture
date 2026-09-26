@@ -7,12 +7,12 @@
 
 ## 1. Every backend route, by class
 
-Implemented through phase **P7**.
+Implemented through phase **P8**.
 
 | Class | Meaning | Admin routes | Other routes | Total |
 | --- | --- | ---: | ---: | ---: |
-| UI required: built | wired in the endpoint registry and used by a screen | 255 | 4 | 259 |
-| UI required: final UI phase | classified for a screen (P3 and later), not wired yet | 27 | 2 | 29 |
+| UI required: built | wired in the endpoint registry and used by a screen | 263 | 4 | 267 |
+| UI required: final UI phase | classified for a screen (P3 and later), not wired yet | 19 | 2 | 21 |
 | On hold (integration) | payments, refunds, returns, courier or e-mail: hidden until the integration is live | 35 | 0 | 35 |
 | Internal / system | never called by the UI (see ADMIN_API_COVERAGE.md §4) | 1 | 0 | 1 |
 | Not applicable to the admin | storefront and customer API; the admin does not call it | 0 | 113 | 113 |
@@ -42,29 +42,18 @@ Implemented through phase **P7**.
 | Pricing · Delivery charges | 13 | 13 | 0 | 0 | 0 | 13 |
 | System · Admin users & roles | 13 | 13 | 0 | 0 | 0 | 7 |
 | Search | 10 | 10 | 0 | 0 | 0 | 5 |
-| Carts & wishlists | 6 | 0 | 6 | 0 | 0 | 1 |
+| Carts & wishlists | 6 | 6 | 0 | 0 | 0 | 1 |
 | Catalog · Import & export | 6 | 6 | 0 | 0 | 0 | 4 |
 | Catalog · Inventory | 5 | 5 | 0 | 0 | 0 | 4 |
 | Catalog · Settings | 2 | 2 | 0 | 0 | 0 | 0 |
 | Orders (limited verification) | 25 | 0 | 19 | 6 | 0 | 0 |
-| Enquiries | 4 | 2 | 2 | 0 | 0 | 0 |
+| Enquiries | 4 | 4 | 0 | 0 | 0 | 0 |
 | On hold · Notifications | 2 | 0 | 0 | 2 | 0 | 0 |
 | On hold · Refunds & returns | 12 | 0 | 0 | 12 | 0 | 0 |
 
-## 3. Remaining UI capabilities for the final UI phase (27 admin routes)
+## 3. Remaining UI capabilities for the final UI phase (19 admin routes)
 
 Grouped by module; the status is the planned phase. Screens and actions come from the coverage table.
-
-### Carts & wishlists (6)
-
-| Status | Method | Path | Purpose | Screen → action | Permission | Destructive |
-| --- | --- | --- | --- | --- | --- | --- |
-| P8 | GET | `/carts` | Browse carts incl. abandoned | /carts → Carts table | `order.customer.read` | — |
-| P8 | GET | `/carts/{id}` | Cart with event timeline and live re-quote | /carts?id= → Cart drawer | `order.customer.read` | — |
-| P8 | GET | `/carts/stats` | Abandonment rate, average value, top abandoned products | /carts → Stats header | `order.customer.read` | — |
-| P8 | GET | `/customers/{id}/cart` | A customer's active cart | /carts?customer= → Customer cart | `order.customer.read` | — |
-| P8 | GET | `/wishlists/stats` | Most-wishlisted products and price-drop candidates | /carts?tab=wishlists → Wishlist insights | `order.customer.read` | — |
-| P8 | POST | `/carts/cleanup` | Mark abandoned and expire stale carts | /carts → Run cart cleanup | `order.customer.update` | irreversible |
 
 ### Orders (limited verification) (19)
 
@@ -89,13 +78,6 @@ Grouped by module; the status is the planned phase. Screens and actions come fro
 | P9 | POST | `/shipments/{shipmentNumber}/awb` | Assign an AWB (courier) or record a manual docket | /orders/shipments?n= → Record docket number | `order.order.fulfil` | — |
 | P9 | POST | `/shipments/{shipmentNumber}/cancel` | Cancel a shipment | /orders/shipments?n= → Cancel shipment | `order.order.fulfil` | irreversible |
 | P9 | POST | `/shipments/{shipmentNumber}/status` | Move a shipment by hand (state machine) | /orders/shipments?n= → Update status | `order.order.fulfil` | — |
-
-### Enquiries (2)
-
-| Status | Method | Path | Purpose | Screen → action | Permission | Destructive |
-| --- | --- | --- | --- | --- | --- | --- |
-| P8 | GET | `/enquiries/assignees` | Admins an enquiry can be assigned to (id and name only) | /enquiries?id= → Assignee picker | `lead.enquiry.assign` | — |
-| P8 | PATCH | `/enquiries/{id}` | Move status, assign, add note (version) | /enquiries?id= → Update status / Assign / Note | `lead.enquiry.update` | — |
 
 ## 4. Permission matrix
 
@@ -154,8 +136,8 @@ and the password-reset pair, which is on hold).
 | `order.refund.read` | ✓ | ✓ |  | ✓ |  | 2 | 0 | 0 | 2 |
 | `order.refund.create` | ✓ | ✓ |  | ✓ |  | 2 | 0 | 0 | 2 |
 | `order.refund.approve` | ✓ | ✓ |  |  |  | 3 | 0 | 0 | 3 |
-| `order.customer.read` | ✓ | ✓ |  | ✓ |  | 7 | 2 | 5 | 0 |
-| `order.customer.update` | ✓ | ✓ |  | ✓ |  | 6 | 5 | 1 | 0 |
+| `order.customer.read` | ✓ | ✓ |  | ✓ |  | 7 | 7 | 0 | 0 |
+| `order.customer.update` | ✓ | ✓ |  | ✓ |  | 6 | 6 | 0 | 0 |
 | `payment.settings.read` | ✓ | ✓ |  |  |  | 2 | 0 | 0 | 2 |
 | `payment.settings.update` | ✓ |  |  |  |  | 3 | 0 | 0 | 3 |
 | `payment.split.read` | ✓ | ✓ |  |  |  | 3 | 0 | 0 | 3 |
@@ -175,8 +157,8 @@ and the password-reset pair, which is on hold).
 | `cms.faq.update` | ✓ | ✓ |  |  | ✓ | 3 | 3 | 0 | 0 |
 | `cms.faq.delete` | ✓ | ✓ |  |  | ✓ | 2 | 2 | 0 | 0 |
 | `lead.enquiry.read` | ✓ | ✓ |  | ✓ | ✓ | 2 | 2 | 0 | 0 |
-| `lead.enquiry.update` | ✓ | ✓ |  |  | ✓ | 1 | 0 | 1 | 0 |
-| `lead.enquiry.assign` | ✓ | ✓ |  |  | ✓ | 1 | 0 | 1 | 0 |
+| `lead.enquiry.update` | ✓ | ✓ |  |  | ✓ | 1 | 1 | 0 | 0 |
+| `lead.enquiry.assign` | ✓ | ✓ |  |  | ✓ | 1 | 1 | 0 | 0 |
 | `system.user.read` | ✓ | ✓ |  |  |  | 1 | 1 | 0 | 0 |
 | `system.user.create` | ✓ | ✓ |  |  |  | 1 | 1 | 0 | 0 |
 | `system.user.update` | ✓ | ✓ |  |  |  | 3 | 3 | 0 | 0 |
@@ -325,7 +307,7 @@ Permissions that guard no admin route (5): `order.order.export`, `order.customer
 | PATCH | `/cms/pages/{id}/blocks/{blockId}` | u | - | `cms.page.update` | yes | body: blockUpdateSchema | — | — | UI required: built |
 | PATCH | `/cms/stores/{id}` | U | R | `cms.page.update` | yes | params: idParamSchema; body: storeUpdateSchema | — | — | UI required: built |
 | PATCH | `/cms/testimonials/{id}` | U | R | `cms.page.update` | yes | params: idParamSchema; body: testimonialUpdateSchema | — | — | UI required: built |
-| PATCH | `/enquiries/{id}` | U | - | `lead.enquiry.update` | yes | params: idParamSchema; body: enquiryUpdateSchema | — | — | UI required: final UI phase |
+| PATCH | `/enquiries/{id}` | U | - | `lead.enquiry.update` | yes | params: idParamSchema; body: enquiryUpdateSchema | — | — | UI required: built |
 | PATCH | `/media-folders/{id}` | u | - | `media.asset.update` | yes | params: idParamSchema; body: mediaFolderUpdateSchema | — | — | UI required: built |
 | PATCH | `/media/{id}` | u | - | `media.asset.update` | yes | params: idParamSchema; body: mediaUpdateSchema | — | — | UI required: built |
 | PATCH | `/navigation/items/{id}` | u | R | `cms.navigation.update` | yes | params: idParamSchema; body: navigationItemUpdateSchema | — | — | UI required: built |
@@ -350,7 +332,7 @@ Permissions that guard no admin route (5): `order.order.export`, `order.customer
 | POST | `/auth/logout-all` | AU | X | own session | yes | — | — | — | UI required: built |
 | POST | `/auth/refresh` | AU | - | public | **no** | body: refreshSchema | — | admin-refresh | UI required: built |
 | POST | `/auth/reset-password` | AU | - | public | **no** | body: resetPasswordSchema | — | admin-reset | On hold (integration) |
-| POST | `/carts/cleanup` | A | X | `order.customer.update` | yes | body: cartCleanupSchema | — | — | UI required: final UI phase |
+| POST | `/carts/cleanup` | A | X | `order.customer.update` | yes | body: cartCleanupSchema | — | — | UI required: built |
 | POST | `/catalog/attribute-groups` | C | - | `catalog.attribute.create` | yes | body: attributeGroupCreateSchema | — | — | UI required: built |
 | POST | `/catalog/attributes` | C | - | `catalog.attribute.create` | yes | body: attributeCreateSchema | — | — | UI required: built |
 | POST | `/catalog/attributes/{id}/values` | C | - | `catalog.attribute.update` | yes | params: idParamSchema; body: attributeValueCreateSchema | — | — | UI required: built |
@@ -496,5 +478,5 @@ Not offered by the API at `c553f92`. The admin shows none of them and imitates n
 
 The backend's OpenAPI document does not describe 172 of 437 routes (its ratchet list
 `docs/openapi-debt.json`, which may only shrink): 142 of 318 admin routes, of which
-138 are already used by the admin. The admin's contract is the pinned route inventory and the
+139 are already used by the admin. The admin's contract is the pinned route inventory and the
 vendored shared types, both checked on every build, so this is documentation debt rather than contract drift.

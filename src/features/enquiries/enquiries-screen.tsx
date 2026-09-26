@@ -23,6 +23,7 @@ import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
 import { enquiriesApi, enquiryKeys, type EnquiryListQuery } from './api';
+import { assigneeName, useAssignees } from './assignees';
 import { CONTRACT_WORK_FORM, ENQUIRY_STATUS, formLabel } from './model';
 
 const EnquiryDetailSheet = dynamic(
@@ -44,7 +45,10 @@ export function EnquiriesScreen({ formKey }: { formKey?: string }) {
 }
 
 function EnquiriesList({ formKey }: { formKey?: string }) {
-  const params = useListParams<'status' | 'id'>({ filters: ['status', 'id'] });
+  const params = useListParams<'status' | 'id' | 'assignedToId'>({
+    filters: ['status', 'id', 'assignedToId'],
+  });
+  const assignees = useAssignees();
   const query: EnquiryListQuery = {
     page: params.page,
     limit: params.limit,
@@ -52,6 +56,7 @@ function EnquiriesList({ formKey }: { formKey?: string }) {
     order: params.order,
     q: params.q || undefined,
     status: params.filters.status as EnquiryStatus | undefined,
+    assignedToId: params.filters.assignedToId,
     formKey,
   };
   const rows = useQuery({
@@ -102,7 +107,7 @@ function EnquiriesList({ formKey }: { formKey?: string }) {
       header: 'Assigned',
       cell: ({ row }) =>
         row.original.assignedToId ? (
-          <Badge tone="neutral">Assigned</Badge>
+          <Badge tone="neutral">{assigneeName(row.original.assignedToId, assignees.data)}</Badge>
         ) : (
           <Badge tone="warning">Unassigned</Badge>
         ),
@@ -154,6 +159,14 @@ function EnquiriesList({ formKey }: { formKey?: string }) {
               options={STATUS_OPTIONS}
               onChange={(v) => params.setFilter('status', v)}
             />
+            {assignees.data ? (
+              <FilterSelect
+                label="Assigned to"
+                value={params.filters.assignedToId}
+                options={assignees.data.map((a) => ({ value: a.id, label: a.name }))}
+                onChange={(v) => params.setFilter('assignedToId', v)}
+              />
+            ) : null}
             <div className="sm:ml-auto">
               <SavedFiltersMenu listId={contract ? 'contract-work' : 'enquiries'} />
             </div>

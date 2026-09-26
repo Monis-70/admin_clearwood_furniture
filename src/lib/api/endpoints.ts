@@ -19,6 +19,7 @@ import { importExportRoutes } from './routes/importExport';
 import { mediaRoutes } from './routes/media';
 import { contentRoutes } from './routes/content';
 import { enquiriesRoutes } from './routes/enquiries';
+import { cartsRoutes } from './routes/carts';
 import { systemRoutes } from './routes/system';
 
 /**
@@ -52,5 +53,6 @@ export const endpoints = {
   media: mediaRoutes,
   content: contentRoutes,
   enquiries: enquiriesRoutes,
+  carts: cartsRoutes,
   system: systemRoutes,
 } as const;
