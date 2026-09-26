@@ -22,7 +22,8 @@ test('roles: details in plain language, create and delete a custom role', async 
   await dialog.getByLabel('View enquiries').check();
   await dialog.getByRole('button', { name: 'Create role' }).click();
   await expect(page.getByRole('heading', { level: 1, name: `E2E Role ${RUN}` })).toBeVisible();
-  await expect(page.getByText('Custom')).toBeVisible();
+  // Exact: the sidebar now also lists "Customers" and "Customer groups".
+  await expect(page.getByText('Custom', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Delete' }).click();
   const confirm = page.getByRole('alertdialog');
