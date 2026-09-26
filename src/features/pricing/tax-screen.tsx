@@ -28,6 +28,10 @@ import { taxClassesApi, taxonomyKeys, type TaxClassRow } from '../catalog/taxono
 const TaxClassDialog = dynamic(() => import('./tax-class-dialog').then((m) => m.TaxClassDialog), {
   ssr: false,
 });
+const PricingSettingsPanel = dynamic(
+  () => import('./pricing-settings-panel').then((m) => m.PricingSettingsPanel),
+  { ssr: false },
+);
 
 /** Basis points shown as a percentage: 1800 → "18%". Display only; tax is computed by the API. */
 const formatRate = (bp: number) =>
@@ -172,6 +176,14 @@ function TaxList() {
           />
         }
       />
+      {canCall(endpoints.pricing.settings) ? (
+        <section aria-labelledby="pricing-settings" className="mt-8 flex flex-col gap-3">
+          <h2 id="pricing-settings" className="text-lg font-semibold">
+            Pricing &amp; GST settings
+          </h2>
+          <PricingSettingsPanel />
+        </section>
+      ) : null}
       {editing ? (
         <TaxClassDialog
           taxClass={editing === 'new' ? null : editing}

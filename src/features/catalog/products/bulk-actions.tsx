@@ -28,7 +28,16 @@ import { flattenTree, useBrandOptions, useCategoryOptions, useTaxClassOptions } 
 
 import { productsApi, type BulkInput } from './api';
 
-type Target = 'category' | 'collection' | 'brand' | 'taxClass';
+type Target = 'category' | 'collection' | 'brand' | 'taxClass' | 'merchandising';
+
+const FLAGS = [
+  { key: 'isFeatured', label: 'Featured' },
+  { key: 'isNewArrival', label: 'New arrival' },
+  { key: 'isBestSeller', label: 'Best seller' },
+  { key: 'isSpecialCollection', label: 'Special collection' },
+] as const;
+type Flag = (typeof FLAGS)[number]['key'];
+type FlagChoice = '' | 'on' | 'off';
 
 interface BulkOption {
   action: BulkActionType;
@@ -100,6 +109,13 @@ const OPTIONS: readonly BulkOption[] = [
     permission: 'pricing.tax.update',
     target: 'taxClass',
     explain: 'Changes the GST rate applied at checkout.',
+  },
+  {
+    action: 'SET_MERCHANDISING',
+    label: 'Set merchandising',
+    permission: 'catalog.product.update',
+    target: 'merchandising',
+    explain: 'Turns highlight flags on or off; anything left as it is stays unchanged.',
   },
   {
     action: 'RESTORE',
@@ -181,6 +197,20 @@ function BulkDialog({
   const queryClient = useQueryClient();
   const keyFor = useIdempotencyKey();
   const [target, setTarget] = useState('');
+  const [flags, setFlags] = useState<Record<Flag, FlagChoice>>({
+    isFeatured: '',
+    isNewArrival: '',
+    isBestSeller: '',
+    isSpecialCollection: '',
+  });
+  const [clearBadge, setClearBadge] = useState(false);
+  const merchandising = {
+    ...Object.fromEntries(
+      FLAGS.filter(({ key }) => flags[key]).map(({ key }) => [key, flags[key] === 'on']),
+    ),
+    ...(clearBadge ? { badgeText: null, badgeColor: null } : {}),
+  };
+  const merchandisingChosen = Object.keys(merchandising).length > 0;
   const [result, setResult] = useState<BulkActionResultDto | null>(null);
   const categories = useCategoryOptions(option.target === 'category');
   const brands = useBrandOptions(option.target === 'brand');
@@ -217,6 +247,7 @@ function BulkDialog({
         ...(option.target === 'collection' ? { collectionId: target } : {}),
         ...(option.target === 'brand' ? { brandId: target } : {}),
         ...(option.target === 'taxClass' ? { taxClassId: target } : {}),
+        ...(option.target === 'merchandising' ? { merchandising } : {}),
       };
       return productsApi.bulk(body, keyFor(body));
     },
@@ -282,7 +313,41 @@ function BulkDialog({
               <DialogDescription>{option.explain}</DialogDescription>
             </DialogHeader>
             <FormAlert error={run.error} />
-            {option.target ? (
+            {option.target === 'merchandising' ? (
+              <fieldset className="flex flex-col gap-3">
+                <legend className="sr-only">Merchandising changes</legend>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {FLAGS.map(({ key, label }) => (
+                    <div key={key} className="flex flex-col gap-1.5">
+                      <Label htmlFor={`bulk-${key}`}>{label}</Label>
+                      <NativeSelect
+                        id={`bulk-${key}`}
+                        value={flags[key]}
+                        onChange={(event) =>
+                          setFlags((current) => ({
+                            ...current,
+                            [key]: event.target.value as FlagChoice,
+                          }))
+                        }
+                      >
+                        <option value="">Leave as it is</option>
+                        <option value="on">Turn on</option>
+                        <option value="off">Turn off</option>
+                      </NativeSelect>
+                    </div>
+                  ))}
+                </div>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="size-4 accent-primary"
+                    checked={clearBadge}
+                    onChange={(event) => setClearBadge(event.target.checked)}
+                  />
+                  Remove each product&apos;s custom badge
+                </label>
+              </fieldset>
+            ) : option.target ? (
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="bulk-target">
                   {option.target === 'taxClass'
@@ -329,7 +394,11 @@ function BulkDialog({
               </Button>
               <Button
                 variant={option.destructive ? 'destructive' : 'default'}
-                disabled={Boolean(option.target) && !target}
+                disabled={
+                  option.target === 'merchandising'
+                    ? !merchandisingChosen
+                    : Boolean(option.target) && !target
+                }
                 loading={run.isPending}
                 onClick={() => run.mutate()}
               >

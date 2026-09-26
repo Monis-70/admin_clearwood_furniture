@@ -7,6 +7,7 @@ import type {
   ProductAttributeValuesInput,
   ProductCategoriesInput,
   ProductDuplicateInput,
+  ProductRelationsInput,
   ProductUpdateInput,
   VariantCreateInput,
   VariantMatrixInput,
@@ -102,6 +103,10 @@ export const productsApi = {
     return (
       await apiRequest(endpoints.products.setAttributeValues, { params: { id }, body: input })
     ).data as AdminProductDetailDto;
+  },
+  async setRelations(id: string, input: ProductRelationsInput) {
+    return (await apiRequest(endpoints.products.setRelations, { params: { id }, body: input }))
+      .data as AdminProductDetailDto;
   },
   async bulk(input: BulkInput, idempotencyKey: string) {
     return (await apiRequest(endpoints.products.bulk, { body: input, idempotencyKey }))

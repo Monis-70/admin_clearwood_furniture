@@ -1,4 +1,6 @@
+import type { CatalogSettingsUpdateInput } from '@shared/schemas/catalogAdmin';
 import type {
+  AdminCatalogSettingsDto,
   AdminCategoryDto,
   AdminProductSummaryDto,
   LowStockItemDto,
@@ -24,6 +26,9 @@ export interface ProductListQuery {
   visibility?: string;
   madeToOrder?: string;
   customizable?: string;
+  isFeatured?: string;
+  isNewArrival?: string;
+  isSpecialCollection?: string;
   includeDeleted?: string;
 }
 
@@ -59,9 +64,18 @@ export const catalogKeys = {
   categoryTree: () => [...catalogKeys.all, 'category-tree'] as const,
   collections: (query: SimpleListQuery) => [...catalogKeys.all, 'collections', query] as const,
   lowStock: (query: SimpleListQuery) => [...catalogKeys.all, 'low-stock', query] as const,
+  settings: () => [...catalogKeys.all, 'settings'] as const,
 };
 
 export const catalogApi = {
+  async settings(signal?: AbortSignal) {
+    return (await apiRequest<AdminCatalogSettingsDto>(endpoints.catalog.settings, { signal })).data;
+  },
+  async updateSettings(input: CatalogSettingsUpdateInput) {
+    return (
+      await apiRequest<AdminCatalogSettingsDto>(endpoints.catalog.updateSettings, { body: input })
+    ).data;
+  },
   products(query: ProductListQuery, signal?: AbortSignal): Promise<Page<AdminProductSummaryDto>> {
     return apiPage<AdminProductSummaryDto>(endpoints.catalog.products, {
       query: { ...query },

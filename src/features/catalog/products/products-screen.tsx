@@ -56,6 +56,9 @@ const FILTERS = [
   'visibility',
   'madeToOrder',
   'customizable',
+  'isFeatured',
+  'isNewArrival',
+  'isSpecialCollection',
   'includeDeleted',
 ] as const;
 type Filter = (typeof FILTERS)[number];
@@ -124,6 +127,9 @@ function ProductsList() {
     visibility: f.visibility,
     madeToOrder: f.madeToOrder,
     customizable: f.customizable,
+    isFeatured: f.isFeatured,
+    isNewArrival: f.isNewArrival,
+    isSpecialCollection: f.isSpecialCollection,
     includeDeleted: f.includeDeleted,
   };
   const products = useQuery({
@@ -398,6 +404,9 @@ function ProductsList() {
                 'visibility',
                 'madeToOrder',
                 'customizable',
+                'isFeatured',
+                'isNewArrival',
+                'isSpecialCollection',
                 'hasMedia',
                 'completenessMax',
                 'includeDeleted',
@@ -439,6 +448,24 @@ function ProductsList() {
                   value={f.customizable}
                   options={YES_NO}
                   onChange={(v) => params.setFilter('customizable', v)}
+                />
+                <FilterSelect
+                  label="Featured"
+                  value={f.isFeatured}
+                  options={YES_NO}
+                  onChange={(v) => params.setFilter('isFeatured', v)}
+                />
+                <FilterSelect
+                  label="New arrival"
+                  value={f.isNewArrival}
+                  options={YES_NO}
+                  onChange={(v) => params.setFilter('isNewArrival', v)}
+                />
+                <FilterSelect
+                  label="Special collection"
+                  value={f.isSpecialCollection}
+                  options={YES_NO}
+                  onChange={(v) => params.setFilter('isSpecialCollection', v)}
                 />
                 <FilterSelect
                   label="Images"

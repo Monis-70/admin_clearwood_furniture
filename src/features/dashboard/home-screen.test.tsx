@@ -109,7 +109,8 @@ describe('HomeScreen', () => {
     const upcoming = (await screen.findByRole('heading', { name: 'Being built' })).closest(
       'section',
     )!;
-    expect(within(upcoming).getByText('Merchandising')).toBeInTheDocument();
+    expect(within(upcoming).getByText('Synonyms')).toBeInTheDocument();
+    expect(within(upcoming).queryByText('Merchandising')).not.toBeInTheDocument();
     expect(within(upcoming).queryByText('Attributes')).not.toBeInTheDocument();
     expect(within(upcoming).queryByText('Admin users')).not.toBeInTheDocument();
   });

@@ -9,6 +9,8 @@ export const PRODUCT_TABS = [
   { id: 'specifications', label: 'Specifications' },
   { id: 'variants', label: 'Variants' },
   { id: 'media', label: 'Media' },
+  { id: 'merchandising', label: 'Merchandising' },
+  { id: 'related', label: 'Related' },
   { id: 'fulfilment', label: 'Fulfilment' },
   { id: 'seo', label: 'SEO' },
   { id: 'publishing', label: 'Publishing' },

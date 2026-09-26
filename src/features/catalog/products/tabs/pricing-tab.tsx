@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { z } from 'zod';
 
@@ -27,6 +28,15 @@ import { priceAdjustmentsApi, pricingKeys } from '@/features/pricing/api';
 import { describeAdjustment } from '@/features/pricing/model';
 
 import { ReadOnlyNotice, productConflict, saveProduct } from './shared';
+
+const ProductTiers = dynamic(
+  () => import('./pricing/tiers-and-explain').then((m) => m.ProductTiers),
+  { ssr: false },
+);
+const ExplainPrice = dynamic(
+  () => import('./pricing/tiers-and-explain').then((m) => m.ExplainPrice),
+  { ssr: false },
+);
 
 const schema = z.object({
   basePricePaise: rupees('Base price'),
@@ -101,6 +111,8 @@ export function PricingTab({ product }: { product: AdminProductDetailDto }) {
         </FormSection>
       </EditorForm>
       {canCall(endpoints.priceAdjustments.list) ? <ProductPriceRules product={product} /> : null}
+      {canCall(endpoints.pricing.tierPrices) ? <ProductTiers product={product} /> : null}
+      {canCall(endpoints.pricing.simulate) ? <ExplainPrice product={product} /> : null}
     </div>
   );
 }

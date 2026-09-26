@@ -151,6 +151,15 @@ const REPLANNED: Readonly<Record<string, { status: CoverageStatus; screen?: stri
   'PUT /catalog/products/{id}/relations': { status: 'P3' },
   // Storage garbage report is a maintenance tool, delivered with the other maintenance actions.
   'GET /media/gc': { status: 'P6' },
+  // Quantity tiers are edited per product (Pricing tab) and listed on the price lists screen.
+  ...Object.fromEntries(
+    [
+      'GET /pricing/tier-prices',
+      'POST /pricing/tier-prices',
+      'PATCH /pricing/tier-prices/{id}',
+      'DELETE /pricing/tier-prices/{id}',
+    ].map((key) => [key, { status: 'P5', screen: '/pricing/price-lists, product Pricing tab' }]),
+  ),
 };
 
 function section(module: string, rows: Row[]): Record<string, CoverageEntry> {

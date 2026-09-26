@@ -1,6 +1,9 @@
 import {
   Activity,
   Award,
+  BadgePercent,
+  Calculator,
+  ClipboardList,
   FileText,
   FolderTree,
   HardHat,
@@ -13,10 +16,15 @@ import {
   PanelTop,
   Receipt,
   ScrollText,
+  Settings2,
   ShieldCheck,
+  Sparkles,
   Tags,
+  TicketPercent,
+  Truck,
   Upload,
   UserCog,
+  Users,
   Warehouse,
   type LucideIcon,
 } from 'lucide-react';
@@ -134,10 +142,10 @@ export const NAVIGATION: readonly NavGroup[] = [
         id: 'merchandising',
         label: 'Merchandising',
         href: '/catalog/merchandising',
-        // icon: Sparkles
+        icon: Sparkles,
         requires: { all: ['catalog.product.read'] },
-        phase: 4,
-        // description: 'Featured, new and highlighted products.'
+        phase: 3,
+        description: 'Featured, new and highlighted products.',
       },
       {
         id: 'import-export',
@@ -154,6 +162,15 @@ export const NAVIGATION: readonly NavGroup[] = [
         },
         phase: 2,
         description: 'Bring in or download catalog data in bulk.',
+      },
+      {
+        id: 'catalog-settings',
+        label: 'Catalog settings',
+        href: '/catalog/settings',
+        icon: Settings2,
+        requires: { all: ['catalog.product.read'] },
+        phase: 3,
+        description: 'Page sizes, out-of-stock products, new arrivals and badges.',
       },
     ],
   },
@@ -189,37 +206,37 @@ export const NAVIGATION: readonly NavGroup[] = [
         id: 'price-lists',
         label: 'Price lists & tiers',
         href: '/pricing/price-lists',
-        // icon: ClipboardList
+        icon: ClipboardList,
         requires: { all: ['pricing.adjustment.read'] },
         phase: 5,
-        // description: 'Special price lists and quantity tiers.'
+        description: 'Special price lists and quantity tiers.',
       },
       {
         id: 'discounts',
         label: 'Automatic discounts',
         href: '/pricing/discount-rules',
-        // icon: Sparkles
+        icon: BadgePercent,
         requires: { all: ['pricing.adjustment.read'] },
         phase: 5,
-        // description: 'Discounts applied without a code.'
+        description: 'Discounts applied without a code.',
       },
       {
         id: 'coupons',
         label: 'Coupons',
         href: '/pricing/coupons',
-        // icon: TicketPercent
+        icon: TicketPercent,
         requires: { all: ['pricing.coupon.read'] },
         phase: 5,
-        // description: 'Codes customers enter at checkout.'
+        description: 'Codes customers enter at checkout.',
       },
       {
         id: 'customer-groups',
         label: 'Customer groups',
         href: '/pricing/customer-groups',
-        // icon: Users
+        icon: Users,
         requires: { all: ['order.customer.read'] },
         phase: 5,
-        // description: 'Groups that receive their own prices.'
+        description: 'Groups that receive their own prices.',
       },
       {
         id: 'tax',
@@ -234,10 +251,19 @@ export const NAVIGATION: readonly NavGroup[] = [
         id: 'delivery',
         label: 'Delivery charges',
         href: '/pricing/delivery',
-        // icon: Truck
+        icon: Truck,
         requires: { all: ['pricing.tax.read'] },
         phase: 5,
-        // description: 'Delivery zones, rates and pincodes.'
+        description: 'Delivery zones, rates and pincodes.',
+      },
+      {
+        id: 'simulator',
+        label: 'Price simulator',
+        href: '/pricing/simulator',
+        icon: Calculator,
+        requires: { all: ['pricing.adjustment.read'] },
+        phase: 5,
+        description: 'Price a what-if cart and see every rule applied.',
       },
     ],
   },

@@ -64,6 +64,8 @@ describe('AppShell inside AuthGate', () => {
       'Products',
       'Categories',
       'Brands',
+      'Merchandising',
+      'Catalog settings',
       'Media library',
       'Pages',
       'Banners',

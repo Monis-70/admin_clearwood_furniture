@@ -63,6 +63,8 @@ const SECTIONS: Record<ProductTab, React.ComponentType<{ product: AdminProductDe
   specifications: tab(() => import('./tabs/specifications-tab').then((m) => m.SpecificationsTab)),
   variants: tab(() => import('./tabs/variants-tab').then((m) => m.VariantsTab)),
   media: tab(() => import('./tabs/media-tab').then((m) => m.MediaTab)),
+  merchandising: tab(() => import('./tabs/merchandising-tab').then((m) => m.MerchandisingTab)),
+  related: tab(() => import('./tabs/related-tab').then((m) => m.RelatedTab)),
   fulfilment: tab(() => import('./tabs/fulfilment-tab').then((m) => m.FulfilmentTab)),
   seo: tab(() => import('./tabs/seo-tab').then((m) => m.SeoTab)),
   publishing: tab(() => import('./tabs/publishing-tab').then((m) => m.PublishingTab)),

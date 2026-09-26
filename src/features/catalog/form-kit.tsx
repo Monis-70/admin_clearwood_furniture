@@ -305,6 +305,13 @@ export function FormSection({
 
 /* ---------------------------------------------------------- the editor form */
 
+/** Thrown from `onSubmit` for problems the schema cannot see (e.g. rows edited outside the form). */
+export class FormProblem extends Error {
+  constructor(readonly messages: string[]) {
+    super(messages.join(' '));
+  }
+}
+
 interface EditorFormProps<Values extends FieldValues, Output, Record> {
   schema: z.ZodType<Output, z.ZodTypeDef, Values>;
   defaultValues: DefaultValues<Values>;
@@ -363,6 +370,10 @@ export function EditorForm<Values extends FieldValues, Output, Record>({
       await onSubmit(values);
       notifySuccess(successMessage);
     } catch (error) {
+      if (error instanceof FormProblem) {
+        setFormMessages(error.messages);
+        return;
+      }
       if (conflict && hasCode(error, 'STALE_RESOURCE')) {
         setConflicted(values);
         return;

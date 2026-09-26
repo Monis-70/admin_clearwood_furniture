@@ -75,4 +75,51 @@ describe('BulkActions', () => {
     await waitFor(() => expect(onDone).toHaveBeenCalled());
     expect(listRefreshes()).toHaveLength(1);
   });
+
+  it('sets merchandising flags in bulk, sending only the choices made', async () => {
+    signInAs(account({ role: 'CATALOG_MANAGER' }));
+    server.use(
+      http.post(
+        `${API}/admin/catalog/bulk`,
+        guarded(
+          () =>
+            ok({
+              action: 'SET_MERCHANDISING',
+              requested: 2,
+              succeeded: 2,
+              failed: 0,
+              results: [
+                { id: 'prd_chair', ok: true, code: null, message: null },
+                { id: 'prd_table', ok: true, code: null, message: null },
+              ],
+            }),
+          { csrf: true },
+        ),
+      ),
+    );
+    renderWithProviders(
+      <AuthGate>
+        <BulkActions selected={[chair, table]} onDone={vi.fn()} />
+      </AuthGate>,
+    );
+    const user = userEvent.setup();
+    await user.selectOptions(
+      await screen.findByLabelText('Action for the selected products'),
+      'SET_MERCHANDISING',
+    );
+    await user.click(screen.getByRole('button', { name: 'Apply to 2' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Set merchandising: 2 products' });
+    const apply = within(dialog).getByRole('button', { name: 'Set merchandising 2' });
+    expect(apply).toBeDisabled();
+    await user.selectOptions(within(dialog).getByLabelText('Featured'), 'on');
+    await user.selectOptions(within(dialog).getByLabelText('New arrival'), 'off');
+    await user.click(apply);
+
+    expect(await screen.findByRole('dialog', { name: 'Done' })).toBeInTheDocument();
+    expect(callsTo('/api/v1/admin/catalog/bulk', 'POST')[0]!.body).toEqual({
+      action: 'SET_MERCHANDISING',
+      ids: ['prd_chair', 'prd_table'],
+      merchandising: { isFeatured: true, isNewArrival: false },
+    });
+  });
 });
