@@ -1,6 +1,8 @@
-import { endpoint, requires } from '../endpoint';
+import { PUBLIC, endpoint, requires } from '../endpoint';
 
 export const catalogRoutes = {
+  /** Storefront resolver: what a customer reaching this path gets (entity, redirect, 404). */
+  resolvePath: endpoint('GET', '/catalog/resolve', { access: PUBLIC }),
   settings: endpoint('GET', '/admin/catalog/settings', {
     access: requires('catalog.product.read'),
   }),

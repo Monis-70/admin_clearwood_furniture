@@ -132,8 +132,11 @@ export function checkCoverage(input: CoverageInput): CoverageResult {
     }
 
     const access = def.access;
-    if (route.auth === 'public' && access.kind !== 'public') fail(`${name}: backend route is public but the registry says ${access.kind}`);
-    if (route.auth !== 'public' && access.kind === 'public') fail(`${name}: backend route requires ${route.auth} but the registry says public`);
+    // optional-customer: anyone may call it; a customer session only changes the pricing audience.
+    // The admin never holds a customer session, so for the admin it is a public route.
+    const open = route.auth === 'public' || route.auth === 'optional-customer';
+    if (open && access.kind !== 'public') fail(`${name}: backend route is ${route.auth} but the registry says ${access.kind}`);
+    if (!open && access.kind === 'public') fail(`${name}: backend route requires ${route.auth} but the registry says public`);
     if (access.kind === 'permission') {
       const expected = [...route.permissions].sort().join(',');
       const actual = [...access.all].sort().join(',');

@@ -28,6 +28,9 @@ const SearchAndSeoPanels = dynamic(
   () => import('./seo/search-and-seo-panels').then((m) => m.SearchAndSeoPanels),
   { ssr: false },
 );
+const PathCheck = dynamic(() => import('../../path-check').then((m) => m.PathCheck), {
+  ssr: false,
+});
 
 const schema = z.object({
   seoTitle: optionalText(180),
@@ -133,6 +136,7 @@ function Redirects({ product }: { product: AdminProductDetailDto }) {
           ))}
         </ul>
       )}
+      <PathCheck id="product-redirects" />
     </section>
   );
 }

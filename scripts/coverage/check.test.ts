@@ -131,6 +131,23 @@ describe('checkCoverage', () => {
     );
   });
 
+  it('treats an optional-customer route as public for the admin, and only as public', () => {
+    const base = input({ externalRoutes: { 'GET /api/v1/version': {}, 'GET /api/v1/search': {} } });
+    base.inventory.routes.push(route('GET', '/api/v1/search', { auth: 'optional-customer', csrf: false }));
+    const withAccess = (access: typeof PUBLIC) =>
+      checkCoverage({
+        ...base,
+        registry: flattenRegistry({
+          users: endpoint('GET', '/admin/users', { access: requires('system.user.read') }),
+          search: endpoint('GET', '/search', { access }),
+        }),
+      }).failures;
+    expect(withAccess(PUBLIC)).toEqual([]);
+    expect(withAccess(SESSION)).toContain(
+      'endpoints.search: backend route is optional-customer but the registry says session',
+    );
+  });
+
   it('fails on missing screens, duplicates, undocumented holds and unknown external calls', () => {
     const base = input({
       appRoutes: new Set(['/']),

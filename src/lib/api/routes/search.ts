@@ -1,6 +1,8 @@
-import { endpoint, requires } from '../endpoint';
+import { PUBLIC, endpoint, requires } from '../endpoint';
 
 export const searchRoutes = {
+  /** Storefront search: every call is logged as a customer search (Search insights). */
+  storefrontSearch: endpoint('GET', '/search', { access: PUBLIC }),
   analytics: endpoint('GET', '/admin/search/analytics', {
     access: requires('catalog.product.update'),
   }),

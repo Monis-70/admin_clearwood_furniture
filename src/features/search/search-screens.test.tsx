@@ -139,6 +139,53 @@ describe('SynonymsScreen', () => {
       expect(callsTo('/api/v1/admin/search/synonyms/couch', 'DELETE')).toHaveLength(1),
     );
   });
+
+  it('runs a storefront search only when asked, and once per click', async () => {
+    const asked: string[] = [];
+    server.use(
+      http.get(
+        `${API}/admin/search/synonyms`,
+        guarded(() => ok([synonym], 200, meta(1))),
+      ),
+      http.get(`${API}/search`, ({ request }) => {
+        asked.push(new URL(request.url).searchParams.get('q') ?? '');
+        return ok({
+          query: 'couch',
+          normalizedQuery: 'couch',
+          expandedTerms: ['couch', 'sofa', 'settee'],
+          queryLogId: 'log_1',
+          products: {
+            items: [{ id: 'p1', name: 'Godavari Sofa' }],
+            totalCount: 14,
+          },
+          categories: [{ type: 'CATEGORY', total: 2, items: [] }],
+          collections: [{ type: 'COLLECTION', total: 0, items: [] }],
+          brands: [{ type: 'BRAND', total: 1, items: [] }],
+          tookMs: 12,
+        });
+      }),
+    );
+    const user = userEvent.setup();
+    render(<SynonymsScreen />, 'CATALOG_MANAGER', '/search/synonyms');
+
+    const field = await screen.findByLabelText('Search words');
+    expect(screen.getByText(/recorded as a customer search/)).toBeInTheDocument();
+    expect(asked).toHaveLength(0);
+    await user.type(field, 'couch');
+    await user.click(screen.getByRole('button', { name: 'Search' }));
+
+    expect(await screen.findByText('couch, sofa, settee')).toBeInTheDocument();
+    expect(
+      screen.getByText(/14 products · 2 categories · 0 collections · 1 brands/),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('list', { name: 'First products found' })).getByText('Godavari Sofa'),
+    ).toBeInTheDocument();
+    expect(asked).toEqual(['couch']);
+
+    await user.click(screen.getByRole('button', { name: 'Search' }));
+    await waitFor(() => expect(asked).toEqual(['couch', 'couch']));
+  });
 });
 
 describe('SearchIndexScreen', () => {

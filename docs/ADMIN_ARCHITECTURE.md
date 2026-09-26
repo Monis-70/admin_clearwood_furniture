@@ -519,3 +519,37 @@ before sending, versioned edit, refused delete, read-only and no-access roles); 
 `taxonomy.spec.ts` (3: attribute with a value, brand with a stale-version 409, tax class with a
 duplicate-code refusal); `media.spec.ts` minimum-size and library drop tests; the 429 test; the
 signed-out visitor now asserts zero API requests.
+
+## 22. Master completion record (every admin route controllable)
+
+Started from admin `14590b9` and backend `c553f92` (both clean). The backend was not changed in
+this pass. Local commits `012bebe` … `0cede44` plus a closing commit; nothing pushed, no remote, no
+deployment. Result: implemented through phase 9, 282 of 318 admin routes wired to a screen, 0 left
+unwired; the other 36 are on hold (35) or internal (1). The 6 non-admin routes the admin needs are
+wired too. Current counts: [CURRENT_STATE.md](CURRENT_STATE.md).
+
+| Decision | Why |
+| --- | --- |
+| App code imports one route module per domain (`src/lib/api/routes/<domain>.ts`, `xRoutes`); `endpoints.ts` is only the aggregate for scripts and tests | Turbopack does not tree-shake property access on a namespace import, so the single registry shipped every route on every page and broke the 280 KB budget (B1). Coverage and matrix generation still read the aggregate |
+| Navigation icons are named in `navigation.ts` and loaded after the page (`src/config/nav-icons.tsx`) | icons are decoration (every entry has a text label); they were a fixed cost on every page |
+| Dialogs, sheets and forms of list screens are separate lazy modules; list screens never import zod | the same budget; zod helpers live in `pricing/fields.ts` and `content/dialogs/fields.ts` |
+| The page builder generates each block's form from the shared block registry's Zod schema (`content/dialogs/config-editor.tsx`) and pre-checks it before saving | the backend comment asks for a generated builder; 22 block types stay in sync with no per-type code. The API remains the judge; publish blockers are shown from `422 PAGE_NOT_PUBLISHABLE` `details.blockers`, never computed |
+| Custom HTML and rich text edit `rawConfig` when present | the backend keeps the author's original next to the sanitised copy precisely so it can be edited again |
+| Order status and shipment status offer every status; a refusal shows the server's `details.allowed` | the state machine is the backend's; the admin does not copy it |
+| Order cancel needs the order number typed; shipment clean-up and cart clean-up need an explicit acknowledgement | irreversible actions (stock release, refund request, expired carts) |
+| Manual shipments, AWB and invoice use an Idempotency-Key per logical attempt (`useIdempotencyKey`) | a double click or a retry after a timeout never creates a second shipment or invoice |
+| Enquiry follow-up sends only changed fields with the version; assignment is offered only with `lead.enquiry.assign` | the API refuses an assignment without it (403) and a stale version (409 `STALE_RESOURCE`, handled by the conflict dialog) |
+| Site settings form fields use `__` instead of `.` | react-hook-form reads dots as nesting; the API keys (`site.contact_phone`) are restored at the boundary |
+| `site.usp_lines` is shown read-only | it is stored as JSON but `PUT /content/settings` accepts only scalar values, so no correct write exists (recorded as C3) |
+| Refunds, returns, payment settings, courier pickup/sync/serviceability and e-mail templates are never called; the screens show the on-hold notice | "do not fake on-hold integrations"; the coverage gate fails if a `hold:*` route is wired |
+| The carts entry moved from `/customers/carts` to `/carts` | one URL for the navigation and the coverage table |
+| "Try a search" (Synonyms) calls the real storefront search; "Check an address" (product and category redirect panels) calls the storefront resolver. Both run only on an explicit click, each click is a new query, and neither shares a cache key that a save would refresh | the storefront is the only judge of what a customer gets. Both calls have side effects (a logged customer search; a visit on a followed redirect), stated beside the tool (C10) |
+| `coverage:check` treats an `optional-customer` backend route as public | anyone may call it and a customer session only changes the pricing audience; the admin never holds one. A registry entry with any other access still fails |
+| The shipment sheet and NDR tab are a lazy module | kept `/orders/shipments` (279.6 KB) clear of the budget edge (now 275.5 KB) |
+
+Tests added: unit/component 302 → 354 (pricing 12, search 7, content 12, enquiries 2, carts 3,
+orders 6, dashboard 1, address check 1, coverage gate 1, plus updated shell/dashboard expectations);
+real-backend `operations.spec.ts` (6: page build/publish/unpublish/delete, FAQ/announcement/synonym
+round trips with a storefront search try, enquiry note, orders/shipments/reports/notifications/carts
+on real data with axe, site-settings round trip, read-only address check on a live product). Every
+test that creates data deletes it or restores the DEV record it touched.

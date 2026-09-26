@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -52,6 +53,10 @@ import { categoriesApi, taxonomyKeys } from '../taxonomy/api';
 
 import type { CategoryDialog } from './categories-screen';
 import { KIND_OPTIONS } from './model';
+
+const PathCheck = dynamic(() => import('../path-check').then((m) => m.PathCheck), {
+  ssr: false,
+});
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LEAD_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -571,6 +576,15 @@ function CategoryProducts({ category }: { category: AdminCategoryDto }) {
 }
 
 function CategoryRedirects({ category }: { category: AdminCategoryDto }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <CategoryRedirectList category={category} />
+      <PathCheck id="category-redirects" />
+    </div>
+  );
+}
+
+function CategoryRedirectList({ category }: { category: AdminCategoryDto }) {
   const redirects = useQuery({
     queryKey: taxonomyKeys.categoryPart(category.id, 'redirects'),
     queryFn: ({ signal }) => categoriesApi.redirects(category.id, signal),

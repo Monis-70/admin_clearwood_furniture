@@ -11,8 +11,8 @@ Implemented through phase **P9**.
 
 | Class | Meaning | Admin routes | Other routes | Total |
 | --- | --- | ---: | ---: | ---: |
-| UI required: built | wired in the endpoint registry and used by a screen | 282 | 4 | 286 |
-| UI required: final UI phase | classified for a screen (P3 and later), not wired yet | 0 | 2 | 2 |
+| UI required: built | wired in the endpoint registry and used by a screen | 282 | 6 | 288 |
+| UI required: final UI phase | classified for a screen (P3 and later), not wired yet | 0 | 0 | 0 |
 | On hold (integration) | payments, refunds, returns, courier or e-mail: hidden until the integration is live | 35 | 0 | 35 |
 | Internal / system | never called by the UI (see ADMIN_API_COVERAGE.md §4) | 1 | 0 | 1 |
 | Not applicable to the admin | storefront and customer API; the admin does not call it | 0 | 113 | 113 |

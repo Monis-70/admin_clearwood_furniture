@@ -39,6 +39,9 @@ import { searchApi, searchKeys, type SynonymRow } from './api';
 const SynonymDialog = dynamic(() => import('./synonym-dialog').then((m) => m.SynonymDialog), {
   ssr: false,
 });
+const SearchTest = dynamic(() => import('./search-test').then((m) => m.SearchTest), {
+  ssr: false,
+});
 
 const pct = (bp: number) => `${(bp / 100).toLocaleString('en-IN', { maximumFractionDigits: 1 })}%`;
 
@@ -334,6 +337,9 @@ function Synonyms() {
           />
         }
       />
+      <div className="mt-6">
+        <SearchTest />
+      </div>
       {editing ? (
         <SynonymDialog
           synonym={editing === 'new' ? null : editing}

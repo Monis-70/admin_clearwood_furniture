@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { apiData } from './catalog-helpers';
 import { RUN, appears, expectAccessible, signInAsSuperAdmin, trackApi } from './stack';
 
 /*
@@ -105,10 +106,33 @@ test('content: FAQ, announcement and synonym round trips', async ({ page }) => {
   await syn.getByRole('button', { name: 'Create synonyms' }).click();
   const table = page.getByRole('table', { name: 'Synonyms' });
   await expect(table.getByText(`e2e${RUN}`)).toBeVisible();
+  await page.getByLabel('Search words').fill(`e2e${RUN}`);
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(page.getByText(new RegExp(`Searched for: .*e2e${RUN}.*sofa`))).toBeVisible();
+  await expect(page.getByRole('list', { name: 'First products found' })).toBeVisible();
   await table.getByRole('button', { name: `Actions for e2e${RUN}` }).click();
   await page.getByRole('menuitem', { name: 'Delete…' }).click();
   await confirmIn(page, 'Delete synonyms');
   await expect(table.getByText(`e2e${RUN}`)).toHaveCount(0);
+  noServerErrors(calls);
+});
+
+test('catalog: the address check reports what a customer gets (read-only)', async ({ page }) => {
+  const calls = trackApi(page);
+  await signInAsSuperAdmin(page);
+  const live = await apiData<{ items: { id: string; slug: string; name: string }[] }>(
+    page,
+    '/catalog/products?limit=1',
+  );
+  const product = live.items[0]!;
+  await page.goto(`/catalog/products/edit?id=${product.id}&tab=seo`);
+  const field = page.getByLabel('Check an address');
+  await field.fill(`/products/${product.slug}`);
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  await expect(page.getByText(`Opens the product ${product.name} directly.`)).toBeVisible();
+  await field.fill(`/products/gone-${RUN}`);
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  await expect(page.getByText(/page not found/)).toBeVisible();
   noServerErrors(calls);
 });
 
