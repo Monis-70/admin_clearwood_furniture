@@ -7,7 +7,7 @@
 ## 1. Summary
 
 318 admin routes are mounted under `/api/v1/admin`; every one is classified. 282 have a screen, 36 are deliberately screen-less (§4).
-Implemented through phase **P2**: routes marked ✓ are wired in the endpoint registry.
+Implemented through phase **P7**: routes marked ✓ are wired in the endpoint registry.
 
 | Status | Meaning | Routes |
 | --- | --- | --- |
@@ -98,7 +98,7 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 |---|---|---|---|---|---|---|---|---|---|---|
 | GET | `/media` | Browse/filter the media library | `media.asset.read` | — | /media → Library grid/list | SA AD CM CO | — | L | **P2** ✓ |  |
 | GET | `/media/config` | Upload limits, allowed types, rendition ladder, driver | `media.asset.read` | — | /media → Uploader limits | SA AD CM CO | — | G | **P2** ✓ |  |
-| GET | `/media/gc` | Storage integrity report (orphaned/missing files), read-only | `media.asset.delete` | — | /system/status → Run storage check | SA AD CM CO | — | P | **P6** | Scans the whole bucket; on demand only, never auto-loaded |
+| GET | `/media/gc` | Storage integrity report (orphaned/missing files), read-only | `media.asset.delete` | — | /system/status → Run storage check | SA AD CM CO | — | P | **P6** ✓ | Scans the whole bucket; on demand only, never auto-loaded |
 | GET | `/media/{id}` | One asset with renditions and usage list | `media.asset.read` | — | /media, product Media & Gallery → Asset drawer; usage impact before deleting a file | SA AD CM CO | — | G | **P2** ✓ |  |
 | PATCH | `/media/{id}` | Edit alt text, title, tags, focal point, folder | `media.asset.update` | yes | /media → Save asset details | SA AD CM CO | — | u | **P2** ✓ |  |
 | POST | `/media/upload` | Upload files (multipart "files") | `media.asset.upload` | yes | /media, MediaPicker, product Media & Gallery → Upload | SA AD CM CO | — | UP | **P2** ✓ | Rate limited (media-upload): one file per request, 2 at a time, queue pauses on 429 Retry-After; rate limit: media-upload |
@@ -123,8 +123,8 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/catalog/settings` | Page sizes, out-of-stock policy, new-arrival window, badges | `catalog.product.read` | — | /catalog/settings → Settings form | SA AD CM OM CO | — | G | **P3** |  |
-| PUT | `/catalog/settings` | Change catalog settings (badges merge per code; null turns one off) | `catalog.product.update` | yes | /catalog/settings → Save settings | SA AD CM | — | u | **P3** |  |
+| GET | `/catalog/settings` | Page sizes, out-of-stock policy, new-arrival window, badges | `catalog.product.read` | — | /catalog/settings → Settings form | SA AD CM OM CO | — | G | **P3** ✓ |  |
+| PUT | `/catalog/settings` | Change catalog settings (badges merge per code; null turns one off) | `catalog.product.update` | yes | /catalog/settings → Save settings | SA AD CM | — | u | **P3** ✓ |  |
 
 ### Catalog · Attributes (13)
 
@@ -161,8 +161,8 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 | POST | `/catalog/tax-classes` | Create a tax class | `pricing.tax.update` | yes | /pricing/tax → Add tax class | SA AD | — | C | **P2** ✓ |  |
 | PATCH | `/catalog/tax-classes/{id}` | Edit a tax class (no version) | `pricing.tax.update` | yes | /pricing/tax → Edit tax class | SA AD | — | u | **P2** ✓ |  |
 | DELETE | `/catalog/tax-classes/{id}` | Delete a tax class | `pricing.tax.update` | yes | /pricing/tax → Delete tax class | SA AD | Irreversible | D | **P2** ✓ |  |
-| GET | `/pricing/settings` | Pricing & GST settings | `pricing.tax.read` | — | /pricing/tax → Settings form | SA AD CM | — | G | **P5** |  |
-| PUT | `/pricing/settings` | Change pricing & GST settings | `pricing.tax.update` | yes | /pricing/tax → Save settings | SA AD | — | u | **P5** |  |
+| GET | `/pricing/settings` | Pricing & GST settings | `pricing.tax.read` | — | /pricing/tax → Settings form | SA AD CM | — | G | **P5** ✓ |  |
+| PUT | `/pricing/settings` | Change pricing & GST settings | `pricing.tax.update` | yes | /pricing/tax → Save settings | SA AD | — | u | **P5** ✓ |  |
 
 ### Catalog · Products (15)
 
@@ -181,7 +181,7 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 | GET | `/catalog/products/{id}/redirects` | Old slugs redirecting to this product | `catalog.product.read` | — | /catalog/products/edit?id=&tab=seo → Redirects panel | SA AD CM OM CO | — | L | **P2** ✓ |  |
 | PUT | `/catalog/products/{id}/categories` | Set primary + additional categories | `catalog.product.update` | yes | /catalog/products/edit?id=&tab=categories → Save categories | SA AD CM | — | A | **P2** ✓ | 422 CATEGORY_NOT_PURCHASABLE for SERVICE categories |
 | PUT | `/catalog/products/{id}/attribute-values` | Set specification values | `catalog.product.update` | yes | /catalog/products/edit?id=&tab=specifications → Save specifications | SA AD CM | — | A | **P2** ✓ |  |
-| PUT | `/catalog/products/{id}/relations` | Replace curated relations (RELATED, SIMILAR, …) | `catalog.product.update` | yes | /catalog/products/edit?id=&tab=related → Save related products | SA AD CM | — | A | **P3** |  |
+| PUT | `/catalog/products/{id}/relations` | Replace curated relations (RELATED, SIMILAR, …) | `catalog.product.update` | yes | /catalog/products/edit?id=&tab=related → Save related products | SA AD CM | — | A | **P3** ✓ |  |
 | POST | `/catalog/bulk` | One action on up to 500 products with per-id results | `catalog.product.read` | yes | /catalog/products → Bulk actions menu | SA AD CM OM CO | Reversible | A | **P2** ✓ | Rate limited (catalog-bulk); Idempotency-Key; ACTIVATE/PUBLISH need catalog.product.publish; rate limit: catalog-bulk; Idempotency-Key |
 
 ### Catalog · Variants (8)
@@ -221,7 +221,7 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 | POST | `/catalog/collections/{id}/products/reorder` | Reorder collection products | `catalog.collection.update` | yes | /catalog/collections/edit?id=&tab=products → Drag to reorder | SA AD CM | — | R | **P2** ✓ |  |
 | POST | `/collections/rules/preview` | Dry-run an AUTOMATIC rule tree | `catalog.collection.update` | yes | /catalog/collections/edit?id=&tab=rules → Preview matches | SA AD CM | — | P | **P2** ✓ |  |
 | POST | `/collections/{id}/evaluate` | Materialise an AUTOMATIC collection now | `catalog.collection.update` | yes | /catalog/collections/edit?id=&tab=rules → Refresh membership | SA AD CM | — | A | **P2** ✓ |  |
-| POST | `/collections/evaluate-all` | Re-evaluate every AUTOMATIC collection | `catalog.collection.update` | yes | /system/status (Maintenance) → Refresh all automatic collections | SA AD CM | — | A | **P6** | The reconciler also does this on schedule |
+| POST | `/collections/evaluate-all` | Re-evaluate every AUTOMATIC collection | `catalog.collection.update` | yes | /system/status (Maintenance) → Refresh all automatic collections | SA AD CM | — | A | **P6** ✓ | The reconciler also does this on schedule |
 
 ### Pricing · Price rules (22)
 
@@ -232,60 +232,60 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 | POST | `/catalog/price-adjustments` | Create a price adjustment | `pricing.adjustment.create` | yes | /pricing/price-rules → Add rule | SA AD CM | — | C | **P2** ✓ |  |
 | PATCH | `/catalog/price-adjustments/{id}` | Edit a price adjustment (version) | `pricing.adjustment.update` | yes | /pricing/price-rules → Edit rule | SA AD CM | — | U | **P2** ✓ |  |
 | DELETE | `/catalog/price-adjustments/{id}` | Delete a price adjustment | `pricing.adjustment.delete` | yes | /pricing/price-rules → Delete rule | SA AD CM | Irreversible | D | **P2** ✓ |  |
-| GET | `/pricing/tier-prices` | Quantity tier prices | `pricing.adjustment.read` | — | /pricing/tier-prices → Tiers table | SA AD CM | — | L | **P5** |  |
-| POST | `/pricing/tier-prices` | Create a tier price | `pricing.adjustment.create` | yes | /pricing/tier-prices → Add tier | SA AD CM | — | C | **P5** |  |
-| PATCH | `/pricing/tier-prices/{id}` | Edit a tier price (no version) | `pricing.adjustment.update` | yes | /pricing/tier-prices → Edit tier | SA AD CM | — | u | **P5** |  |
-| DELETE | `/pricing/tier-prices/{id}` | Delete a tier price | `pricing.adjustment.delete` | yes | /pricing/tier-prices → Delete tier | SA AD CM | Irreversible | D | **P5** |  |
-| GET | `/pricing/price-lists` | Price lists | `pricing.adjustment.read` | — | /pricing/price-lists → Price lists table | SA AD CM | — | L | **P5** |  |
-| POST | `/pricing/price-lists` | Create a price list | `pricing.adjustment.create` | yes | /pricing/price-lists → Add price list | SA AD CM | — | C | **P5** | Idempotency-Key; Idempotency-Key |
-| PATCH | `/pricing/price-lists/{id}` | Edit a price list (version) | `pricing.adjustment.update` | yes | /pricing/price-lists → Edit price list | SA AD CM | — | U | **P5** |  |
-| DELETE | `/pricing/price-lists/{id}` | Delete a price list | `pricing.adjustment.delete` | yes | /pricing/price-lists → Delete price list | SA AD CM | Irreversible | D | **P5** |  |
-| GET | `/pricing/price-lists/{id}/items` | Items of a price list | `pricing.adjustment.read` | — | /pricing/price-lists?id= → Items editor | SA AD CM | — | L | **P5** |  |
-| PUT | `/pricing/price-lists/{id}/items` | Replace price list items | `pricing.adjustment.update` | yes | /pricing/price-lists?id= → Save items | SA AD CM | — | A | **P5** |  |
-| GET | `/pricing/discount-rules` | Automatic discount rules | `pricing.adjustment.read` | — | /pricing/discount-rules → Rules table | SA AD CM | — | L | **P5** |  |
-| POST | `/pricing/discount-rules` | Create a discount rule (conditions + actions) | `pricing.adjustment.create` | yes | /pricing/discount-rules → Add rule | SA AD CM | — | C | **P5** |  |
-| PATCH | `/pricing/discount-rules/{id}` | Edit a discount rule (version) | `pricing.adjustment.update` | yes | /pricing/discount-rules → Edit rule | SA AD CM | — | U | **P5** |  |
-| DELETE | `/pricing/discount-rules/{id}` | Delete a discount rule | `pricing.adjustment.delete` | yes | /pricing/discount-rules → Delete rule | SA AD CM | Irreversible | D | **P5** |  |
-| POST | `/pricing/discount-rules/evaluate` | Test discount rules against a sample cart | `pricing.adjustment.read` | yes | /pricing/discount-rules → Test rules | SA AD CM | — | P | **P5** |  |
-| POST | `/pricing/simulate` | Price a hypothetical cart with the full rule trace | `pricing.adjustment.read` | yes | /pricing/simulator → Run simulation | SA AD CM | — | P | **P5** |  |
-| GET | `/pricing/explain/{id}` | Every rule that could touch a product | `pricing.adjustment.read` | — | /pricing/simulator, product Pricing tab → Explain price | SA AD CM | — | G | **P5** |  |
+| GET | `/pricing/tier-prices` | Quantity tier prices | `pricing.adjustment.read` | — | /pricing/price-lists, product Pricing tab → Tiers table | SA AD CM | — | L | **P5** ✓ |  |
+| POST | `/pricing/tier-prices` | Create a tier price | `pricing.adjustment.create` | yes | /pricing/price-lists, product Pricing tab → Add tier | SA AD CM | — | C | **P5** ✓ |  |
+| PATCH | `/pricing/tier-prices/{id}` | Edit a tier price (no version) | `pricing.adjustment.update` | yes | /pricing/price-lists, product Pricing tab → Edit tier | SA AD CM | — | u | **P5** ✓ |  |
+| DELETE | `/pricing/tier-prices/{id}` | Delete a tier price | `pricing.adjustment.delete` | yes | /pricing/price-lists, product Pricing tab → Delete tier | SA AD CM | Irreversible | D | **P5** ✓ |  |
+| GET | `/pricing/price-lists` | Price lists | `pricing.adjustment.read` | — | /pricing/price-lists → Price lists table | SA AD CM | — | L | **P5** ✓ |  |
+| POST | `/pricing/price-lists` | Create a price list | `pricing.adjustment.create` | yes | /pricing/price-lists → Add price list | SA AD CM | — | C | **P5** ✓ | Idempotency-Key; Idempotency-Key |
+| PATCH | `/pricing/price-lists/{id}` | Edit a price list (version) | `pricing.adjustment.update` | yes | /pricing/price-lists → Edit price list | SA AD CM | — | U | **P5** ✓ |  |
+| DELETE | `/pricing/price-lists/{id}` | Delete a price list | `pricing.adjustment.delete` | yes | /pricing/price-lists → Delete price list | SA AD CM | Irreversible | D | **P5** ✓ |  |
+| GET | `/pricing/price-lists/{id}/items` | Items of a price list | `pricing.adjustment.read` | — | /pricing/price-lists?id= → Items editor | SA AD CM | — | L | **P5** ✓ |  |
+| PUT | `/pricing/price-lists/{id}/items` | Replace price list items | `pricing.adjustment.update` | yes | /pricing/price-lists?id= → Save items | SA AD CM | — | A | **P5** ✓ |  |
+| GET | `/pricing/discount-rules` | Automatic discount rules | `pricing.adjustment.read` | — | /pricing/discount-rules → Rules table | SA AD CM | — | L | **P5** ✓ |  |
+| POST | `/pricing/discount-rules` | Create a discount rule (conditions + actions) | `pricing.adjustment.create` | yes | /pricing/discount-rules → Add rule | SA AD CM | — | C | **P5** ✓ |  |
+| PATCH | `/pricing/discount-rules/{id}` | Edit a discount rule (version) | `pricing.adjustment.update` | yes | /pricing/discount-rules → Edit rule | SA AD CM | — | U | **P5** ✓ |  |
+| DELETE | `/pricing/discount-rules/{id}` | Delete a discount rule | `pricing.adjustment.delete` | yes | /pricing/discount-rules → Delete rule | SA AD CM | Irreversible | D | **P5** ✓ |  |
+| POST | `/pricing/discount-rules/evaluate` | Test discount rules against a sample cart | `pricing.adjustment.read` | yes | /pricing/discount-rules → Test rules | SA AD CM | — | P | **P5** ✓ |  |
+| POST | `/pricing/simulate` | Price a hypothetical cart with the full rule trace | `pricing.adjustment.read` | yes | /pricing/simulator → Run simulation | SA AD CM | — | P | **P5** ✓ |  |
+| GET | `/pricing/explain/{id}` | Every rule that could touch a product | `pricing.adjustment.read` | — | /pricing/simulator, product Pricing tab → Explain price | SA AD CM | — | G | **P5** ✓ |  |
 
 ### Pricing · Coupons & customer groups (14)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/pricing/coupons` | Search coupons | `pricing.coupon.read` | — | /pricing/coupons → Coupons table | SA AD | — | L | **P5** |  |
-| POST | `/pricing/coupons` | Create a coupon | `pricing.coupon.create` | yes | /pricing/coupons → Add coupon | SA AD | — | C | **P5** | Idempotency-Key; Idempotency-Key |
-| GET | `/pricing/coupons/{id}` | One coupon with redemption counts | `pricing.coupon.read` | — | /pricing/coupons?id= → Coupon drawer | SA AD | — | G | **P5** |  |
-| PATCH | `/pricing/coupons/{id}` | Edit a coupon (version) | `pricing.coupon.update` | yes | /pricing/coupons?id= → Save / Activate / Deactivate | SA AD | Reversible | U | **P5** |  |
-| DELETE | `/pricing/coupons/{id}` | Delete a coupon | `pricing.coupon.delete` | yes | /pricing/coupons?id= → Delete coupon | SA AD | Irreversible | D | **P5** |  |
-| GET | `/pricing/coupons/{id}/redemptions` | Redemption ledger of a coupon | `pricing.coupon.read` | — | /pricing/coupons?id=&tab=redemptions → Redemptions table | SA AD | — | L | **P5** |  |
-| POST | `/pricing/coupons/bulk-generate` | Generate up to 500 codes from a template | `pricing.coupon.create` | yes | /pricing/coupons → Generate codes | SA AD | — | C | **P5** | Rate limited (coupon-bulk); Idempotency-Key; rate limit: coupon-bulk; Idempotency-Key |
-| GET | `/pricing/customer-groups` | Customer groups | `order.customer.read` | — | /pricing/customer-groups → Groups table | SA AD OM | — | L | **P5** |  |
-| POST | `/pricing/customer-groups` | Create a customer group | `order.customer.update` | yes | /pricing/customer-groups → Add group | SA AD OM | — | C | **P5** | Idempotency-Key; Idempotency-Key |
-| PATCH | `/pricing/customer-groups/{id}` | Edit a customer group (version) | `order.customer.update` | yes | /pricing/customer-groups → Edit group | SA AD OM | — | U | **P5** |  |
-| DELETE | `/pricing/customer-groups/{id}` | Delete a customer group | `order.customer.update` | yes | /pricing/customer-groups → Delete group | SA AD OM | Irreversible | D | **P5** |  |
-| GET | `/pricing/customer-groups/{id}/members` | Members of a group | `order.customer.read` | — | /pricing/customer-groups?id= → Members table | SA AD OM | — | L | **P5** |  |
-| POST | `/pricing/customer-groups/{id}/members` | Add customers by id | `order.customer.update` | yes | /pricing/customer-groups?id= → Add members | SA AD OM | — | A | **P5** | No customer search API exists: ids must be pasted or picked from Carts |
-| DELETE | `/pricing/customer-groups/{id}/members` | Remove customers by id | `order.customer.update` | yes | /pricing/customer-groups?id= → Remove members | SA AD OM | — | A | **P5** |  |
+| GET | `/pricing/coupons` | Search coupons | `pricing.coupon.read` | — | /pricing/coupons → Coupons table | SA AD | — | L | **P5** ✓ |  |
+| POST | `/pricing/coupons` | Create a coupon | `pricing.coupon.create` | yes | /pricing/coupons → Add coupon | SA AD | — | C | **P5** ✓ | Idempotency-Key; Idempotency-Key |
+| GET | `/pricing/coupons/{id}` | One coupon with redemption counts | `pricing.coupon.read` | — | /pricing/coupons?id= → Coupon drawer | SA AD | — | G | **P5** ✓ |  |
+| PATCH | `/pricing/coupons/{id}` | Edit a coupon (version) | `pricing.coupon.update` | yes | /pricing/coupons?id= → Save / Activate / Deactivate | SA AD | Reversible | U | **P5** ✓ |  |
+| DELETE | `/pricing/coupons/{id}` | Delete a coupon | `pricing.coupon.delete` | yes | /pricing/coupons?id= → Delete coupon | SA AD | Irreversible | D | **P5** ✓ |  |
+| GET | `/pricing/coupons/{id}/redemptions` | Redemption ledger of a coupon | `pricing.coupon.read` | — | /pricing/coupons?id=&tab=redemptions → Redemptions table | SA AD | — | L | **P5** ✓ |  |
+| POST | `/pricing/coupons/bulk-generate` | Generate up to 500 codes from a template | `pricing.coupon.create` | yes | /pricing/coupons → Generate codes | SA AD | — | C | **P5** ✓ | Rate limited (coupon-bulk); Idempotency-Key; rate limit: coupon-bulk; Idempotency-Key |
+| GET | `/pricing/customer-groups` | Customer groups | `order.customer.read` | — | /pricing/customer-groups → Groups table | SA AD OM | — | L | **P5** ✓ |  |
+| POST | `/pricing/customer-groups` | Create a customer group | `order.customer.update` | yes | /pricing/customer-groups → Add group | SA AD OM | — | C | **P5** ✓ | Idempotency-Key; Idempotency-Key |
+| PATCH | `/pricing/customer-groups/{id}` | Edit a customer group (version) | `order.customer.update` | yes | /pricing/customer-groups → Edit group | SA AD OM | — | U | **P5** ✓ |  |
+| DELETE | `/pricing/customer-groups/{id}` | Delete a customer group | `order.customer.update` | yes | /pricing/customer-groups → Delete group | SA AD OM | Irreversible | D | **P5** ✓ |  |
+| GET | `/pricing/customer-groups/{id}/members` | Members of a group | `order.customer.read` | — | /pricing/customer-groups?id= → Members table | SA AD OM | — | L | **P5** ✓ |  |
+| POST | `/pricing/customer-groups/{id}/members` | Add customers by id | `order.customer.update` | yes | /pricing/customer-groups?id= → Add members | SA AD OM | — | A | **P5** ✓ | No customer search API exists: ids must be pasted or picked from Carts |
+| DELETE | `/pricing/customer-groups/{id}/members` | Remove customers by id | `order.customer.update` | yes | /pricing/customer-groups?id= → Remove members | SA AD OM | — | A | **P5** ✓ |  |
 
 ### Pricing · Delivery charges (13)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/pricing/shipping-zones` | Delivery zones | `pricing.tax.read` | — | /pricing/delivery → Zones table | SA AD CM | — | L | **P5** | Internal delivery pricing, not a courier integration |
-| POST | `/pricing/shipping-zones` | Create a zone | `pricing.tax.update` | yes | /pricing/delivery → Add zone | SA AD | — | C | **P5** |  |
-| PATCH | `/pricing/shipping-zones/{id}` | Edit a zone (version) | `pricing.tax.update` | yes | /pricing/delivery → Edit zone | SA AD | — | U | **P5** |  |
-| DELETE | `/pricing/shipping-zones/{id}` | Delete a zone | `pricing.tax.update` | yes | /pricing/delivery → Delete zone | SA AD | Irreversible | D | **P5** |  |
-| GET | `/pricing/shipping-rates` | Delivery rates | `pricing.tax.read` | — | /pricing/delivery → Rates table | SA AD CM | — | L | **P5** |  |
-| POST | `/pricing/shipping-rates` | Create a rate | `pricing.tax.update` | yes | /pricing/delivery → Add rate | SA AD | — | C | **P5** |  |
-| PATCH | `/pricing/shipping-rates/{id}` | Edit a rate (version) | `pricing.tax.update` | yes | /pricing/delivery → Edit rate | SA AD | — | U | **P5** |  |
-| DELETE | `/pricing/shipping-rates/{id}` | Delete a rate | `pricing.tax.update` | yes | /pricing/delivery → Delete rate | SA AD | Irreversible | D | **P5** |  |
-| GET | `/pricing/shipping-pincodes` | Serviceable pincodes (optional zoneId query) | `pricing.tax.read` | — | /pricing/delivery?zone= → Pincodes table | SA AD CM | — | L | **P5** | zoneId is read unvalidated by the controller; not paginated |
-| POST | `/pricing/shipping-pincodes` | Add a pincode to a zone | `pricing.tax.update` | yes | /pricing/delivery?zone= → Add pincode | SA AD | — | C | **P5** |  |
-| DELETE | `/pricing/shipping-pincodes/{id}` | Remove a pincode | `pricing.tax.update` | yes | /pricing/delivery?zone= → Remove pincode | SA AD | Irreversible | D | **P5** |  |
-| POST | `/pricing/shipping-pincode-ranges` | Add a pincode range to a zone | `pricing.tax.update` | yes | /pricing/delivery?zone= → Add range | SA AD | — | C | **P5** |  |
-| POST | `/pricing/shipping-zones/{id}/pincodes/import` | Import pincodes from CSV (multipart "files" or csv field) | `pricing.tax.update` | yes | /pricing/delivery?zone= → Import pincodes | SA AD | — | UP | **P5** | Rate limited (pincode-import); rate limit: pincode-import |
+| GET | `/pricing/shipping-zones` | Delivery zones | `pricing.tax.read` | — | /pricing/delivery → Zones table | SA AD CM | — | L | **P5** ✓ | Internal delivery pricing, not a courier integration |
+| POST | `/pricing/shipping-zones` | Create a zone | `pricing.tax.update` | yes | /pricing/delivery → Add zone | SA AD | — | C | **P5** ✓ |  |
+| PATCH | `/pricing/shipping-zones/{id}` | Edit a zone (version) | `pricing.tax.update` | yes | /pricing/delivery → Edit zone | SA AD | — | U | **P5** ✓ |  |
+| DELETE | `/pricing/shipping-zones/{id}` | Delete a zone | `pricing.tax.update` | yes | /pricing/delivery → Delete zone | SA AD | Irreversible | D | **P5** ✓ |  |
+| GET | `/pricing/shipping-rates` | Delivery rates | `pricing.tax.read` | — | /pricing/delivery → Rates table | SA AD CM | — | L | **P5** ✓ |  |
+| POST | `/pricing/shipping-rates` | Create a rate | `pricing.tax.update` | yes | /pricing/delivery → Add rate | SA AD | — | C | **P5** ✓ |  |
+| PATCH | `/pricing/shipping-rates/{id}` | Edit a rate (version) | `pricing.tax.update` | yes | /pricing/delivery → Edit rate | SA AD | — | U | **P5** ✓ |  |
+| DELETE | `/pricing/shipping-rates/{id}` | Delete a rate | `pricing.tax.update` | yes | /pricing/delivery → Delete rate | SA AD | Irreversible | D | **P5** ✓ |  |
+| GET | `/pricing/shipping-pincodes` | Serviceable pincodes (optional zoneId query) | `pricing.tax.read` | — | /pricing/delivery?zone= → Pincodes table | SA AD CM | — | L | **P5** ✓ | zoneId is read unvalidated by the controller; not paginated |
+| POST | `/pricing/shipping-pincodes` | Add a pincode to a zone | `pricing.tax.update` | yes | /pricing/delivery?zone= → Add pincode | SA AD | — | C | **P5** ✓ |  |
+| DELETE | `/pricing/shipping-pincodes/{id}` | Remove a pincode | `pricing.tax.update` | yes | /pricing/delivery?zone= → Remove pincode | SA AD | Irreversible | D | **P5** ✓ |  |
+| POST | `/pricing/shipping-pincode-ranges` | Add a pincode range to a zone | `pricing.tax.update` | yes | /pricing/delivery?zone= → Add range | SA AD | — | C | **P5** ✓ |  |
+| POST | `/pricing/shipping-zones/{id}/pincodes/import` | Import pincodes from CSV (multipart "files" or csv field) | `pricing.tax.update` | yes | /pricing/delivery?zone= → Import pincodes | SA AD | — | UP | **P5** ✓ | Rate limited (pincode-import); rate limit: pincode-import |
 
 ### Catalog · Import & export (6)
 
@@ -302,101 +302,101 @@ Implemented through phase **P2**: routes marked ✓ are wired in the endpoint re
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/search/analytics` | Top/zero-result queries, CTR, 30-day trend | `catalog.product.update` | — | /search/insights → Insights | SA AD CM | — | G | **P6** | Also: Dashboard zero-results widget |
-| GET | `/search/synonyms` | Synonym sets | `catalog.product.update` | — | /search/synonyms → Synonyms table | SA AD CM | — | L | **P6** |  |
-| POST | `/search/synonyms` | Create a synonym set | `catalog.product.update` | yes | /search/synonyms, /search/insights → Add synonym | SA AD CM | — | C | **P6** |  |
-| PATCH | `/search/synonyms/{term}` | Edit a synonym set | `catalog.product.update` | yes | /search/synonyms → Edit synonym | SA AD CM | — | u | **P6** |  |
-| DELETE | `/search/synonyms/{term}` | Delete a synonym set | `catalog.product.update` | yes | /search/synonyms → Delete synonym | SA AD CM | Irreversible | D | **P6** |  |
-| POST | `/search/reindex` | Start a (partial or full) reindex job | `catalog.product.update` | yes | /search/index → Rebuild index | SA AD CM | — | A | **P6** | 202 + job; poll the job while visible |
-| GET | `/search/jobs` | Recent reindex jobs | `catalog.product.update` | — | /search/index → Jobs table | SA AD CM | — | L | **P6** |  |
-| GET | `/search/jobs/{id}` | Reindex job progress | `catalog.product.update` | — | /search/index → Progress | SA AD CM | — | G | **P6** |  |
-| POST | `/search/popularity/recompute` | Recompute popularity scores | `catalog.product.update` | yes | /search/index → Recompute popularity | SA AD CM | — | A | **P6** |  |
-| GET | `/catalog/products/{id}/search-document` | What search indexed for a product | `catalog.product.read` | — | /catalog/products/edit?id=&tab=seo → What search sees | SA AD CM OM CO | — | G | **P6** |  |
+| GET | `/search/analytics` | Top/zero-result queries, CTR, 30-day trend | `catalog.product.update` | — | /search/insights → Insights | SA AD CM | — | G | **P6** ✓ | Also: Dashboard zero-results widget |
+| GET | `/search/synonyms` | Synonym sets | `catalog.product.update` | — | /search/synonyms → Synonyms table | SA AD CM | — | L | **P6** ✓ |  |
+| POST | `/search/synonyms` | Create a synonym set | `catalog.product.update` | yes | /search/synonyms, /search/insights → Add synonym | SA AD CM | — | C | **P6** ✓ |  |
+| PATCH | `/search/synonyms/{term}` | Edit a synonym set | `catalog.product.update` | yes | /search/synonyms → Edit synonym | SA AD CM | — | u | **P6** ✓ |  |
+| DELETE | `/search/synonyms/{term}` | Delete a synonym set | `catalog.product.update` | yes | /search/synonyms → Delete synonym | SA AD CM | Irreversible | D | **P6** ✓ |  |
+| POST | `/search/reindex` | Start a (partial or full) reindex job | `catalog.product.update` | yes | /search/index → Rebuild index | SA AD CM | — | A | **P6** ✓ | 202 + job; poll the job while visible |
+| GET | `/search/jobs` | Recent reindex jobs | `catalog.product.update` | — | /search/index → Jobs table | SA AD CM | — | L | **P6** ✓ |  |
+| GET | `/search/jobs/{id}` | Reindex job progress | `catalog.product.update` | — | /search/index → Progress | SA AD CM | — | G | **P6** ✓ |  |
+| POST | `/search/popularity/recompute` | Recompute popularity scores | `catalog.product.update` | yes | /search/index → Recompute popularity | SA AD CM | — | A | **P6** ✓ |  |
+| GET | `/catalog/products/{id}/search-document` | What search indexed for a product | `catalog.product.read` | — | /catalog/products/edit?id=&tab=seo → What search sees | SA AD CM OM CO | — | G | **P6** ✓ |  |
 
 ### Content · Pages (19)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
 | GET | `/cms/pages` | List pages | `cms.page.read` | — | /content/pages → Pages table | SA AD CO | — | L | **P7** ✓ |  |
-| POST | `/cms/pages` | Create a page | `cms.page.create` | yes | /content/pages → New page | SA AD CO | — | C | **P7** |  |
-| GET | `/cms/pages/{id}` | One page with blocks | `cms.page.read` | — | /content/pages/edit?id= → Page builder | SA AD CO | — | G | **P7** |  |
-| PATCH | `/cms/pages/{id}` | Edit page settings (version) | `cms.page.update` | yes | /content/pages/edit?id=&tab=settings → Save | SA AD CO | — | U | **P7** |  |
-| DELETE | `/cms/pages/{id}` | Soft-delete a page | `cms.page.delete` | yes | /content/pages/edit?id= → Delete page | SA AD CO | Irreversible | D | **P7** | No restore endpoint |
-| POST | `/cms/pages/{id}/publish` | Publish; 422 lists every blocker | `cms.page.update` | yes | /content/pages/edit?id= → Publish | SA AD CO | — | A | **P7** |  |
-| POST | `/cms/pages/{id}/unpublish` | Unpublish | `cms.page.update` | yes | /content/pages/edit?id= → Unpublish | SA AD CO | Reversible | A | **P7** |  |
-| POST | `/cms/pages/{id}/schedule` | Schedule publish (and optional expiry) | `cms.page.update` | yes | /content/pages/edit?id= → Schedule | SA AD CO | — | A | **P7** |  |
-| POST | `/cms/pages/{id}/duplicate` | Duplicate with a new slug/title | `cms.page.create` | yes | /content/pages → Duplicate | SA AD CO | — | C | **P7** |  |
-| POST | `/cms/pages/{id}/preview` | Render including drafts (data, not HTML) | `cms.page.read` | yes | /content/pages/edit?id=&tab=preview → Preview | SA AD CO | — | P | **P7** |  |
-| GET | `/cms/pages/{id}/revisions` | Revision history | `cms.page.read` | — | /content/pages/edit?id=&tab=history → Revisions | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/pages/{id}/revisions/{version}/restore` | Restore a revision (writes a new revision) | `cms.page.update` | yes | /content/pages/edit?id=&tab=history → Restore this version | SA AD CO | — | A | **P7** |  |
-| POST | `/cms/pages/{id}/blocks` | Add a block | `cms.page.update` | yes | /content/pages/edit?id= → Add block | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/pages/{id}/blocks/{blockId}` | Edit a block | `cms.page.update` | yes | /content/pages/edit?id= → Save block | SA AD CO | — | u | **P7** |  |
-| DELETE | `/cms/pages/{id}/blocks/{blockId}` | Remove a block | `cms.page.update` | yes | /content/pages/edit?id= → Remove block | SA AD CO | Reversible | D | **P7** | Recoverable via revision restore |
-| POST | `/cms/pages/{id}/blocks/reorder` | Reorder blocks | `cms.page.update` | yes | /content/pages/edit?id= → Drag to reorder | SA AD CO | — | R | **P7** |  |
-| GET | `/cms/block-types` | Block registry: defaults + media/reference paths | `cms.page.read` | — | /content/pages/edit?id= → Block palette | SA AD CO | — | L | **P7** |  |
-| GET | `/seo/preview/{type}/{id}` | Meta tags an entity will render with | `cms.page.read` | — | /content/pages/edit?id=&tab=seo, product SEO tab → SEO preview | SA AD CO | — | G | **P7** |  |
-| POST | `/seo/sitemap/rebuild` | Rebuild the sitemap cache | `cms.page.update` | yes | /content/pages (SEO tools), /content/site-settings → Rebuild sitemap | SA AD CO | — | A | **P7** | on the Pages toolbar because CO cannot open Site settings |
+| POST | `/cms/pages` | Create a page | `cms.page.create` | yes | /content/pages → New page | SA AD CO | — | C | **P7** ✓ |  |
+| GET | `/cms/pages/{id}` | One page with blocks | `cms.page.read` | — | /content/pages/edit?id= → Page builder | SA AD CO | — | G | **P7** ✓ |  |
+| PATCH | `/cms/pages/{id}` | Edit page settings (version) | `cms.page.update` | yes | /content/pages/edit?id=&tab=settings → Save | SA AD CO | — | U | **P7** ✓ |  |
+| DELETE | `/cms/pages/{id}` | Soft-delete a page | `cms.page.delete` | yes | /content/pages/edit?id= → Delete page | SA AD CO | Irreversible | D | **P7** ✓ | No restore endpoint |
+| POST | `/cms/pages/{id}/publish` | Publish; 422 lists every blocker | `cms.page.update` | yes | /content/pages/edit?id= → Publish | SA AD CO | — | A | **P7** ✓ |  |
+| POST | `/cms/pages/{id}/unpublish` | Unpublish | `cms.page.update` | yes | /content/pages/edit?id= → Unpublish | SA AD CO | Reversible | A | **P7** ✓ |  |
+| POST | `/cms/pages/{id}/schedule` | Schedule publish (and optional expiry) | `cms.page.update` | yes | /content/pages/edit?id= → Schedule | SA AD CO | — | A | **P7** ✓ |  |
+| POST | `/cms/pages/{id}/duplicate` | Duplicate with a new slug/title | `cms.page.create` | yes | /content/pages → Duplicate | SA AD CO | — | C | **P7** ✓ |  |
+| POST | `/cms/pages/{id}/preview` | Render including drafts (data, not HTML) | `cms.page.read` | yes | /content/pages/edit?id=&tab=preview → Preview | SA AD CO | — | P | **P7** ✓ |  |
+| GET | `/cms/pages/{id}/revisions` | Revision history | `cms.page.read` | — | /content/pages/edit?id=&tab=history → Revisions | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/pages/{id}/revisions/{version}/restore` | Restore a revision (writes a new revision) | `cms.page.update` | yes | /content/pages/edit?id=&tab=history → Restore this version | SA AD CO | — | A | **P7** ✓ |  |
+| POST | `/cms/pages/{id}/blocks` | Add a block | `cms.page.update` | yes | /content/pages/edit?id= → Add block | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/pages/{id}/blocks/{blockId}` | Edit a block | `cms.page.update` | yes | /content/pages/edit?id= → Save block | SA AD CO | — | u | **P7** ✓ |  |
+| DELETE | `/cms/pages/{id}/blocks/{blockId}` | Remove a block | `cms.page.update` | yes | /content/pages/edit?id= → Remove block | SA AD CO | Reversible | D | **P7** ✓ | Recoverable via revision restore |
+| POST | `/cms/pages/{id}/blocks/reorder` | Reorder blocks | `cms.page.update` | yes | /content/pages/edit?id= → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
+| GET | `/cms/block-types` | Block registry: defaults + media/reference paths | `cms.page.read` | — | /content/pages/edit?id= → Block palette | SA AD CO | — | L | **P7** ✓ |  |
+| GET | `/seo/preview/{type}/{id}` | Meta tags an entity will render with | `cms.page.read` | — | /content/pages/edit?id=&tab=seo, product SEO tab → SEO preview | SA AD CO | — | G | **P7** ✓ |  |
+| POST | `/seo/sitemap/rebuild` | Rebuild the sitemap cache | `cms.page.update` | yes | /content/pages (SEO tools), /content/site-settings → Rebuild sitemap | SA AD CO | — | A | **P7** ✓ | on the Pages toolbar because CO cannot open Site settings |
 
 ### Content · Banners & announcements (10)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
 | GET | `/cms/banners` | List banners | `cms.banner.read` | — | /content/banners → Banners table | SA AD CO | — | L | **P7** ✓ | isActive=true\|false filters correctly (booleanQuerySchema) |
-| POST | `/cms/banners` | Create a banner | `cms.banner.create` | yes | /content/banners → Add banner | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/banners/{id}` | Edit a banner (version) | `cms.banner.update` | yes | /content/banners → Edit banner | SA AD CO | Reversible | U | **P7** |  |
-| DELETE | `/cms/banners/{id}` | Delete a banner | `cms.banner.delete` | yes | /content/banners → Delete banner | SA AD CO | Irreversible | D | **P7** |  |
-| POST | `/cms/banners/reorder` | Reorder banners | `cms.banner.update` | yes | /content/banners → Drag to reorder | SA AD CO | — | R | **P7** |  |
-| GET | `/cms/banners/{id}/stats` | Impressions and clicks | `cms.banner.read` | — | /content/banners?id= → Performance | SA AD CO | — | G | **P7** |  |
-| GET | `/cms/announcements` | Announcement bars | `cms.banner.read` | — | /content/announcements → Announcements table | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/announcements` | Create an announcement bar | `cms.banner.create` | yes | /content/announcements → Add announcement | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/announcements/{id}` | Edit an announcement bar (version) | `cms.banner.update` | yes | /content/announcements → Edit announcement | SA AD CO | Reversible | U | **P7** |  |
-| DELETE | `/cms/announcements/{id}` | Delete an announcement bar | `cms.banner.delete` | yes | /content/announcements → Delete announcement | SA AD CO | Irreversible | D | **P7** |  |
+| POST | `/cms/banners` | Create a banner | `cms.banner.create` | yes | /content/banners → Add banner | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/banners/{id}` | Edit a banner (version) | `cms.banner.update` | yes | /content/banners → Edit banner | SA AD CO | Reversible | U | **P7** ✓ |  |
+| DELETE | `/cms/banners/{id}` | Delete a banner | `cms.banner.delete` | yes | /content/banners → Delete banner | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| POST | `/cms/banners/reorder` | Reorder banners | `cms.banner.update` | yes | /content/banners → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
+| GET | `/cms/banners/{id}/stats` | Impressions and clicks | `cms.banner.read` | — | /content/banners?id= → Performance | SA AD CO | — | G | **P7** ✓ |  |
+| GET | `/cms/announcements` | Announcement bars | `cms.banner.read` | — | /content/announcements → Announcements table | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/announcements` | Create an announcement bar | `cms.banner.create` | yes | /content/announcements → Add announcement | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/announcements/{id}` | Edit an announcement bar (version) | `cms.banner.update` | yes | /content/announcements → Edit announcement | SA AD CO | Reversible | U | **P7** ✓ |  |
+| DELETE | `/cms/announcements/{id}` | Delete an announcement bar | `cms.banner.delete` | yes | /content/announcements → Delete announcement | SA AD CO | Irreversible | D | **P7** ✓ |  |
 
 ### Content · FAQs & help centre (18)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/cms/faqs` | List FAQs | `cms.faq.read` | — | /content/faqs → FAQs table | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/faqs` | Create a FAQ | `cms.faq.create` | yes | /content/faqs → Add FAQ | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/faqs/{id}` | Edit a FAQ (version) | `cms.faq.update` | yes | /content/faqs → Edit FAQ | SA AD CO | Reversible | U | **P7** |  |
-| DELETE | `/cms/faqs/{id}` | Delete a FAQ | `cms.faq.delete` | yes | /content/faqs → Delete FAQ | SA AD CO | Irreversible | D | **P7** |  |
-| POST | `/cms/faqs/reorder` | Reorder FAQs | `cms.faq.update` | yes | /content/faqs → Drag to reorder | SA AD CO | — | R | **P7** |  |
-| GET | `/cms/faq-categories` | FAQ categories | `cms.faq.read` | — | /content/faqs → Categories panel | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/faq-categories` | Create a FAQ category | `cms.faq.create` | yes | /content/faqs → Add category | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/faq-categories/{id}` | Edit a FAQ category (version) | `cms.faq.update` | yes | /content/faqs → Edit category | SA AD CO | — | U | **P7** |  |
-| DELETE | `/cms/faq-categories/{id}` | Delete a FAQ category | `cms.faq.delete` | yes | /content/faqs → Delete category | SA AD CO | Irreversible | D | **P7** |  |
-| GET | `/cms/help/categories` | Help category tree | `cms.page.read` | — | /content/help-centre → Category tree | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/help/categories` | Create a help category | `cms.page.create` | yes | /content/help-centre → Add category | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/help/categories/{id}` | Edit a help category (version) | `cms.page.update` | yes | /content/help-centre → Edit category | SA AD CO | — | U | **P7** |  |
-| DELETE | `/cms/help/categories/{id}` | Delete a help category | `cms.page.delete` | yes | /content/help-centre → Delete category | SA AD CO | Irreversible | D | **P7** |  |
-| GET | `/cms/help/articles` | Help articles | `cms.page.read` | — | /content/help-centre → Articles table | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/help/articles` | Create a help article (Markdown) | `cms.page.create` | yes | /content/help-centre → New article | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/help/articles/{id}` | Edit a help article (version) | `cms.page.update` | yes | /content/help-centre?article= → Save / Publish / Archive | SA AD CO | Reversible | U | **P7** |  |
-| DELETE | `/cms/help/articles/{id}` | Delete a help article | `cms.page.delete` | yes | /content/help-centre?article= → Delete article | SA AD CO | Irreversible | D | **P7** |  |
-| POST | `/cms/help/articles/reorder` | Reorder help articles | `cms.page.update` | yes | /content/help-centre → Drag to reorder | SA AD CO | — | R | **P7** |  |
+| GET | `/cms/faqs` | List FAQs | `cms.faq.read` | — | /content/faqs → FAQs table | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/faqs` | Create a FAQ | `cms.faq.create` | yes | /content/faqs → Add FAQ | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/faqs/{id}` | Edit a FAQ (version) | `cms.faq.update` | yes | /content/faqs → Edit FAQ | SA AD CO | Reversible | U | **P7** ✓ |  |
+| DELETE | `/cms/faqs/{id}` | Delete a FAQ | `cms.faq.delete` | yes | /content/faqs → Delete FAQ | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| POST | `/cms/faqs/reorder` | Reorder FAQs | `cms.faq.update` | yes | /content/faqs → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
+| GET | `/cms/faq-categories` | FAQ categories | `cms.faq.read` | — | /content/faqs → Categories panel | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/faq-categories` | Create a FAQ category | `cms.faq.create` | yes | /content/faqs → Add category | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/faq-categories/{id}` | Edit a FAQ category (version) | `cms.faq.update` | yes | /content/faqs → Edit category | SA AD CO | — | U | **P7** ✓ |  |
+| DELETE | `/cms/faq-categories/{id}` | Delete a FAQ category | `cms.faq.delete` | yes | /content/faqs → Delete category | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| GET | `/cms/help/categories` | Help category tree | `cms.page.read` | — | /content/help-centre → Category tree | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/help/categories` | Create a help category | `cms.page.create` | yes | /content/help-centre → Add category | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/help/categories/{id}` | Edit a help category (version) | `cms.page.update` | yes | /content/help-centre → Edit category | SA AD CO | — | U | **P7** ✓ |  |
+| DELETE | `/cms/help/categories/{id}` | Delete a help category | `cms.page.delete` | yes | /content/help-centre → Delete category | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| GET | `/cms/help/articles` | Help articles | `cms.page.read` | — | /content/help-centre → Articles table | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/help/articles` | Create a help article (Markdown) | `cms.page.create` | yes | /content/help-centre → New article | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/help/articles/{id}` | Edit a help article (version) | `cms.page.update` | yes | /content/help-centre?article= → Save / Publish / Archive | SA AD CO | Reversible | U | **P7** ✓ |  |
+| DELETE | `/cms/help/articles/{id}` | Delete a help article | `cms.page.delete` | yes | /content/help-centre?article= → Delete article | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| POST | `/cms/help/articles/reorder` | Reorder help articles | `cms.page.update` | yes | /content/help-centre → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
 
 ### Content · Testimonials, stores, navigation, settings (18)
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/cms/testimonials` | Testimonials | `cms.page.read` | — | /content/testimonials → Testimonials table | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/testimonials` | Create a testimonial | `cms.page.create` | yes | /content/testimonials → Add testimonial | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/testimonials/{id}` | Edit a testimonial (version) | `cms.page.update` | yes | /content/testimonials → Edit testimonial | SA AD CO | Reversible | U | **P7** |  |
-| DELETE | `/cms/testimonials/{id}` | Delete a testimonial | `cms.page.delete` | yes | /content/testimonials → Delete testimonial | SA AD CO | Irreversible | D | **P7** |  |
-| POST | `/cms/testimonials/reorder` | Reorder testimonials | `cms.page.update` | yes | /content/testimonials → Drag to reorder | SA AD CO | — | R | **P7** |  |
-| GET | `/cms/stores` | Store locations | `cms.page.read` | — | /content/stores → Stores table | SA AD CO | — | L | **P7** |  |
-| POST | `/cms/stores` | Create a store | `cms.page.create` | yes | /content/stores → Add store | SA AD CO | — | C | **P7** |  |
-| PATCH | `/cms/stores/{id}` | Edit a store (version) | `cms.page.update` | yes | /content/stores → Edit store | SA AD CO | Reversible | U | **P7** |  |
-| DELETE | `/cms/stores/{id}` | Delete a store | `cms.page.delete` | yes | /content/stores → Delete store | SA AD CO | Irreversible | D | **P7** |  |
-| POST | `/cms/stores/reorder` | Reorder stores | `cms.page.update` | yes | /content/stores → Drag to reorder | SA AD CO | — | R | **P7** |  |
-| GET | `/navigation` | Navigation menus | `cms.navigation.read` | — | /content/navigation → Menu list | SA AD CM CO | — | L | **P7** |  |
-| GET | `/navigation/{key}` | One menu with items | `cms.navigation.read` | — | /content/navigation?menu= → Menu editor | SA AD CM CO | — | G | **P7** |  |
-| POST | `/navigation/{key}/items` | Add a menu item (target verified; depth ≤ 3) | `cms.navigation.update` | yes | /content/navigation?menu= → Add item | SA AD CO | — | C | **P7** |  |
-| PATCH | `/navigation/items/{id}` | Edit a menu item | `cms.navigation.update` | yes | /content/navigation?menu= → Edit item | SA AD CO | Reversible | u | **P7** | menuColumn 0..NAVIGATION_MENU_COLUMN_MAX (10). Rows seeded earlier with 11-13 must be corrected here; send changed fields only |
-| DELETE | `/navigation/items/{id}` | Delete a menu item | `cms.navigation.update` | yes | /content/navigation?menu= → Delete item | SA AD CO | Irreversible | D | **P7** |  |
-| POST | `/navigation/{key}/reorder` | Reorder a menu | `cms.navigation.update` | yes | /content/navigation?menu= → Drag to reorder | SA AD CO | — | R | **P7** |  |
-| GET | `/content/settings` | Site contact, social, SEO and CMS settings | `system.setting.read` | — | /content/site-settings → Settings form | SA AD | — | G | **P7** |  |
-| PUT | `/content/settings` | Write whitelisted content settings (20 keys) | `system.setting.update` | yes | /content/site-settings → Save settings | SA AD | — | u | **P7** |  |
+| GET | `/cms/testimonials` | Testimonials | `cms.page.read` | — | /content/testimonials → Testimonials table | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/testimonials` | Create a testimonial | `cms.page.create` | yes | /content/testimonials → Add testimonial | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/testimonials/{id}` | Edit a testimonial (version) | `cms.page.update` | yes | /content/testimonials → Edit testimonial | SA AD CO | Reversible | U | **P7** ✓ |  |
+| DELETE | `/cms/testimonials/{id}` | Delete a testimonial | `cms.page.delete` | yes | /content/testimonials → Delete testimonial | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| POST | `/cms/testimonials/reorder` | Reorder testimonials | `cms.page.update` | yes | /content/testimonials → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
+| GET | `/cms/stores` | Store locations | `cms.page.read` | — | /content/stores → Stores table | SA AD CO | — | L | **P7** ✓ |  |
+| POST | `/cms/stores` | Create a store | `cms.page.create` | yes | /content/stores → Add store | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/cms/stores/{id}` | Edit a store (version) | `cms.page.update` | yes | /content/stores → Edit store | SA AD CO | Reversible | U | **P7** ✓ |  |
+| DELETE | `/cms/stores/{id}` | Delete a store | `cms.page.delete` | yes | /content/stores → Delete store | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| POST | `/cms/stores/reorder` | Reorder stores | `cms.page.update` | yes | /content/stores → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
+| GET | `/navigation` | Navigation menus | `cms.navigation.read` | — | /content/navigation → Menu list | SA AD CM CO | — | L | **P7** ✓ |  |
+| GET | `/navigation/{key}` | One menu with items | `cms.navigation.read` | — | /content/navigation?menu= → Menu editor | SA AD CM CO | — | G | **P7** ✓ |  |
+| POST | `/navigation/{key}/items` | Add a menu item (target verified; depth ≤ 3) | `cms.navigation.update` | yes | /content/navigation?menu= → Add item | SA AD CO | — | C | **P7** ✓ |  |
+| PATCH | `/navigation/items/{id}` | Edit a menu item | `cms.navigation.update` | yes | /content/navigation?menu= → Edit item | SA AD CO | Reversible | u | **P7** ✓ | menuColumn 0..NAVIGATION_MENU_COLUMN_MAX (10). Rows seeded earlier with 11-13 must be corrected here; send changed fields only |
+| DELETE | `/navigation/items/{id}` | Delete a menu item | `cms.navigation.update` | yes | /content/navigation?menu= → Delete item | SA AD CO | Irreversible | D | **P7** ✓ |  |
+| POST | `/navigation/{key}/reorder` | Reorder a menu | `cms.navigation.update` | yes | /content/navigation?menu= → Drag to reorder | SA AD CO | — | R | **P7** ✓ |  |
+| GET | `/content/settings` | Site contact, social, SEO and CMS settings | `system.setting.read` | — | /content/site-settings → Settings form | SA AD | — | G | **P7** ✓ |  |
+| PUT | `/content/settings` | Write whitelisted content settings (20 keys) | `system.setting.update` | yes | /content/site-settings → Save settings | SA AD | — | u | **P7** ✓ |  |
 
 ### Enquiries (4)
 

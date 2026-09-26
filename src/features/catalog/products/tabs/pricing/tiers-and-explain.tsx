@@ -43,12 +43,8 @@ import {
 import { formatRupees } from '../../../model';
 import { RecordDialog } from '../../../record-dialog';
 import { BreakdownView, TraceView } from '@/features/pricing/breakdown-view';
-import {
-  bpInput,
-  optionalPercentBp,
-  percent,
-  useCustomerGroupOptions,
-} from '@/features/pricing/lookups';
+import { optionalPercentBp } from '@/features/pricing/fields';
+import { bpInput, percent, useCustomerGroupOptions } from '@/features/pricing/lookups';
 import { rulesApi, rulesKeys, type TierPriceRow } from '@/features/pricing/rules-api';
 
 /* ------------------------------------------------------------------ tiers */
