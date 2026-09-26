@@ -11,6 +11,7 @@ export const VENDOR_DIR = path.join(ADMIN_ROOT, 'src', 'contracts', 'shared');
 export const CONTRACTS_DIR = path.join(ADMIN_ROOT, 'contracts');
 export const MANIFEST_FILE = path.join(CONTRACTS_DIR, 'manifest.json');
 export const INVENTORY_FILE = path.join(CONTRACTS_DIR, 'route-inventory.json');
+export const OPENAPI_DEBT_FILE = path.join(CONTRACTS_DIR, 'openapi-debt.json');
 const INVENTORY_SCRIPT = path.join(ADMIN_ROOT, 'scripts', 'contracts', 'backend-inventory.cts');
 
 export const sha256 = (buffer) => createHash('sha256').update(buffer).digest('hex');

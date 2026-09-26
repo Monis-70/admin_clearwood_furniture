@@ -56,17 +56,21 @@ First time (from this folder, PowerShell):
 Later days: `up`, `backend`, `admin`. Other commands: `status`, `down`, `reset` (drops the local
 volume), `preview`, `backend-test` (backend suite against a local test database).
 `npm run e2e:real` (after `npm run build`, with the backend running) drives the real API in Edge.
+`npm run e2e:ratelimit` (after `npm run build`) starts its own test-only API on :7185 with a low upload
+limit (`stack.ps1 backend-ratelimit`) and checks that uploads wait for a real `429 Retry-After`.
 
 ## Contracts with the backend
 
 The backend is the source of truth. Its `shared/src` (Zod schemas, enums, DTO types) is pinned into
-`src/contracts/shared/` and its mounted routes into `contracts/route-inventory.json`, both recorded in
+`src/contracts/shared/` and its mounted routes into `contracts/route-inventory.json` (plus its OpenAPI
+debt list, `contracts/openapi-debt.json`), all recorded in
 `contracts/manifest.json` with the backend commit.
 
 ```sh
 npm run contracts:sync -- --backend ../clearwood-backend-repo   # after a backend change
 npm run coverage:check                                           # classify any new/changed route
 npm run coverage:doc                                             # regenerate docs/ADMIN_API_COVERAGE.md
+npm run matrix:doc                                               # regenerate docs/ADMIN_CAPABILITY_MATRIX.md
 npm run contracts:check -- --against-backend                     # fail on silent drift (CI with a backend checkout)
 ```
 

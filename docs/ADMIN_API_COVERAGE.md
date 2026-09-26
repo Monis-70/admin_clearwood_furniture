@@ -1,6 +1,6 @@
 # ClearWood Admin — API Coverage
 
-> **Generated** by `npm run coverage:doc` from `contracts/route-inventory.json` (backend `3a81325 + uncommitted changes`),
+> **Generated** by `npm run coverage:doc` from `contracts/route-inventory.json` (backend `c553f92`),
 > `src/config/api-coverage.ts` and `src/lib/api/endpoints.ts`. Do not edit by hand: change the
 > classification and regenerate. `npm run coverage:check` (part of every build) fails when these sources disagree.
 

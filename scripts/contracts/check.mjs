@@ -9,6 +9,7 @@ import path from 'node:path';
 import {
   INVENTORY_FILE,
   MANIFEST_FILE,
+  OPENAPI_DEBT_FILE,
   VENDOR_DIR,
   backendGitState,
   diffKeys,
@@ -41,6 +42,11 @@ for (const [rel, hash] of Object.entries(files)) {
 if (hashFile(INVENTORY_FILE) !== manifest.inventory.sha256) {
   problems.push('contracts/route-inventory.json was edited by hand');
 }
+if (!manifest.openapiDebt || !fs.existsSync(OPENAPI_DEBT_FILE)) {
+  problems.push('contracts/openapi-debt.json is not pinned');
+} else if (hashFile(OPENAPI_DEBT_FILE) !== manifest.openapiDebt.sha256) {
+  problems.push('contracts/openapi-debt.json was edited by hand');
+}
 
 // 2. Optional: the backend has not moved on since the sync.
 const againstBackend = process.argv.includes('--against-backend');
@@ -71,6 +77,10 @@ if (againstBackend) {
       if (routes.added.length === 0 && routes.removed.length === 0) {
         problems.push('backend changed route middleware (auth/CSRF/permissions/limits/validation)');
       }
+    }
+    const debtSource = path.join(backend.dir, 'docs', 'openapi-debt.json');
+    if (fs.existsSync(OPENAPI_DEBT_FILE) && hashFile(debtSource) !== hashFile(OPENAPI_DEBT_FILE)) {
+      problems.push('backend changed docs/openapi-debt.json (OpenAPI coverage)');
     }
   }
 }

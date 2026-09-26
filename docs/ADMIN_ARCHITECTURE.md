@@ -279,8 +279,8 @@ The admin follows the current behaviour; nothing is worked around on the client 
 | F10 | Enquiry assignee picker needed `system.user.read` | **Fixed**: `GET /admin/enquiries/assignees` (needs `lead.enquiry.assign`, eligible admins only) | picker uses it (P8) |
 | F11 | Reports gated by `payment.settings.read` | **Fixed**: per-kind permissions (`order.order.export` for sales/GST/top products, `catalog.inventory.read` for inventory movement) | refund and split-payout kinds stay hidden (on hold) (P9) |
 | F12 | Seeded menu columns 11–13 above the 0–10 schema | **Fixed for new seeds** (`NAVIGATION_MENU_COLUMN_MAX`); rows already in production keep 11–13 | the editor flags them for correction; PATCH sends changed fields only (P7) |
-| F13 | (Phase 2, at `3a81325`) `GET /catalog/inventory/low-stock` excluded deleted variants but not the variants of a product in the trash, so trashed products filled the low-stock queue and the dashboard | **Fixed locally, uncommitted**: `product: { isMadeToOrder: false, deletedAt: null }` in `inventory.service.ts`, regression test in `tests/low-stock.test.ts` (5 red → 8 green); full backend suite 1116 passed, 35 skipped (Redis-only files) | nothing on the client; the queue shows what the API returns |
-| F14 | (Phase 2) 66 of the 71 seeded live products fail today's publish gate with `INVALID_CATEGORY_ATTRIBUTES` (specifications of attributes not linked to the primary category) | **Open** (seed data vs. gate; a product decision) | the admin shows the live blocker with "Fix issue" → Specifications. Unpublishing such a product cannot be undone until its specifications are fixed |
+| F13 | (Phase 2, at `3a81325`) `GET /catalog/inventory/low-stock` excluded deleted variants but not the variants of a product in the trash, so trashed products filled the low-stock queue and the dashboard | **Fixed and committed** (backend `a03a1b4`, local commit, not pushed): `product: { isMadeToOrder: false, deletedAt: null }` in `inventory.service.ts`, regression test in `tests/low-stock.test.ts` | nothing on the client; the queue shows what the API returns |
+| F14 | (Phase 2) 66 of the 71 seeded live products fail today's publish gate with `INVALID_CATEGORY_ATTRIBUTES` (specifications of attributes not linked to the primary category) | **Fixed in the seed** (backend `127dd5d`): the gate is right and stays as it is; the seeded category tree now links the attributes seeded products use (inherited from top-level categories). Create-only is kept, so databases seeded earlier keep their links and are fixed from the admin (link the attribute on the category). Regression: `tests/seed-publish-gate.test.ts` (every seeded demo product passes the live gate; a foreign attribute is named; an ancestor link satisfies it) | the Specifications tab reads the live blockers and marks each specification the primary category does not use (§21). Unpublishing such a product still cannot be undone until it is fixed |
 
 New routes at `b5861fd`: `GET /roles/{id}`, `POST /users/{id}/password`, `GET /enquiries/assignees`
 (318 admin routes; 437 in total).
@@ -491,6 +491,31 @@ Measured: `/media` 263.0 → 266.3 KB, `/catalog/products/edit` 264.6 → 265.5 
 4.0 KB, delete dialog 4.2 KB.
 
 Known limits (backend, not changed): `MAX_IMAGE_DIMENSION` downscales oversized images rather than
-refusing them and there is no minimum dimension; soft-deleted files stay attached (the gallery marks
+refusing them and there is no minimum dimension (superseded: §21 adds a minimum for product images); soft-deleted files stay attached (the gallery marks
 them "In trash" and `MEDIA_NOT_READY` blocks publishing); a file cancelled after its bytes were sent
 cannot be recalled, so cancel is offered only while queued or sending.
+
+## 21. Pre-final closure record (audit and backend-contract closure)
+
+Audited against the actual heads: backend `c553f92` (three local commits on `3a81325`, not pushed:
+`a03a1b4` F13, `127dd5d` F14, `c553f92` minimum product image; tree clean) and this repository,
+which became a git repository in this pass (baseline `484cf95`). Current counts, risks and
+decisions: [CURRENT_STATE.md](CURRENT_STATE.md). Route, permission and mutation matrices:
+[ADMIN_CAPABILITY_MATRIX.md](ADMIN_CAPABILITY_MATRIX.md) (generated, checked by `npm run verify`).
+
+| Decision | Why |
+| --- | --- |
+| F14: the publish gate is unchanged; the seeded category tree links the attributes seeded products use | the rule (specifications must belong to the primary category lineage) is right; the seed was incomplete. Create-only seeding is kept, so a database seeded earlier is fixed from the admin, never overwritten |
+| The Specifications tab reads the live publish blockers and marks each specification the primary category does not use | the admin states what the API refuses, with its own ids (`details.attributeIds`); no rule is re-implemented in the client |
+| Product images need 1024 px on the shortest side (`MIN_PRODUCT_IMAGE_DIMENSION`, 0 turns it off), enforced by the API on attach (`422 IMAGE_TOO_SMALL`), not on upload | icons, swatches and brand logos are smaller by design. The admin pre-checks JPEG/PNG/WebP/AVIF with `createImageBitmap` before sending and shows too-small library images as not selectable; the API stays the guard. Seeded demo images (1200×900, 800×1000) stay attached: the rule applies to new attachments |
+| The media library accepts dropped files (same queue, same limits, one file per request) | parity with the product gallery |
+| A real 429 test runs against a second, test-only local API (`stack.ps1 backend-ratelimit`: 3 uploads per 20 s, its own Redis prefix, port 7185; static admin on 7186) | the main local API keeps production-like limits; `npm run e2e:ratelimit` proves the queue waits for the API's `Retry-After` and resumes in order |
+| `contracts:sync` also pins the backend's OpenAPI debt list (`contracts/openapi-debt.json`); `contracts:check` detects hand edits and drift | the capability matrix reports OpenAPI coverage from pinned data, like everything else |
+| `matrix:doc` classifies every route (built, final UI phase, on hold, internal, not applicable) and lists capabilities with no route (`MISSING_BACKEND_CAPABILITIES`) | "do not invent endpoints": a missing capability is recorded, never imitated. Generation fails on an admin mutation without a permission guard unless it is an own-session route or a known controller check (imports) |
+| The picker's scroll area is focusable | with every library image disabled (all below the minimum) the region had no focusable content (axe `scrollable-region-focusable`) |
+
+Tests added: attributes, brands and tax screens (15 component tests: lists, create, validation
+before sending, versioned edit, refused delete, read-only and no-access roles); real-backend
+`taxonomy.spec.ts` (3: attribute with a value, brand with a stale-version 409, tax class with a
+duplicate-code refusal); `media.spec.ts` minimum-size and library drop tests; the 429 test; the
+signed-out visitor now asserts zero API requests.

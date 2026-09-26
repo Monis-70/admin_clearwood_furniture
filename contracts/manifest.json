@@ -1,12 +1,10 @@
 {
   "schema": 1,
   "backend": {
-    "commit": "3a8132535d442f45e598e7b991c9f80256447ca8",
+    "commit": "c553f92bf5d8b2eef3e3f1244823b3578c648a3a",
     "branch": "main",
-    "dirty": true,
-    "dirtyFiles": [
-      "backend/src/modules/catalog-admin/inventory.service.ts"
-    ]
+    "dirty": false,
+    "dirtyFiles": []
   },
   "shared": {
     "source": "shared/src",
@@ -35,7 +33,7 @@
       "types/catalogAdmin.ts": "fdcb7d73e0b03dae92eedbe4d570bdf730a6f4700a88faa48bb6ed9c159f77c7",
       "types/enquiry.ts": "b1e0e625c88f9896cdf7d392bef39fe99cbd62e8c8cbd696e844b25311fff4c4",
       "types/fulfilment.ts": "963741c020f9174559c4afc01730fb6e3567166c971c920f1b1b616d72ff0a33",
-      "types/media.ts": "7a31646d856aebd4457670fc675abc5a483e3bc7d66528b7cdd83d7a0ebb607c",
+      "types/media.ts": "7d6dcdfc834fb787b69ab313b0034131e9e1e99ca6aa4acfeb3a179b67039255",
       "types/order.ts": "a1c657616496f2337382940e5d4243517fd18bfb71e2a01de4a1ae3fe21c4fbd",
       "types/pricing.ts": "72e8167e66a559d5673031379dd94286a68223f2898e6679913a0c8748f65430",
       "types/storefront.ts": "37ff8f82d081d6f22a4ffd58e431f659fbb1e53cd78e22904535bdbc6740df12"
@@ -46,5 +44,11 @@
     "sha256": "c73d0a3e8cfe0700e57a93becee70ac05c4a325e244e1a159cb5ab99379bd9ed",
     "routes": 437,
     "adminRoutes": 318
+  },
+  "openapiDebt": {
+    "file": "contracts/openapi-debt.json",
+    "source": "docs/openapi-debt.json",
+    "sha256": "c26e1e967cc50e394135a79835491fd66398f28379300ea535a885e41f215599",
+    "routes": 172
   }
 }

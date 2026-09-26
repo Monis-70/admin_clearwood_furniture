@@ -23,16 +23,19 @@ import { cachePolicy } from '@/lib/query/policies';
 import { cn } from '@/lib/utils';
 
 import { mediaApi, mediaKeys, renditionUrl } from './api';
+import { MEASURED_IMAGE_TYPES as MEASURED } from './upload-queue';
 
 /**
  * Choose images that are already in the media library (loaded only while the picker is open).
  * Choosing links the existing file; nothing is copied or uploaded again. Images already used by
- * the caller (`attachedIds`) are shown but cannot be chosen twice.
+ * the caller (`attachedIds`) or smaller than `minSide` on their shortest side are shown but cannot
+ * be chosen.
  */
 export function MediaPicker({
   title = 'Choose images',
   multiple = true,
   attachedIds,
+  minSide = 0,
   onClose,
   onChoose,
   busy,
@@ -40,6 +43,8 @@ export function MediaPicker({
   title?: string;
   multiple?: boolean;
   attachedIds?: ReadonlySet<string>;
+  /** The API's `minProductImageDimension` when choosing for a product gallery. */
+  minSide?: number;
   onClose(): void;
   onChoose(assets: MediaAssetDto[]): void | Promise<void>;
   busy?: boolean;
@@ -87,7 +92,13 @@ export function MediaPicker({
             className="min-w-48 flex-1"
           />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        {/* Focusable so the list scrolls from the keyboard even when every image is disabled. */}
+        <div
+          tabIndex={0}
+          role="group"
+          aria-label="Library images"
+          className="min-h-0 flex-1 overflow-y-auto rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        >
           {library.isPending ? (
             <div
               className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6"
@@ -115,12 +126,18 @@ export function MediaPicker({
               {library.data.items.map((asset) => {
                 const on = chosen.some((a) => a.id === asset.id);
                 const attached = attachedIds?.has(asset.id) ?? false;
+                const tooSmall =
+                  minSide > 0 &&
+                  MEASURED.has(asset.mimeType) &&
+                  asset.width !== null &&
+                  asset.height !== null &&
+                  Math.min(asset.width, asset.height) < minSide;
                 return (
                   <li key={asset.id}>
                     <button
                       type="button"
                       aria-pressed={on}
-                      disabled={attached}
+                      disabled={attached || tooSmall}
                       onClick={() => toggle(asset)}
                       className={cn(
                         'group relative block w-full overflow-hidden rounded-md border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60',
@@ -135,7 +152,11 @@ export function MediaPicker({
                         className="aspect-square w-full bg-muted object-cover"
                       />
                       <span className="block truncate px-1 py-0.5 text-left text-xs">
-                        {attached ? 'Already added · ' : ''}
+                        {attached
+                          ? 'Already added · '
+                          : tooSmall
+                            ? `Too small (${asset.width} × ${asset.height}) · `
+                            : ''}
                         {asset.title ?? asset.originalName}
                       </span>
                       {on ? (

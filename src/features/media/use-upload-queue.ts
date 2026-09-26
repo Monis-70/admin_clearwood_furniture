@@ -8,6 +8,7 @@ import { createUploadQueue, type UploadQueue, type UploadQueueState } from './up
 interface Options {
   folderId?: string;
   validate?: (file: File) => string | null;
+  inspect?: (file: File) => Promise<string | null>;
 }
 
 /** One upload queue for the lifetime of the component; leaving the screen stops it. */
@@ -16,12 +17,13 @@ export function useUploadQueue(options: Options = {}): {
   state: UploadQueueState;
 } {
   const [queue] = useState(() => createUploadQueue());
-  const { folderId, validate } = options;
+  const { folderId, validate, inspect } = options;
   useEffect(() => {
     queue.configure({
       upload: (file, { signal, onProgress }) =>
         mediaApi.uploadOne(file, { folderId, signal, onProgress }),
       validate,
+      inspect,
     });
   });
   useEffect(() => {

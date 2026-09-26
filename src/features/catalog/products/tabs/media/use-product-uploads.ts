@@ -26,14 +26,16 @@ export function useProductUploads({
   productId,
   hasPrimary,
   validate,
+  inspect,
   onAttached,
 }: {
   productId: string;
   hasPrimary: boolean;
   validate: (file: File) => string | null;
+  inspect?: (file: File) => Promise<string | null>;
   onAttached(): void;
 }) {
-  const { queue, state } = useUploadQueue({ validate });
+  const { queue, state } = useUploadQueue({ validate, inspect });
   const [attach, setAttach] = useState<Readonly<Record<string, AttachState>>>({});
   const claimed = useRef(new Set<string>());
   const chain = useRef<Promise<void>>(Promise.resolve());

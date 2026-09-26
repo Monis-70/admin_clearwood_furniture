@@ -207,7 +207,10 @@ against the real local API (`e2e-real/catalog*.spec.ts`).
 2. Editor tabs, each saving independently:
    - **Overview** → `PATCH /catalog/products/{id}` (dirty fields + version).
    - **Categories** → `PUT /catalog/products/{id}/categories`.
-   - **Specifications** → `PUT /catalog/products/{id}/attribute-values`.
+   - **Specifications** → `PUT /catalog/products/{id}/attribute-values`. When the live publish
+     blockers include `INVALID_CATEGORY_ATTRIBUTES`, the specifications it names
+     (`details.attributeIds`) are listed in a warning and marked "Not in the primary category"; the
+     fix is to remove them or to link the attribute to the category (or an ancestor).
    - **Variants** → C5.
    - **Media** → C6.
    - **Pricing** → price rules scoped to this product (`GET /catalog/price-adjustments?productId=`),
@@ -313,9 +316,14 @@ against the real local API (`e2e-real/catalog*.spec.ts`).
 ## D. Media
 
 ### D1 Upload
-1. Browse (media library, product gallery) or drop files (product gallery). Limits come from
-   `GET /media/config` (`maxUploadSizeMb`, `maxUploadFiles` per selection, allowed types).
-2. Client pre-check (UX only): type and size; rejected files are listed with the reason.
+1. Browse or drop files, in the media library and in a product gallery. Limits come from
+   `GET /media/config` (`maxUploadSizeMb`, `maxUploadFiles` per selection, allowed types,
+   `minProductImageDimension`).
+2. Client pre-check (UX only): type and size; rejected files are listed with the reason. In a
+   product gallery a JPEG/PNG/WebP/AVIF whose shortest side is below `minProductImageDimension`
+   (1024 px by default) is refused before it is sent, with its measured size; the picker shows such
+   library images as "Too small" and does not offer them. The API enforces the same rule on attach
+   (`422 IMAGE_TOO_SMALL`); uploads to the library itself (icons, swatches, logos) have no minimum.
 3. Files are sent **one per request** (the API validates a multipart batch as a whole, so one bad
    file would fail its neighbours), two at a time, to `POST /media/upload` (multipart `files`,
    optional folder) with XHR byte progress. The endpoint allows 10 requests/minute per network in

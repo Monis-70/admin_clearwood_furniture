@@ -75,6 +75,7 @@ export default defineConfig([
       '*.config.{ts,mts,mjs}',
       'e2e/**/*.ts',
       'e2e-real/**/*.ts',
+      'e2e-ratelimit/**/*.ts',
     ],
     rules: { 'no-console': 'off' },
   },

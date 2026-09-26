@@ -4,6 +4,7 @@ import {
   apiData,
   createDraft,
   csrfHeader,
+  dropFiles,
   toast,
   trashProduct,
   uniquePng,
@@ -190,7 +191,7 @@ test('2. upload four at once: one request per file, two at a time, real per-file
 
   await page
     .getByLabel('Upload images')
-    .setInputFiles(['b1', 'b2', 'b3', 'b4'].map((label) => png(label, uniquePng(160))));
+    .setInputFiles(['b1', 'b2', 'b3', 'b4'].map((label) => png(label, uniquePng(1024, 300))));
   await expect(page.getByRole('progressbar', { name: 'Overall upload progress' })).toBeVisible();
   await expect(uploads(page).getByText('4 uploaded successfully')).toBeVisible({
     timeout: 60_000,
@@ -525,6 +526,75 @@ test('security: CSRF, cross-product variants and size limits are enforced by the
     .setInputFiles({ name: `e2e-${RUN}-huge.png`, mimeType: 'image/png', buffer: tooBig });
   await expect(uploads(page).getByText(/is over the 15 MB limit/)).toBeVisible();
   expect(sent.started).toBe(0);
+});
+
+test('product images need 1024 px on the shortest side: checked before sending and by the API', async ({
+  page,
+}) => {
+  const sent = watchUploads(page);
+  await signInAsSuperAdmin(page);
+  const config = await apiData<{ minProductImageDimension: number }>(page, '/admin/media/config');
+  expect(config.minProductImageDimension).toBe(1024);
+
+  // The admin measures the file and refuses it without sending a byte.
+  await openMedia(page, ids.c!);
+  const before = (await rowsOf(page, ids.c!)).length;
+  await page.getByLabel('Upload images').setInputFiles(png('small', uniquePng(800)));
+  await expect(
+    uploads(page).getByText(
+      'Not uploaded: 800 × 800 px is too small for a product image: it needs at least 1024 px on the shortest side.',
+    ),
+  ).toBeVisible();
+  expect(sent.started).toBe(0);
+
+  // The library still takes small images (icons, swatches), but the API will not attach one.
+  const headers = await csrfHeader(page);
+  const upload = await page.request.post('/api/v1/admin/media/upload', {
+    headers,
+    multipart: {
+      files: { name: `e2e-${RUN}-icon.png`, mimeType: 'image/png', buffer: uniquePng(640) },
+    },
+  });
+  expect(upload.status()).toBe(201);
+  const icon = ((await upload.json()) as { data: { uploaded: { media: { id: string } }[] } }).data
+    .uploaded[0]!.media.id;
+  const refused = await page.request.post(`/api/v1/admin/products/${ids.c!}/media`, {
+    headers,
+    data: { items: [{ mediaId: icon, role: 'GALLERY' }] },
+  });
+  expect(refused.status()).toBe(422);
+  expect(await refused.json()).toMatchObject({
+    error: { code: 'IMAGE_TOO_SMALL', details: { width: 640, height: 640, minDimension: 1024 } },
+  });
+  expect(await rowsOf(page, ids.c!)).toHaveLength(before);
+
+  // The picker shows it, but as not selectable.
+  await page.getByRole('button', { name: 'Select from media library' }).click();
+  const picker = page.getByRole('dialog', { name: /^Select images for / });
+  await picker.getByRole('searchbox', { name: /Search images/ }).fill(`e2e-${RUN}-icon`);
+  const choice = picker.getByRole('list', { name: 'Images' }).getByRole('button');
+  await expect(choice).toHaveCount(1);
+  await expect(choice).toBeDisabled();
+  await expect(choice).toContainText('Too small (640 × 640)');
+});
+
+test('media library: files dropped on the page upload one by one into the library', async ({
+  page,
+}) => {
+  const sent = watchUploads(page);
+  await signInAsSuperAdmin(page);
+  await page.goto('/media');
+  const zone = page.getByText('Drag files here, or').locator('xpath=ancestor::div[1]');
+  await dropFiles(page, zone, [png('drop-1', uniquePng(512)), png('drop-2', uniquePng(512))]);
+  await expect(uploads(page).getByText('2 uploaded successfully')).toBeVisible();
+  expect(sent.started).toBe(2);
+  expect(sent.statuses).toEqual([201, 201]);
+
+  await page.goto(`/media?q=${encodeURIComponent(`e2e-${RUN}-drop`)}`);
+  await expect(
+    page.getByRole('list', { name: 'Media' }).getByRole('button', { name: /^Select e2e-/ }),
+  ).toHaveCount(2);
+  await expectAccessible(page);
 });
 
 test('11. the gallery on a phone: upload, reorder, details sheet, preview @mobile', async ({

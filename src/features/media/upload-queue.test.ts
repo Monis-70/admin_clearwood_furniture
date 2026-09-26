@@ -9,6 +9,7 @@ import {
   createUploadQueue,
   describeTypes,
   fileProblem,
+  productImageProblem,
   summarize,
   type UploadQueue,
 } from './upload-queue';
@@ -242,6 +243,58 @@ describe('upload queue', () => {
     expect(api.pending).toHaveLength(0);
     queue.activate();
     expect(api.pending.map((entry) => entry.file.name)).toEqual(['c.png']);
+  });
+
+  it('refuses a file its inspection rejects without sending it, and sends the others', async () => {
+    const api = controllableUploader();
+    const queue = createUploadQueue({
+      upload: api.upload,
+      inspect: async (file) => (file.name.startsWith('small') ? 'Too small.' : null),
+    });
+    queue.add([png('small.png'), png('large.png')]);
+    await flush();
+    expect(api.started).toEqual(['large.png']);
+    expect(queue.getState().items[0]).toMatchObject({
+      status: 'failed',
+      retryable: false,
+      error: { title: 'Not uploaded', message: 'Too small.' },
+    });
+    api.find('large.png').resolve();
+    await flush();
+    expect(summarize(queue.getState())).toMatchObject({ done: 1, failed: 1 });
+  });
+});
+
+describe('productImageProblem', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const bitmap = (width: number, height: number) =>
+    vi.fn(async () => ({ width, height, close: vi.fn() }));
+
+  it('names the measured size when the shortest side is below the API minimum', async () => {
+    vi.stubGlobal('createImageBitmap', bitmap(1600, 900));
+    expect(await productImageProblem(png('wide.png'), 1024)).toBe(
+      '1600 × 900 px is too small for a product image: it needs at least 1024 px on the shortest side.',
+    );
+    vi.stubGlobal('createImageBitmap', bitmap(1024, 1300));
+    expect(await productImageProblem(png('ok.png'), 1024)).toBeNull();
+  });
+
+  it('leaves the decision to the API when off, unmeasured or undecodable', async () => {
+    const decode = bitmap(10, 10);
+    vi.stubGlobal('createImageBitmap', decode);
+    expect(await productImageProblem(png('a.png'), 0)).toBeNull();
+    expect(
+      await productImageProblem(new File(['<svg/>'], 'a.svg', { type: 'image/svg+xml' }), 1024),
+    ).toBeNull();
+    expect(decode).not.toHaveBeenCalled();
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn(async () => {
+        throw new Error('undecodable');
+      }),
+    );
+    expect(await productImageProblem(png('broken.png'), 1024)).toBeNull();
   });
 });
 

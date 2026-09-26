@@ -21,12 +21,14 @@
     "pree2e": "next build",
     "e2e": "playwright test",
     "e2e:real": "playwright test -c playwright.real.config.ts",
+    "e2e:ratelimit": "playwright test -c playwright.ratelimit.config.ts",
     "contracts:sync": "node scripts/contracts/sync.mjs",
     "contracts:check": "node scripts/contracts/check.mjs",
     "coverage:check": "tsx scripts/check-coverage.ts",
     "coverage:doc": "tsx scripts/coverage-doc.ts",
+    "matrix:doc": "tsx scripts/capability-matrix.ts",
     "bundle:report": "node scripts/bundle-report.mjs",
-    "verify": "npm run contracts:check && npm run coverage:check && npm run coverage:doc -- --check && npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build && npm run bundle:report"
+    "verify": "npm run contracts:check && npm run coverage:check && npm run coverage:doc -- --check && npm run matrix:doc -- --check && npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build && npm run bundle:report"
   },
   "dependencies": {
     "@floating-ui/react-dom": "2.1.9",

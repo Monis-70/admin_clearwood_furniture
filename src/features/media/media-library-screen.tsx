@@ -1,9 +1,9 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, FolderOpen, ImageOff, Upload } from 'lucide-react';
+import { Check, FolderOpen, ImageOff } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { MediaAssetDto } from '@shared/types/media';
 
@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 
 import { mediaApi, mediaKeys, renditionUrl, type MediaListQuery } from './api';
 import { flattenFolders, formatBytes } from './model';
-import { UploadPanel } from './upload-panel';
+import { UploadDropzone, UploadPanel } from './upload-panel';
 import { fileProblem, summarize } from './upload-queue';
 import { useUploadQueue } from './use-upload-queue';
 
@@ -71,7 +71,6 @@ function MediaLibrary() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [foldersOpen, setFoldersOpen] = useState(false);
   const [bulkDeleting, setBulkDeleting] = useState(false);
-  const fileInput = useRef<HTMLInputElement>(null);
   const query: MediaListQuery = {
     page: params.page,
     limit: 48,
@@ -124,6 +123,22 @@ function MediaLibrary() {
     if (finished > 0) void queryClient.invalidateQueries({ queryKey: mediaKeys.all });
   }, [finished, queryClient]);
   const [uploadNotice, setUploadNotice] = useState<string | null>(null);
+  const addFiles = (files: File[]) => {
+    const max = config.data?.maxUploadFiles ?? files.length;
+    const { duplicates } = upload.queue.add(files.slice(0, max));
+    setUploadNotice(
+      [
+        files.length > max
+          ? `Only the first ${max} files were added: up to ${max} can be chosen at a time.`
+          : null,
+        duplicates.length > 0
+          ? `${formatCount(duplicates.length, 'file was', 'files were')} already in the upload list.`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(' ') || null,
+    );
+  };
   const accept = config.data
     ? [
         ...config.data.allowedImageMime,
@@ -154,45 +169,32 @@ function MediaLibrary() {
                 Folders
               </Button>
             ) : null}
-            {canCall(endpoints.media.upload) ? (
-              <>
-                <input
-                  ref={fileInput}
-                  type="file"
-                  multiple
-                  accept={accept}
-                  className="sr-only"
-                  aria-label="Upload files"
-                  tabIndex={-1}
-                  onChange={(event) => {
-                    const files = [...(event.target.files ?? [])];
-                    event.target.value = '';
-                    if (files.length === 0) return;
-                    const max = config.data?.maxUploadFiles ?? files.length;
-                    const { duplicates } = upload.queue.add(files.slice(0, max));
-                    setUploadNotice(
-                      [
-                        files.length > max
-                          ? `Only the first ${max} files were added: up to ${max} can be chosen at a time.`
-                          : null,
-                        duplicates.length > 0
-                          ? `${formatCount(duplicates.length, 'file was', 'files were')} already in the upload list.`
-                          : null,
-                      ]
-                        .filter(Boolean)
-                        .join(' ') || null,
-                    );
-                  }}
-                />
-                <Button onClick={() => fileInput.current?.click()}>
-                  <Upload aria-hidden />
-                  Upload
-                </Button>
-              </>
-            ) : null}
           </>
         }
       />
+      {canCall(endpoints.media.upload) ? (
+        <UploadDropzone
+          className="mb-3"
+          accept={accept}
+          label="Upload files"
+          inputLabel="Upload files"
+          dropText="Drag files here, or"
+          onFiles={addFiles}
+          hint={
+            config.data
+              ? [
+                  `up to ${config.data.maxUploadSizeMb} MB each`,
+                  `${config.data.maxUploadFiles} at a time`,
+                  f.folderId
+                    ? `into ${flatFolders.find((folder) => folder.id === f.folderId)?.name ?? 'the selected folder'}`
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')
+              : undefined
+          }
+        />
+      ) : null}
       {uploadNotice ? (
         <p role="status" className="mb-3 text-sm text-muted-foreground">
           {uploadNotice}

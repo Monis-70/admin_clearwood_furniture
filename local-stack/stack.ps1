@@ -9,6 +9,7 @@
     .\local-stack\stack.ps1 provision     # promote the seeded bootstrap account to the DEV SUPER_ADMIN
     .\local-stack\stack.ps1 dev-data      # DEV admins + enquiries through the real API (backend running)
     .\local-stack\stack.ps1 backend       # API on http://127.0.0.1:7181 (tsx watch)
+    .\local-stack\stack.ps1 backend-ratelimit # test-only API on :7185 with a low upload limit (npm run e2e:ratelimit)
     .\local-stack\stack.ps1 admin         # admin on http://localhost:3000, /api proxied to 7181
     .\local-stack\stack.ps1 preview       # static export on http://localhost:7183, /api proxied to 7181
     .\local-stack\stack.ps1 backend-test  # backend test suite against the local MySQL
@@ -17,7 +18,7 @@
 [CmdletBinding()]
 param(
   [Parameter(Position = 0)]
-  [ValidateSet('init', 'up', 'down', 'reset', 'status', 'migrate', 'seed', 'provision', 'dev-data', 'backend', 'admin', 'preview', 'backend-test', 'print-login')]
+  [ValidateSet('init', 'up', 'down', 'reset', 'status', 'migrate', 'seed', 'provision', 'dev-data', 'backend', 'backend-ratelimit', 'admin', 'preview', 'backend-test', 'print-login')]
   [string]$Command = 'status',
   [Parameter(Position = 1, ValueFromRemainingArguments = $true)]
   [string[]]$Rest = @()
@@ -39,6 +40,8 @@ $ApiPort = 7181
 $AdminPort = 3000
 $PreviewPort = 7183
 $RealE2ePort = 7184
+$RateLimitApiPort = 7185
+$RateLimitE2ePort = 7186
 $ApiOrigin = "http://127.0.0.1:$ApiPort"
 
 function Read-EnvFile([string]$Path) {
@@ -219,6 +222,19 @@ switch ($Command) {
     $vars = Get-BackendEnv
     Push-Location $BackendRoot
     try { Invoke-WithEnv $vars { npx tsx watch src/server.ts } } finally { Pop-Location }
+  }
+  'backend-ratelimit' {
+    # The same local database, but a low upload allowance (3 per 20 s), its own Redis prefix (its
+    # counters and caches never touch the main API's) and no reconciler timer.
+    $vars = Get-BackendEnv
+    $vars['API_PORT'] = "$RateLimitApiPort"
+    $vars['CORS_ORIGINS'] = "http://localhost:$RateLimitE2ePort"
+    $vars['AUTH_RATE_LIMIT_MAX'] = '3'
+    $vars['AUTH_RATE_LIMIT_WINDOW_MS'] = '20000'
+    $vars['REDIS_KEY_PREFIX'] = 'cwratelimit:'
+    $vars['LISTING_RECONCILE_INTERVAL_SECONDS'] = '0'
+    Push-Location $BackendRoot
+    try { Invoke-WithEnv $vars { npx tsx src/server.ts } } finally { Pop-Location }
   }
   'dev-data' {
     $s = Get-Secrets

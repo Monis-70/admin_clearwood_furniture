@@ -24,6 +24,7 @@ export function UploadDropzone({
   accept,
   label = 'Upload new images',
   inputLabel = 'Upload images',
+  dropText = 'Drag images here, or',
   hint,
   disabled,
   onFiles,
@@ -32,6 +33,7 @@ export function UploadDropzone({
   accept: string;
   label?: string;
   inputLabel?: string;
+  dropText?: string;
   hint?: ReactNode;
   disabled?: boolean;
   onFiles(files: File[]): void;
@@ -86,7 +88,7 @@ export function UploadDropzone({
       />
       <Upload aria-hidden className="size-6 text-muted-foreground" />
       <p>
-        <span className="hidden sm:inline">Drag images here, or </span>
+        <span className="hidden sm:inline">{dropText} </span>
         <Button
           type="button"
           size="sm"

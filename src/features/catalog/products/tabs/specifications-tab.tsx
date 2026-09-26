@@ -9,6 +9,7 @@ import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 import { FormAlert } from '@/components/patterns/form/form-alert';
 import { useUnsavedChangesGuard } from '@/components/patterns/form/use-unsaved-changes-guard';
 import { EmptyState, ErrorState, SectionLoader } from '@/components/patterns/states';
+import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ import { cachePolicy } from '@/lib/query/policies';
 import { useAttributeGroups, useAttributeOptions } from '../../lookups';
 import { categoriesApi, taxonomyKeys, type AttributeRow } from '../../taxonomy/api';
 import { productsApi, productKeys } from '../api';
+import { usePublishBlockers } from '../use-publish-blockers';
 
 type Entry = ProductAttributeValuesInput['values'][number];
 type Draft = Record<
@@ -81,6 +83,15 @@ export function SpecificationsTab({ product }: { product: AdminProductDetailDto 
     ...cachePolicy.reference,
   });
   const canEdit = canCall(endpoints.products.setAttributeValues) && !product.deletedAt;
+  const gate = usePublishBlockers(product);
+  const foreign = new Set(
+    (gate.data ?? [])
+      .filter((blocker) => blocker.code === 'INVALID_CATEGORY_ATTRIBUTES')
+      .flatMap((blocker) => {
+        const ids = blocker.details?.attributeIds;
+        return Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string') : [];
+      }),
+  );
   const initial = useMemo(() => toDraft(product), [product]);
   const [draft, setDraft] = useState<Draft>(initial);
   const dirty = JSON.stringify(draft) !== JSON.stringify(initial);
@@ -136,6 +147,17 @@ export function SpecificationsTab({ product }: { product: AdminProductDetailDto 
         error={save.error}
         messages={invalid.length > 0 ? ['Numbers must be whole numbers.'] : []}
       />
+      {foreign.size > 0 ? (
+        <Alert tone="warning" title="Publishing is blocked by these specifications">
+          {attributes.data
+            .filter((attribute) => foreign.has(attribute.id))
+            .map((attribute) => attribute.name)
+            .join(', ')}{' '}
+          {foreign.size === 1 ? 'is' : 'are'} not used by the primary category. Clear{' '}
+          {foreign.size === 1 ? 'that value' : 'those values'} here, or link the attribute to the
+          primary category (or one of its parents) under Categories → Attributes.
+        </Alert>
+      ) : null}
       {[...byGroup.entries()].map(([group, list]) => (
         <fieldset key={group} className="flex flex-col gap-3 rounded-lg border bg-card p-4 sm:p-5">
           <legend className="px-1 text-base font-semibold">{group}</legend>
@@ -151,6 +173,9 @@ export function SpecificationsTab({ product }: { product: AdminProductDetailDto 
                   ) : null}
                   {required.has(attribute.id) ? (
                     <Badge tone="warning">Required by category</Badge>
+                  ) : null}
+                  {foreign.has(attribute.id) ? (
+                    <Badge tone="danger">Not in the primary category</Badge>
                   ) : null}
                   {attribute.isVariantDefining ? (
                     <Badge tone="outline">Variant option</Badge>

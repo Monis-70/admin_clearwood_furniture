@@ -202,6 +202,57 @@ export const SCREENLESS_REASONS: Readonly<
   },
 };
 
+/**
+ * Capabilities an admin might expect that the API does not offer at the pinned commit. The UI
+ * must not imitate any of them; each needs a backend change (and usually a product decision).
+ */
+export const MISSING_BACKEND_CAPABILITIES: readonly {
+  area: string;
+  capability: string;
+  today: string;
+  needs: string;
+}[] = [
+  {
+    area: 'Customers',
+    capability: 'Customer directory and search (F9)',
+    today:
+      'customer groups add and remove members by customer id; a cart is read by customer id (GET /customers/{id}/cart)',
+    needs: 'an admin customer list/search endpoint behind order.customer.read',
+  },
+  {
+    area: 'Business enquiries',
+    capability: 'A quote (amount or document) on an enquiry',
+    today:
+      'status QUOTED plus one admin note; the customer then places a normal order on the storefront',
+    needs: 'a quote field or entity, and a decision on who issues quotes',
+  },
+  {
+    area: 'Business enquiries',
+    capability: 'Discussion history on an enquiry',
+    today: 'one admin note (adminNote), replaced on each save',
+    needs: 'an enquiry notes or messages endpoint',
+  },
+  {
+    area: 'Business enquiries',
+    capability: 'Link an enquiry to the order it became',
+    today: 'no reference between an enquiry and an order',
+    needs: 'an order reference on the enquiry, or a conversion endpoint',
+  },
+  {
+    area: 'Orders',
+    capability: 'Orders created by an admin on a customer’s behalf',
+    today: 'orders are created only by customers at checkout',
+    needs: 'an admin order-creation endpoint and a product decision',
+  },
+  {
+    area: 'Media',
+    capability: 'Direct (presigned) uploads',
+    today:
+      'POST /media/presign is classified internal; every upload goes through POST /media/upload',
+    needs: 'a completion endpoint that validates and processes the uploaded object',
+  },
+];
+
 /** Non-admin routes the admin calls, with the phase that first uses them. */
 export const EXTERNAL_ROUTES_USED: Readonly<Record<string, { purpose: string; phase: number }>> = {
   'GET /api/v1/version': {

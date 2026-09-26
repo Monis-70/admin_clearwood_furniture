@@ -54,6 +54,8 @@ export interface UploadQueueOptions {
   concurrency?: number;
   /** A reason to refuse a file before sending it (UX only: the API validates again). */
   validate?: (file: File) => string | null;
+  /** Like `validate`, for checks that must read the file (image dimensions); runs just before sending. */
+  inspect?: (file: File) => Promise<string | null>;
   /** Used when a 429 carries no Retry-After. */
   defaultRetryAfterSeconds?: number;
   now?: () => number;
@@ -69,7 +71,7 @@ export interface UploadQueue {
   getState(): UploadQueueState;
   subscribe(listener: () => void): () => void;
   /** Replaces the uploader and/or validator (a component passes its latest props). */
-  configure(options: Pick<UploadQueueOptions, 'upload' | 'validate'>): void;
+  configure(options: Pick<UploadQueueOptions, 'upload' | 'validate' | 'inspect'>): void;
   add(files: readonly File[]): AddResult;
   /** Queued or still sending; a file the API is already processing cannot be recalled. */
   cancel(id: string): void;
@@ -112,6 +114,7 @@ export function createUploadQueue(options: UploadQueueOptions = {}): UploadQueue
   let upload: Uploader =
     options.upload ?? (() => Promise.reject(new Error('The upload queue is not configured.')));
   let validate = options.validate;
+  let inspect = options.inspect;
   const listeners = new Set<() => void>();
   const controllers = new Map<string, AbortController>();
   let state: UploadQueueState = { items: [], pausedUntil: null };
@@ -163,25 +166,39 @@ export function createUploadQueue(options: UploadQueueOptions = {}): UploadQueue
       error: null,
       attempts: item.attempts + 1,
     });
-    upload(item.file, {
-      signal: controller.signal,
-      onProgress: ({ loaded, total }) => {
-        const size = total || item.file.size;
-        patch(item.id, {
-          loaded: Math.min(loaded, size),
-          total: size,
-          status: size > 0 && loaded >= size ? 'processing' : 'uploading',
-        });
-      },
-    })
-      .then((result) => {
+    const send = () =>
+      upload(item.file, {
+        signal: controller.signal,
+        onProgress: ({ loaded, total }) => {
+          const size = total || item.file.size;
+          patch(item.id, {
+            loaded: Math.min(loaded, size),
+            total: size,
+            status: size > 0 && loaded >= size ? 'processing' : 'uploading',
+          });
+        },
+      }).then((result) => {
         patch(item.id, {
           status: 'done',
           loaded: item.file.size,
           asset: result.media,
           deduplicated: result.deduplicated,
         });
-      })
+      });
+    const work = inspect
+      ? inspect(item.file)
+          .catch(() => null)
+          .then((reason) => {
+            if (controller.signal.aborted) throw new DOMException('Cancelled', 'AbortError');
+            if (!reason) return send();
+            patch(item.id, {
+              status: 'failed',
+              error: { title: 'Not uploaded', message: reason },
+              retryable: false,
+            });
+          })
+      : send();
+    work
       .catch((error: unknown) => {
         if (controller.signal.aborted) {
           patch(item.id, { status: 'cancelled', loaded: 0 });
@@ -230,6 +247,7 @@ export function createUploadQueue(options: UploadQueueOptions = {}): UploadQueue
     configure(next) {
       if (next.upload) upload = next.upload;
       if ('validate' in next) validate = next.validate;
+      if ('inspect' in next) inspect = next.inspect;
     },
     add(files) {
       const known = new Set(
@@ -377,4 +395,36 @@ export function fileProblem(
     return `${formatBytes(file.size)} is over the ${limits.maxUploadSizeMb} MB limit.`;
   }
   return null;
+}
+
+/** Raster types the API measures for product galleries (it skips SVG and GIF). */
+export const MEASURED_IMAGE_TYPES: ReadonlySet<string> = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/avif',
+]);
+
+/**
+ * Refuses an image the API would not attach to a product (`minProductImageDimension` from
+ * `/media/config`) before its bytes are sent. When the browser cannot decode the file, the API
+ * decides.
+ */
+export async function productImageProblem(file: File, minSide: number): Promise<string | null> {
+  if (
+    minSide <= 0 ||
+    !MEASURED_IMAGE_TYPES.has(file.type) ||
+    typeof createImageBitmap !== 'function'
+  ) {
+    return null;
+  }
+  try {
+    const bitmap = await createImageBitmap(file);
+    const { width, height } = bitmap;
+    bitmap.close();
+    if (Math.min(width, height) >= minSide) return null;
+    return `${width} × ${height} px is too small for a product image: it needs at least ${minSide} px on the shortest side.`;
+  } catch {
+    return null;
+  }
 }

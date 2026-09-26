@@ -179,17 +179,16 @@ test('products: fix every publish blocker, publish, unpublish', async ({ page })
   await matrix.getByRole('button', { name: 'Create 1 variant', exact: true }).click();
   await expect(toast(page, '1 variant created')).toBeVisible();
 
-  // A primary image from the library.
+  // A primary image: the first image added to a product without one becomes primary.
   await workbench.getByRole('link', { name: /^Fix this\s*: Set a primary image/ }).click();
-  await page.getByRole('button', { name: 'Select from media library' }).click();
-  const picker = page.getByRole('dialog', { name: /^Select images for E2E Publish/ });
-  await picker
-    .getByRole('list', { name: 'Images' })
-    .getByRole('button', { disabled: false })
-    .first()
-    .click();
-  await picker.getByRole('button', { name: 'Use 1 image' }).click();
-  await expect(toast(page, '1 image added')).toBeVisible();
+  await page.getByLabel('Upload images').setInputFiles({
+    name: `e2e-${RUN}-publish.png`,
+    mimeType: 'image/png',
+    buffer: uniquePng(),
+  });
+  await expect(
+    page.getByRole('region', { name: 'Uploads' }).getByText('Added to the gallery'),
+  ).toBeVisible();
 
   await expect(blockers()).toHaveCount(0);
   await expect(attention).toHaveAccessibleName('Ready');
@@ -342,6 +341,17 @@ test('collections: create, add products, order them and delete', async ({ page }
 
 test('media: upload, attach from the library, reorder, make primary, remove', async ({ page }) => {
   await signInAsSuperAdmin(page);
+  // One file goes into the library first, to be attached from there.
+  await page.goto('/media');
+  await page.getByLabel('Upload files').setInputFiles({
+    name: `e2e-${RUN}-library.png`,
+    mimeType: 'image/png',
+    buffer: uniquePng(),
+  });
+  await expect(
+    page.getByRole('region', { name: 'Uploads' }).getByText('1 uploaded successfully'),
+  ).toBeVisible();
+
   const id = await createDraft(page, `E2E Media ${RUN}`, `E2E-M-${RUN.toUpperCase()}`);
   await page.goto(`/catalog/products/edit?id=${id}&tab=media`);
   await page.getByLabel('Upload images').setInputFiles({
@@ -353,14 +363,13 @@ test('media: upload, attach from the library, reorder, make primary, remove', as
   await expect(uploads.getByText('1 uploaded successfully')).toBeVisible();
   await expect(uploads.getByText('Added to the gallery')).toBeVisible();
 
-  // And one image that is already in the library.
+  // And the image that is already in the library.
   await page.getByRole('button', { name: 'Select from media library' }).click();
   const picker = page.getByRole('dialog', { name: /^Select images for E2E Media/ });
-  await picker
-    .getByRole('list', { name: 'Images' })
-    .getByRole('button', { pressed: false, disabled: false })
-    .first()
-    .click();
+  await picker.getByRole('searchbox', { name: /Search images/ }).fill(`e2e-${RUN}-library`);
+  const choices = picker.getByRole('list', { name: 'Images' }).getByRole('button');
+  await expect(choices).toHaveCount(1);
+  await choices.first().click();
   await expect(picker.getByText('1 selected')).toBeVisible();
   await picker.getByRole('button', { name: 'Use 1 image' }).click();
   await expect(toast(page, '1 image added')).toBeVisible();

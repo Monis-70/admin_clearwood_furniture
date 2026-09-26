@@ -66,6 +66,7 @@ function serveGallery() {
           maxUploadSizeMb: 15,
           maxUploadFiles: 20,
           maxImageDimension: 4000,
+          minProductImageDimension: 1024,
           allowedImageMime: ['image/jpeg', 'image/png', 'image/webp'],
           allowedVideoMime: [],
           allowedDocMime: [],
@@ -371,5 +372,58 @@ describe('Media & Gallery', () => {
     ).toBeVisible();
     expect(screen.queryByLabelText('Upload images')).toBeNull();
     expect(callsTo(GALLERY, 'GET')).toHaveLength(0);
+  });
+
+  it('refuses an image below the API minimum before sending it, and uploads the rest', async () => {
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn(async (file: File) =>
+        file.name.startsWith('small')
+          ? { width: 800, height: 600, close: () => undefined }
+          : { width: 1600, height: 1200, close: () => undefined },
+      ),
+    );
+    const user = userEvent.setup();
+    renderTab();
+    await screen.findByText('No images yet');
+    expect(
+      screen.getByText(/at least 1024 px on the shortest side/, { selector: 'p' }),
+    ).toBeInTheDocument();
+    await user.upload(screen.getByLabelText('Upload images'), [png('small.png'), png('large.png')]);
+
+    const uploads = screen.getByRole('region', { name: 'Uploads' });
+    expect(
+      await within(uploads).findByText('1 uploaded successfully / 1 failed'),
+    ).toBeInTheDocument();
+    expect(
+      within(uploads).getByText(
+        'Not uploaded: 800 × 600 px is too small for a product image: it needs at least 1024 px on the shortest side.',
+      ),
+    ).toBeInTheDocument();
+    expect(callsTo('/api/v1/admin/media/upload', 'POST')).toHaveLength(1);
+    expect(attachCalls()).toEqual([{ items: [{ mediaId: 'med_large.png', role: 'PRIMARY' }] }]);
+  });
+
+  it('shows library images below the minimum as not selectable', async () => {
+    const wide = { ...asset('med_wide', 'wide.png'), width: 1600, height: 1200 };
+    const short = { ...asset('med_short', 'short.png'), width: 1200, height: 900 };
+    server.use(
+      http.get(
+        `${API}/admin/media`,
+        guarded(() =>
+          ok([wide, short], 200, { page: 1, limit: 24, total: 2, totalPages: 1, hasNext: false }),
+        ),
+      ),
+    );
+    const user = userEvent.setup();
+    renderTab();
+    await screen.findByText('No images yet');
+    await user.click(screen.getByRole('button', { name: 'Select from media library' }));
+    const picker = await screen.findByRole('dialog', { name: /^Select images for / });
+    const images = await within(picker).findByRole('list', { name: 'Images' });
+    const buttons = await within(images).findAllByRole('button');
+    expect(buttons[0]).toBeEnabled();
+    expect(buttons[1]).toBeDisabled();
+    expect(buttons[1]).toHaveTextContent('Too small (1200 × 900)');
   });
 });

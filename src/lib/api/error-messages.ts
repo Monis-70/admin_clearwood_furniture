@@ -64,6 +64,7 @@ const BY_CODE: Record<string, Rule> = {
     action: 'fix-input',
   },
   FILE_TOO_LARGE: { title: 'File too large', useServerMessage: true, action: 'fix-input' },
+  IMAGE_TOO_SMALL: { title: 'Image too small', useServerMessage: true, action: 'fix-input' },
   PAYLOAD_TOO_LARGE: {
     title: 'Too much data',
     message: 'The request is larger than the server accepts. Send less at a time.',

@@ -121,7 +121,7 @@ server {
 | --- | --- |
 | install | `npm ci` with lockfile; `npm audit --audit-level=high` |
 | contracts | `contracts:check` (pinned shared files + route inventory untouched); with a backend checkout, `contracts:check -- --against-backend` (no drift) |
-| coverage | `coverage:check` (classification ↔ inventory ↔ endpoint registry, guards, CSRF, idempotency, no on-hold calls) and `coverage:doc -- --check` |
+| coverage | `coverage:check` (classification ↔ inventory ↔ endpoint registry, guards, CSRF, idempotency, no on-hold calls), `coverage:doc -- --check` and `matrix:doc -- --check` |
 | static | `typecheck`, `lint` (0 warnings), `format:check` |
 | test | `test` (Vitest unit + component with MSW + axe) |
 | build | `build` (export) then `bundle:report` (JS ≤ 280 KB, CSS ≤ 40 KB gzip per page) |

@@ -23,7 +23,12 @@ import { cachePolicy } from '@/lib/query/policies';
 
 import { mediaApi, mediaKeys, renditionUrl } from '@/features/media/api';
 import { UploadDropzone, UploadPanel } from '@/features/media/upload-panel';
-import { describeTypes, fileProblem, type UploadItem } from '@/features/media/upload-queue';
+import {
+  describeTypes,
+  fileProblem,
+  productImageProblem,
+  type UploadItem,
+} from '@/features/media/upload-queue';
 
 import { catalogKeys } from '../../api';
 import { useAttributeOptions } from '../../lookups';
@@ -173,11 +178,13 @@ function ManagedGallery({ product }: { product: AdminProductDetailDto }) {
 
   const limits = config.data;
   const allowedMime = limits?.allowedImageMime ?? [];
+  const minSide = limits?.minProductImageDimension ?? 0;
   const uploads = useProductUploads({
     productId: product.id,
     hasPrimary,
     validate: (file) =>
       limits ? fileProblem(file, { allowedMime, maxUploadSizeMb: limits.maxUploadSizeMb }) : null,
+    inspect: (file) => productImageProblem(file, minSide),
     onAttached: () => void refresh(),
   });
 
@@ -348,7 +355,14 @@ function ManagedGallery({ product }: { product: AdminProductDetailDto }) {
             onFiles={addFiles}
             hint={
               limits
-                ? `${describeTypes(allowedMime)} · up to ${limits.maxUploadSizeMb} MB each · ${limits.maxUploadFiles} at a time`
+                ? [
+                    describeTypes(allowedMime),
+                    `up to ${limits.maxUploadSizeMb} MB each`,
+                    `${limits.maxUploadFiles} at a time`,
+                    minSide > 0 ? `at least ${minSide} px on the shortest side` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')
                 : undefined
             }
           />
@@ -470,6 +484,7 @@ function ManagedGallery({ product }: { product: AdminProductDetailDto }) {
         <MediaPicker
           title={`Select images for ${product.name}`}
           attachedIds={new Set(server.map((item) => item.mediaId))}
+          minSide={minSide}
           onClose={() => setDialog(null)}
           busy={pick.isPending}
           onChoose={(assets) => pick.mutate(assets)}

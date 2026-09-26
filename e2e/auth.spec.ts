@@ -7,7 +7,10 @@ test.describe('sign-in and session', () => {
   }) => {
     await page.goto('/system/status');
     await expect(page).toHaveURL(/\/login\?next=%2Fsystem%2Fstatus/);
-    expect(api.count('/api/v1/admin/auth/me')).toBe(0);
+    await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    // A signed-out visitor costs the API nothing: no session probe, no data request.
+    expect(api.calls).toEqual([]);
 
     await signIn(page);
     await expect(page).toHaveURL(/\/system\/status$/);

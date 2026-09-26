@@ -10,3 +10,4 @@ src/contracts/shared
 contracts/route-inventory.json
 contracts/manifest.json
 docs
+contracts/openapi-debt.json

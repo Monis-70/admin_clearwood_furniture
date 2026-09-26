@@ -12,6 +12,7 @@ import {
   CONTRACTS_DIR,
   INVENTORY_FILE,
   MANIFEST_FILE,
+  OPENAPI_DEBT_FILE,
   VENDOR_DIR,
   backendGitState,
   diffKeys,
@@ -64,6 +65,11 @@ if (inventory.duplicates.length > 0) {
 fs.mkdirSync(CONTRACTS_DIR, { recursive: true });
 fs.writeFileSync(INVENTORY_FILE, serialiseInventory(inventory));
 
+// 2b. Routes the backend's OpenAPI document does not describe yet (its ratchet list)
+const debtSource = path.join(backend.dir, 'docs', 'openapi-debt.json');
+const debt = JSON.parse(fs.readFileSync(debtSource, 'utf8'));
+fs.copyFileSync(debtSource, OPENAPI_DEBT_FILE);
+
 // 3. Manifest
 const files = hashTree(VENDOR_DIR);
 const manifest = {
@@ -80,6 +86,12 @@ const manifest = {
     sha256: hashFile(INVENTORY_FILE),
     routes: inventory.routes.length,
     adminRoutes: inventory.routes.filter((r) => r.path.startsWith('/api/v1/admin/')).length,
+  },
+  openapiDebt: {
+    file: 'contracts/openapi-debt.json',
+    source: 'docs/openapi-debt.json',
+    sha256: hashFile(OPENAPI_DEBT_FILE),
+    routes: debt.routes.length,
   },
 };
 fs.writeFileSync(MANIFEST_FILE, `${JSON.stringify(manifest, null, 2)}\n`);
