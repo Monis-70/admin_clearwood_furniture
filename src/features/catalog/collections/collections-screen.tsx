@@ -20,7 +20,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { collectionsRoutes } from '@/lib/api/routes/collections';
 import { formatNumber, formatRelative } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -36,7 +37,7 @@ const FILTERS = ['includeDeleted'] as const;
 
 export function CollectionsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.catalog.collections)) {
+  if (!canCall(catalogRoutes.collections)) {
     return <PermissionNotice area="collections" all={['catalog.collection.read']} />;
   }
   return <CollectionsList />;
@@ -147,7 +148,7 @@ function CollectionsList() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {c.deletedAt ? (
-                canCall(endpoints.collections.restore) ? (
+                canCall(collectionsRoutes.restore) ? (
                   <DropdownMenuItem
                     onSelect={() =>
                       void collectionsApi
@@ -179,7 +180,7 @@ function CollectionsList() {
                       View products
                     </Link>
                   </DropdownMenuItem>
-                  {canCall(endpoints.collections.remove) ? (
+                  {canCall(collectionsRoutes.remove) ? (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -205,7 +206,7 @@ function CollectionsList() {
         title="Collections"
         description="Hand-picked and rule-based groups of products shown on the storefront, such as New Arrivals."
         actions={
-          canCall(endpoints.collections.create) ? (
+          canCall(collectionsRoutes.create) ? (
             <Button asChild>
               <Link href="/catalog/collections/new">
                 <Plus aria-hidden />

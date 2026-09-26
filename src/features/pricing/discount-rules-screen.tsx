@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { formatDate, formatNumber } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -73,7 +73,7 @@ import { parseActions, rulesApi, rulesKeys, type DiscountRuleRow } from './rules
 
 export function DiscountRulesScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.pricing.discountRules)) {
+  if (!canCall(pricingRoutes.discountRules)) {
     return <PermissionNotice area="automatic discounts" all={['pricing.adjustment.read']} />;
   }
   return <DiscountRules />;
@@ -160,8 +160,7 @@ function DiscountRules() {
       meta: { label: 'Actions', align: 'right', mobile: 'detail' },
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) =>
-        canCall(endpoints.pricing.updateDiscountRule) ||
-        canCall(endpoints.pricing.removeDiscountRule) ? (
+        canCall(pricingRoutes.updateDiscountRule) || canCall(pricingRoutes.removeDiscountRule) ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -173,10 +172,10 @@ function DiscountRules() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {canCall(endpoints.pricing.updateDiscountRule) ? (
+              {canCall(pricingRoutes.updateDiscountRule) ? (
                 <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
               ) : null}
-              {canCall(endpoints.pricing.removeDiscountRule) ? (
+              {canCall(pricingRoutes.removeDiscountRule) ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -200,13 +199,13 @@ function DiscountRules() {
         description="Discounts checkout applies without a code when a cart meets the conditions. Rules run in priority order (lowest first)."
         actions={
           <>
-            {canCall(endpoints.pricing.evaluateDiscountRules) ? (
+            {canCall(pricingRoutes.evaluateDiscountRules) ? (
               <Button variant="outline" onClick={() => setTesting(true)}>
                 <FlaskConical aria-hidden />
                 Test rules
               </Button>
             ) : null}
-            {canCall(endpoints.pricing.createDiscountRule) ? (
+            {canCall(pricingRoutes.createDiscountRule) ? (
               <Button onClick={() => setEditing('new')}>
                 <Plus aria-hidden />
                 New rule

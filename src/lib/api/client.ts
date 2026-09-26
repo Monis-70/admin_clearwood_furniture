@@ -4,7 +4,7 @@ import type { AdminLoginResponse, AdminMeDto } from '@shared/types/auth';
 import { API_BASE_URL, API_ROOT_URL } from '@/config/env';
 
 import { fillPath, type EndpointDef, type PathParams } from './endpoint';
-import { endpoints } from './endpoints';
+import { authRoutes } from './routes/auth';
 import { ApiError } from './errors';
 import { toQueryString, type QueryParams } from './query-string';
 import { emitSessionEvent } from './session-events';
@@ -375,6 +375,6 @@ export function withoutTokens(response: AdminLoginResponse): AdminMeDto {
 }
 
 registerRefresher(async () => {
-  const result = await send<AdminLoginResponse, null>(endpoints.auth.refresh, { body: {} });
+  const result = await send<AdminLoginResponse, null>(authRoutes.refresh, { body: {} });
   return withoutTokens(result.data);
 });

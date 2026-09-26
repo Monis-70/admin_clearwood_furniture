@@ -16,7 +16,7 @@ import {
   CardTitle,
   Skeleton,
 } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
 import { formatNumber } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -48,7 +48,7 @@ const LISTS = [
 
 export function MerchandisingScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.catalog.products)) {
+  if (!canCall(catalogRoutes.products)) {
     return <PermissionNotice area="merchandising" all={['catalog.product.read']} />;
   }
   return <Merchandising />;
@@ -59,7 +59,7 @@ function Merchandising() {
   const settings = useQuery({
     queryKey: catalogKeys.settings(),
     queryFn: ({ signal }) => catalogApi.settings(signal),
-    enabled: canCall(endpoints.catalog.settings),
+    enabled: canCall(catalogRoutes.settings),
     ...cachePolicy.reference,
   });
   const days = settings.data?.newArrivalDays;

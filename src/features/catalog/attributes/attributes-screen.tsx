@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { attributesRoutes } from '@/lib/api/routes/attributes';
 import { formatNumber } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -48,7 +48,7 @@ const YES_NO = [
 
 export function AttributesScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.attributes.list))
+  if (!canCall(attributesRoutes.list))
     return <PermissionNotice area="attributes" all={['catalog.attribute.read']} />;
   return <Attributes />;
 }
@@ -84,7 +84,7 @@ function Attributes() {
   const filtered = Boolean(params.q || f.groupId || f.isVariantDefining);
   // Order is only meaningful on the unfiltered list sorted by position.
   const canReorder =
-    canCall(endpoints.attributes.reorder) &&
+    canCall(attributesRoutes.reorder) &&
     !filtered &&
     params.sort === 'position' &&
     params.order === 'asc';
@@ -176,7 +176,7 @@ function Attributes() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => params.setFilter('id', row.original.id)}>
-                {canCall(endpoints.attributes.update) ? 'Edit and values' : 'View values'}
+                {canCall(attributesRoutes.update) ? 'Edit and values' : 'View values'}
               </DropdownMenuItem>
               {canReorder ? (
                 <>
@@ -194,7 +194,7 @@ function Attributes() {
                   </DropdownMenuItem>
                 </>
               ) : null}
-              {canCall(endpoints.attributes.remove) ? (
+              {canCall(attributesRoutes.remove) ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -219,12 +219,12 @@ function Attributes() {
         description="Specifications (material, finish, seating) and the options variants are made of."
         actions={
           <>
-            {canCall(endpoints.attributes.groups) ? (
+            {canCall(attributesRoutes.groups) ? (
               <Button variant="outline" onClick={() => setGroupsOpen(true)}>
                 Groups
               </Button>
             ) : null}
-            {canCall(endpoints.attributes.create) ? (
+            {canCall(attributesRoutes.create) ? (
               <Button onClick={() => params.setFilter('id', 'new')}>
                 <Plus aria-hidden />
                 New attribute

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { StatusBadge } from '@/components/patterns/status-badge';
 import { EmptyState, ErrorState, PermissionNotice } from '@/components/patterns/states';
 import { Skeleton } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { auditRoutes } from '@/lib/api/routes/audit';
 import { formatDateTime, formatRelative } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -18,7 +18,7 @@ import { AUDIT_ACTION_LABELS, AUDIT_SEVERITY } from './model';
 /** The last changes to one record, from the audit trail (the only history the API keeps). */
 export function EntityHistory({ entity, entityId }: { entity: string; entityId: string }) {
   const { canCall } = usePermissions();
-  const allowed = canCall(endpoints.audit.list);
+  const allowed = canCall(auditRoutes.list);
   const query: AuditQuery = { page: 1, limit: 10, order: 'desc', entity, entityId };
   const history = useQuery({
     queryKey: auditKeys.list(query),

@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { formatDateTime } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -74,7 +74,7 @@ const PagePreview = dynamic(() => import('./page-extra-tabs').then((m) => m.Page
 });
 const PageSeo = dynamic(() => import('./page-extra-tabs').then((m) => m.PageSeo), { ssr: false });
 
-const e = endpoints.content;
+const e = contentRoutes;
 const TABS = [
   { id: 'blocks', label: 'Blocks' },
   { id: 'settings', label: 'Settings & SEO' },

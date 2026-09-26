@@ -11,7 +11,7 @@ import type {
 } from '@shared/types/media';
 
 import { apiPage, apiRequest, type Page, type UploadProgress } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 
 export interface MediaListQuery {
   page: number;
@@ -66,16 +66,15 @@ export function renditionUrl(asset: Pick<MediaAssetDto, 'url' | 'variants'>, wid
 
 export const mediaApi = {
   list(query: MediaListQuery, signal?: AbortSignal): Promise<Page<MediaAssetDto>> {
-    return apiPage(endpoints.media.list, { query: { ...query }, signal }) as Promise<
+    return apiPage(mediaRoutes.list, { query: { ...query }, signal }) as Promise<
       Page<MediaAssetDto>
     >;
   },
   async get(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.media.get, { params: { id }, signal }))
-      .data as MediaDetailDto;
+    return (await apiRequest(mediaRoutes.get, { params: { id }, signal })).data as MediaDetailDto;
   },
   async config(signal?: AbortSignal) {
-    return (await apiRequest(endpoints.media.config, { signal })).data as MediaConfigDto;
+    return (await apiRequest(mediaRoutes.config, { signal })).data as MediaConfigDto;
   },
   /**
    * One file per request: the API validates a multipart batch as a whole, so a single bad file
@@ -92,7 +91,7 @@ export const mediaApi = {
     const form = new FormData();
     if (options.folderId) form.append('folderId', options.folderId);
     form.append('files', file);
-    const result = await apiRequest(endpoints.media.upload, {
+    const result = await apiRequest(mediaRoutes.upload, {
       form,
       signal: options.signal,
       onUploadProgress: options.onProgress ?? (() => undefined),
@@ -104,50 +103,49 @@ export const mediaApi = {
   async replace(id: string, file: File) {
     const form = new FormData();
     form.append('files', file);
-    return (await apiRequest(endpoints.media.replace, { params: { id }, form }))
-      .data as MediaAssetDto;
+    return (await apiRequest(mediaRoutes.replace, { params: { id }, form })).data as MediaAssetDto;
   },
   async reprocess(id: string) {
-    return (await apiRequest(endpoints.media.reprocess, { params: { id } })).data as MediaAssetDto;
+    return (await apiRequest(mediaRoutes.reprocess, { params: { id } })).data as MediaAssetDto;
   },
   async update(id: string, input: MediaUpdateInput) {
-    return (await apiRequest(endpoints.media.update, { params: { id }, body: input }))
+    return (await apiRequest(mediaRoutes.update, { params: { id }, body: input }))
       .data as MediaAssetDto;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.media.remove, { params: { id } });
+    await apiRequest(mediaRoutes.remove, { params: { id } });
   },
   async restore(id: string) {
-    return (await apiRequest(endpoints.media.restore, { params: { id } })).data as MediaAssetDto;
+    return (await apiRequest(mediaRoutes.restore, { params: { id } })).data as MediaAssetDto;
   },
   async removePermanently(id: string) {
-    await apiRequest(endpoints.media.removePermanently, { params: { id } });
+    await apiRequest(mediaRoutes.removePermanently, { params: { id } });
   },
   async bulkRemove(ids: string[]) {
-    return (await apiRequest(endpoints.media.bulkRemove, { body: { ids } })).data as {
+    return (await apiRequest(mediaRoutes.bulkRemove, { body: { ids } })).data as {
       deleted?: number;
     };
   },
   async folders(signal?: AbortSignal) {
-    return (await apiRequest(endpoints.media.folders, { signal })).data as MediaFolderDto[];
+    return (await apiRequest(mediaRoutes.folders, { signal })).data as MediaFolderDto[];
   },
   async createFolder(input: { name: string; parentId?: string | null }) {
-    return (await apiRequest(endpoints.media.createFolder, { body: input })).data as MediaFolderDto;
+    return (await apiRequest(mediaRoutes.createFolder, { body: input })).data as MediaFolderDto;
   },
   async updateFolder(id: string, input: { name?: string; parentId?: string | null }) {
-    return (await apiRequest(endpoints.media.updateFolder, { params: { id }, body: input }))
+    return (await apiRequest(mediaRoutes.updateFolder, { params: { id }, body: input }))
       .data as MediaFolderDto;
   },
   async removeFolder(id: string) {
-    await apiRequest(endpoints.media.removeFolder, { params: { id } });
+    await apiRequest(mediaRoutes.removeFolder, { params: { id } });
   },
   async productMedia(productId: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.media.productMedia, { params: { productId }, signal }))
+    return (await apiRequest(mediaRoutes.productMedia, { params: { productId }, signal }))
       .data as ProductMediaItemDto[];
   },
   async attach(productId: string, items: AttachItem[]) {
     return (
-      await apiRequest(endpoints.media.attachProductMedia, {
+      await apiRequest(mediaRoutes.attachProductMedia, {
         params: { productId },
         body: { items },
       })
@@ -155,25 +153,25 @@ export const mediaApi = {
   },
   async updateItem(productId: string, id: string, input: ProductMediaUpdateInput) {
     return (
-      await apiRequest(endpoints.media.updateProductMedia, {
+      await apiRequest(mediaRoutes.updateProductMedia, {
         params: { productId, id },
         body: input,
       })
     ).data as ProductMediaItemDto;
   },
   async reorder(productId: string, items: { id: string; position: number }[]) {
-    await apiRequest(endpoints.media.reorderProductMedia, {
+    await apiRequest(mediaRoutes.reorderProductMedia, {
       params: { productId },
       body: { items },
     });
   },
   async detach(productId: string, id: string) {
-    await apiRequest(endpoints.media.removeProductMedia, { params: { productId, id } });
+    await apiRequest(mediaRoutes.removeProductMedia, { params: { productId, id } });
   },
   /** The storefront's gallery for a live product; drafts answer 404 by design. */
   async publicGallery(slug: string, query: GalleryQuery, signal?: AbortSignal) {
     return (
-      await apiRequest(endpoints.media.publicGallery, {
+      await apiRequest(mediaRoutes.publicGallery, {
         params: { slug },
         query: { ...query },
         signal,

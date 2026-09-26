@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { collectionsRoutes } from '@/lib/api/routes/collections';
 import { formatNumber } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -67,8 +67,8 @@ export function RulesTab({ collection }: { collection: CollectionDetail }) {
   const [preview, setPreview] = useState<RulePreview | null>(null);
   const dirty = JSON.stringify(rules) !== JSON.stringify(stored ?? EMPTY);
   useUnsavedChangesGuard(dirty);
-  const canEdit = canCall(endpoints.collections.update) && !collection.deletedAt;
-  const canPreview = canCall(endpoints.collections.previewRules);
+  const canEdit = canCall(collectionsRoutes.update) && !collection.deletedAt;
+  const canPreview = canCall(collectionsRoutes.previewRules);
 
   const categories = useCategoryOptions();
   const brands = useBrandOptions();

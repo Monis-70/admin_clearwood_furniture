@@ -8,7 +8,7 @@ import type { PricingSettings } from '@shared/types/pricing';
 
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { Alert } from '@/components/ui/alert';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -76,7 +76,7 @@ export function PricingSettingsPanel() {
     queryFn: ({ signal }) => rulesApi.settings(signal),
     ...cachePolicy.detail,
   });
-  const canEdit = canCall(endpoints.pricing.updateSettings);
+  const canEdit = canCall(pricingRoutes.updateSettings);
 
   if (settings.isPending) return <SectionLoader label="Loading pricing settings…" />;
   if (settings.error)

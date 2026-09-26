@@ -1,7 +1,7 @@
 import type { BlockCategory, BlockType } from '@shared/enums';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 
 /*
  * The CMS admin API. Most CMS routes answer with the stored rows (not typed in @clearwood/shared):
@@ -315,7 +315,7 @@ export const contentKeys = {
   seoPreview: (type: string, id: string) => [...contentKeys.all, 'seo', type, id] as const,
 };
 
-const e = endpoints.content;
+const e = contentRoutes;
 
 export const contentApi = {
   /* ---------------------------------------------------------------- pages */

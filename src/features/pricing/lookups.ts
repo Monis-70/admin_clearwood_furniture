@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -15,7 +15,7 @@ export function useCustomerGroupOptions(wanted = true) {
   return useQuery({
     queryKey: promotionsKeys.groupList({ all: true }),
     queryFn: ({ signal }) => customerGroupsApi.all(signal),
-    enabled: wanted && canCall(endpoints.pricing.customerGroups),
+    enabled: wanted && canCall(pricingRoutes.customerGroups),
     ...cachePolicy.reference,
   });
 }

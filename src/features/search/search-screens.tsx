@@ -28,7 +28,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { searchRoutes } from '@/lib/api/routes/search';
 import { formatDate, formatDateTime, formatNumber, formatRelative } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -44,7 +44,7 @@ const pct = (bp: number) => `${(bp / 100).toLocaleString('en-IN', { maximumFract
 
 function Guard({ area, children }: { area: string; children: React.ReactNode }) {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.search.analytics))
+  if (!canCall(searchRoutes.analytics))
     return <PermissionNotice area={area} all={['catalog.product.update']} />;
   return <>{children}</>;
 }

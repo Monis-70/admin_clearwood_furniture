@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { formatDateTime } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -44,7 +44,7 @@ const yesNo = (v: unknown) => (v ? 'Yes' : 'No');
 export function MerchandisingTab({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
-  const canEdit = canCall(endpoints.products.update) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.update) && !product.deletedAt;
 
   return (
     <EditorForm

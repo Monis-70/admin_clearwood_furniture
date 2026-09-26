@@ -4,7 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { AdminCategoryDto } from '@shared/types/catalogAdmin';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { attributesRoutes } from '@/lib/api/routes/attributes';
+import { brandsRoutes } from '@/lib/api/routes/brands';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { taxClassesRoutes } from '@/lib/api/routes/taxClasses';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -20,7 +23,7 @@ export function useCategoryOptions(wanted = true) {
   return useQuery({
     queryKey: catalogKeys.categoryTree(),
     queryFn: ({ signal }) => catalogApi.categoryTree(signal),
-    enabled: wanted && canCall(endpoints.catalog.categoryTree),
+    enabled: wanted && canCall(catalogRoutes.categoryTree),
     ...cachePolicy.reference,
   });
 }
@@ -30,7 +33,7 @@ export function useBrandOptions(wanted = true) {
   return useQuery({
     queryKey: [...taxonomyKeys.brands, 'all'],
     queryFn: ({ signal }) => brandsApi.all(signal),
-    enabled: wanted && canCall(endpoints.brands.list),
+    enabled: wanted && canCall(brandsRoutes.list),
     ...cachePolicy.reference,
   });
 }
@@ -40,7 +43,7 @@ export function useTaxClassOptions(wanted = true) {
   return useQuery({
     queryKey: taxonomyKeys.taxClasses,
     queryFn: ({ signal }) => taxClassesApi.all(signal),
-    enabled: wanted && canCall(endpoints.taxClasses.list),
+    enabled: wanted && canCall(taxClassesRoutes.list),
     ...cachePolicy.reference,
   });
 }
@@ -50,7 +53,7 @@ export function useAttributeOptions() {
   return useQuery({
     queryKey: taxonomyKeys.allAttributes(),
     queryFn: ({ signal }) => attributesApi.all(signal),
-    enabled: canCall(endpoints.attributes.list),
+    enabled: canCall(attributesRoutes.list),
     ...cachePolicy.reference,
   });
 }
@@ -60,7 +63,7 @@ export function useAttributeGroups() {
   return useQuery({
     queryKey: taxonomyKeys.groups(),
     queryFn: ({ signal }) => attributesApi.groups(signal),
-    enabled: canCall(endpoints.attributes.groups),
+    enabled: canCall(attributesRoutes.groups),
     ...cachePolicy.reference,
   });
 }

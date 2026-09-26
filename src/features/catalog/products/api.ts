@@ -26,7 +26,9 @@ import type {
 } from '@shared/types/catalogAdmin';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { inventoryRoutes } from '@/lib/api/routes/inventory';
+import { productsRoutes } from '@/lib/api/routes/products';
+import { variantsRoutes } from '@/lib/api/routes/variants';
 
 /** JSON bodies carry dates as ISO strings; the shared input types describe the parsed form. */
 type Wire<T> = {
@@ -48,27 +50,27 @@ export interface BulkInput extends Omit<Wire<BulkActionInput>, 'merchandising'> 
 
 export const productsApi = {
   async get(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.products.get, { params: { id }, signal }))
+    return (await apiRequest(productsRoutes.get, { params: { id }, signal }))
       .data as AdminProductDetailDto;
   },
   async create(input: Wire<z.input<typeof productCreateSchema>>, idempotencyKey: string) {
-    return (await apiRequest(endpoints.products.create, { body: input, idempotencyKey }))
+    return (await apiRequest(productsRoutes.create, { body: input, idempotencyKey }))
       .data as AdminProductDetailDto;
   },
   async update(id: string, input: Wire<ProductUpdateInput>) {
-    return (await apiRequest(endpoints.products.update, { params: { id }, body: input }))
+    return (await apiRequest(productsRoutes.update, { params: { id }, body: input }))
       .data as AdminProductDetailDto;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.products.remove, { params: { id } });
+    await apiRequest(productsRoutes.remove, { params: { id } });
   },
   async restore(id: string) {
-    return (await apiRequest(endpoints.products.restore, { params: { id } }))
+    return (await apiRequest(productsRoutes.restore, { params: { id } }))
       .data as AdminProductDetailDto;
   },
   async duplicate(id: string, input: ProductDuplicateInput, idempotencyKey: string) {
     return (
-      await apiRequest(endpoints.products.duplicate, {
+      await apiRequest(productsRoutes.duplicate, {
         params: { id },
         body: input,
         idempotencyKey,
@@ -77,39 +79,38 @@ export const productsApi = {
   },
   async publish(id: string, publishAt?: string) {
     return (
-      await apiRequest(endpoints.products.publish, {
+      await apiRequest(productsRoutes.publish, {
         params: { id },
         body: publishAt ? { publishAt } : {},
       })
     ).data as AdminProductDetailDto;
   },
   async unpublish(id: string) {
-    return (await apiRequest(endpoints.products.unpublish, { params: { id } }))
+    return (await apiRequest(productsRoutes.unpublish, { params: { id } }))
       .data as AdminProductDetailDto;
   },
   async blockers(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.products.blockers, { params: { id }, signal }))
+    return (await apiRequest(productsRoutes.blockers, { params: { id }, signal }))
       .data as PublishBlockerDto[];
   },
   async redirects(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.products.redirects, { params: { id }, signal }))
+    return (await apiRequest(productsRoutes.redirects, { params: { id }, signal }))
       .data as SlugRedirectDto[];
   },
   async setCategories(id: string, input: ProductCategoriesInput) {
-    return (await apiRequest(endpoints.products.setCategories, { params: { id }, body: input }))
+    return (await apiRequest(productsRoutes.setCategories, { params: { id }, body: input }))
       .data as AdminProductDetailDto;
   },
   async setAttributeValues(id: string, input: ProductAttributeValuesInput) {
-    return (
-      await apiRequest(endpoints.products.setAttributeValues, { params: { id }, body: input })
-    ).data as AdminProductDetailDto;
+    return (await apiRequest(productsRoutes.setAttributeValues, { params: { id }, body: input }))
+      .data as AdminProductDetailDto;
   },
   async setRelations(id: string, input: ProductRelationsInput) {
-    return (await apiRequest(endpoints.products.setRelations, { params: { id }, body: input }))
+    return (await apiRequest(productsRoutes.setRelations, { params: { id }, body: input }))
       .data as AdminProductDetailDto;
   },
   async bulk(input: BulkInput, idempotencyKey: string) {
-    return (await apiRequest(endpoints.products.bulk, { body: input, idempotencyKey }))
+    return (await apiRequest(productsRoutes.bulk, { body: input, idempotencyKey }))
       .data as BulkActionResultDto;
   },
 };
@@ -117,7 +118,7 @@ export const productsApi = {
 export const variantsApi = {
   async list(id: string, signal?: AbortSignal) {
     return (
-      await apiRequest(endpoints.variants.list, {
+      await apiRequest(variantsRoutes.list, {
         params: { id },
         query: { limit: 100, includeInactive: true },
         signal,
@@ -125,30 +126,30 @@ export const variantsApi = {
     ).data as AdminVariantDto[];
   },
   async create(id: string, input: VariantCreateInput) {
-    return (await apiRequest(endpoints.variants.create, { params: { id }, body: input }))
+    return (await apiRequest(variantsRoutes.create, { params: { id }, body: input }))
       .data as AdminVariantDto;
   },
   async update(id: string, variantId: string, input: VariantUpdateInput) {
-    return (await apiRequest(endpoints.variants.update, { params: { id, variantId }, body: input }))
+    return (await apiRequest(variantsRoutes.update, { params: { id, variantId }, body: input }))
       .data as AdminVariantDto;
   },
   async remove(id: string, variantId: string) {
-    await apiRequest(endpoints.variants.remove, { params: { id, variantId } });
+    await apiRequest(variantsRoutes.remove, { params: { id, variantId } });
   },
   async setDefault(id: string, variantId: string) {
-    return (await apiRequest(endpoints.variants.setDefault, { params: { id, variantId } }))
+    return (await apiRequest(variantsRoutes.setDefault, { params: { id, variantId } }))
       .data as AdminVariantDto;
   },
   async reorder(id: string, items: { id: string; position: number }[]) {
-    await apiRequest(endpoints.variants.reorder, { params: { id }, body: { items } });
+    await apiRequest(variantsRoutes.reorder, { params: { id }, body: { items } });
   },
   async preview(id: string, input: VariantMatrixInput) {
-    return (await apiRequest(endpoints.variants.matrixPreview, { params: { id }, body: input }))
+    return (await apiRequest(variantsRoutes.matrixPreview, { params: { id }, body: input }))
       .data as VariantMatrixPreviewDto;
   },
   async generate(id: string, input: VariantMatrixInput, idempotencyKey: string) {
     return (
-      await apiRequest(endpoints.variants.matrixGenerate, {
+      await apiRequest(variantsRoutes.matrixGenerate, {
         params: { id },
         body: input,
         idempotencyKey,
@@ -159,7 +160,7 @@ export const variantsApi = {
 
 export const inventoryApi = {
   async snapshot(variantId: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.inventory.snapshot, { params: { id: variantId }, signal }))
+    return (await apiRequest(inventoryRoutes.snapshot, { params: { id: variantId }, signal }))
       .data as InventorySnapshotDto;
   },
   history(
@@ -167,7 +168,7 @@ export const inventoryApi = {
     page: number,
     signal?: AbortSignal,
   ): Promise<Page<InventoryLedgerEntryDto>> {
-    return apiPage(endpoints.inventory.history, {
+    return apiPage(inventoryRoutes.history, {
       params: { id: variantId },
       query: { page, limit: 20, order: 'desc' },
       signal,
@@ -175,7 +176,7 @@ export const inventoryApi = {
   },
   async adjust(variantId: string, input: InventoryAdjustInput, idempotencyKey: string) {
     return (
-      await apiRequest(endpoints.inventory.adjust, {
+      await apiRequest(inventoryRoutes.adjust, {
         params: { id: variantId },
         body: input,
         idempotencyKey,
@@ -183,8 +184,7 @@ export const inventoryApi = {
     ).data as { snapshot: InventorySnapshotDto; entry: InventoryLedgerEntryDto };
   },
   async bulkAdjust(input: InventoryBulkAdjustInput, idempotencyKey: string) {
-    return (await apiRequest(endpoints.inventory.bulkAdjust, { body: input, idempotencyKey }))
-      .data as {
+    return (await apiRequest(inventoryRoutes.bulkAdjust, { body: input, idempotencyKey })).data as {
       results: {
         variantId: string;
         ok: boolean;

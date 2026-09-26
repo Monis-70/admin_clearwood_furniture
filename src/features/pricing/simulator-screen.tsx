@@ -11,7 +11,7 @@ import { PageHeader } from '@/components/patterns/page-header';
 import { EmptyState, PermissionNotice } from '@/components/patterns/states';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -24,7 +24,7 @@ import { rulesApi } from './rules-api';
 
 export function SimulatorScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.pricing.simulate)) {
+  if (!canCall(pricingRoutes.simulate)) {
     return <PermissionNotice area="the price simulator" all={['pricing.adjustment.read']} />;
   }
   return <Simulator />;

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 import { ProductPicker } from '../../pricing/product-picker';
@@ -395,7 +395,7 @@ function MediaInput({
 }) {
   const { canCall } = usePermissions();
   const [picking, setPicking] = useState(false);
-  const canPick = canCall(endpoints.media.list);
+  const canPick = canCall(mediaRoutes.list);
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Input

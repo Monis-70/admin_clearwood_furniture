@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRight, Construction } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
@@ -17,6 +18,10 @@ import { PERMISSION_GROUP_LABELS, PERMISSION_LABELS } from '@/lib/permissions/la
 import { satisfies } from '@/lib/permissions/requirements';
 
 import { WorkQueues } from './work-queues';
+
+const NavIcon = dynamic(() => import('@/config/nav-icons').then((m) => m.NavIcon), {
+  ssr: false,
+});
 
 /**
  * The dashboard: facts the session already carries, plus work queues read from real API lists
@@ -73,7 +78,6 @@ export function HomeScreen() {
           <CardContent>
             <ul className="grid gap-3 sm:grid-cols-2">
               {areas.map((item) => {
-                const Icon = item.icon;
                 return (
                   <li key={item.id}>
                     <Link
@@ -81,7 +85,7 @@ export function HomeScreen() {
                       className="group flex h-full items-start gap-3 rounded-md border p-4 transition-colors hover:border-input hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     >
                       <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
-                        {Icon ? <Icon aria-hidden className="size-4" /> : null}
+                        {item.icon ? <NavIcon name={item.icon} className="size-4" /> : null}
                       </span>
                       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span className="flex items-center gap-1 font-medium">

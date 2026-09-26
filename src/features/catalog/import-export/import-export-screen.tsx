@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { importExportRoutes } from '@/lib/api/routes/importExport';
 import { useIdempotencyKey } from '@/lib/api/idempotency';
 import { formatCount, formatDateTime, formatNumber } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
@@ -86,8 +86,8 @@ export function ImportExportScreen() {
   const { canCall, canAll } = usePermissions();
   const params = useListParams<'job'>({ filters: ['job'] });
   const importable = ENTITIES.filter((entity) => canAll(IMPORT_PERMISSIONS[entity]));
-  const canExport = canCall(endpoints.importExport.exportCsv);
-  const canJobs = canCall(endpoints.importExport.jobs);
+  const canExport = canCall(importExportRoutes.exportCsv);
+  const canJobs = canCall(importExportRoutes.jobs);
   if (!canExport && importable.length === 0 && !canJobs) {
     return <PermissionNotice area="catalog import and export" all={['catalog.product.import']} />;
   }
@@ -98,15 +98,12 @@ export function ImportExportScreen() {
         description="Download the catalogue as CSV, or bring changes in from a spreadsheet: every file is checked first and only applied when it has no errors."
       />
       <div className="grid gap-6 lg:grid-cols-2">
-        <DownloadPanel
-          canExport={canExport}
-          canTemplate={canCall(endpoints.importExport.template)}
-        />
+        <DownloadPanel canExport={canExport} canTemplate={canCall(importExportRoutes.template)} />
         {importable.length > 0 ? (
           <ImportPanel entities={importable} onJob={(id) => params.setFilter('job', id)} />
         ) : null}
       </div>
-      {params.filters.job && canCall(endpoints.importExport.job) ? (
+      {params.filters.job && canCall(importExportRoutes.job) ? (
         <JobDetail
           id={params.filters.job}
           entitiesAllowed={importable}

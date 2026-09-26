@@ -2,7 +2,7 @@ import type { EnquiryStatus } from '@shared/enums';
 import type { AdminEnquiryDto, AdminEnquirySummaryDto } from '@shared/types/enquiry';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { enquiriesRoutes } from '@/lib/api/routes/enquiries';
 
 export interface EnquiryListQuery {
   page: number;
@@ -22,13 +22,13 @@ export const enquiryKeys = {
 
 export const enquiriesApi = {
   list(query: EnquiryListQuery, signal?: AbortSignal): Promise<Page<AdminEnquirySummaryDto>> {
-    return apiPage<AdminEnquirySummaryDto>(endpoints.enquiries.list, {
+    return apiPage<AdminEnquirySummaryDto>(enquiriesRoutes.list, {
       query: { ...query },
       signal,
     });
   },
   async get(id: string, signal?: AbortSignal): Promise<AdminEnquiryDto> {
-    const { data } = await apiRequest(endpoints.enquiries.get, { params: { id }, signal });
+    const { data } = await apiRequest(enquiriesRoutes.get, { params: { id }, signal });
     return data as AdminEnquiryDto;
   },
 };

@@ -23,7 +23,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { auditRoutes } from '@/lib/api/routes/audit';
+import { priceAdjustmentsRoutes } from '@/lib/api/routes/priceAdjustments';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { hasCode } from '@/lib/api/errors';
 import { formatCount, formatDateTime, formatNumber, formatRelative } from '@/lib/format/datetime';
 import { useRecentItems } from '@/lib/local-history';
@@ -82,7 +84,7 @@ export function ProductEditorScreen() {
   const requested = params.get('tab');
   const current: ProductTab = isProductTab(requested) ? requested : 'general';
 
-  if (!canCall(endpoints.products.get)) {
+  if (!canCall(productsRoutes.get)) {
     return <PermissionNotice area="products" all={['catalog.product.read']} />;
   }
   if (!id)
@@ -195,8 +197,8 @@ function ProductHeader({ product }: { product: AdminProductDetailDto }) {
   const actions = useProductActions(product);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [duplicating, setDuplicating] = useState(false);
-  const canDuplicate = canCall(endpoints.products.duplicate);
-  const canDelete = canCall(endpoints.products.remove) && !product.deletedAt;
+  const canDuplicate = canCall(productsRoutes.duplicate);
+  const canDelete = canCall(productsRoutes.remove) && !product.deletedAt;
 
   return (
     <div className="flex flex-col gap-3">
@@ -277,7 +279,7 @@ function DeletedNotice({ product }: { product: AdminProductDetailDto }) {
     <Alert tone="warning" title="This product is in the trash">
       <div className="flex flex-wrap items-center gap-3">
         <span>Deleted {formatRelative(product.deletedAt!)}. Customers cannot see it.</span>
-        {canCall(endpoints.products.restore) ? (
+        {canCall(productsRoutes.restore) ? (
           <Button
             size="sm"
             variant="outline"
@@ -311,7 +313,7 @@ export function ProductWorkbench({
     };
   });
   const live = isLive(product);
-  const canPublish = canCall(endpoints.products.publish) && !product.deletedAt;
+  const canPublish = canCall(productsRoutes.publish) && !product.deletedAt;
   const blockerCodes = new Set((gate.data ?? product.publishBlockers).map((b) => b.code));
 
   return (
@@ -401,14 +403,12 @@ export function ProductWorkbench({
         {
           label: 'Price rules',
           count: product.priceAdjustmentIds.length,
-          href: canCall(endpoints.priceAdjustments.list)
+          href: canCall(priceAdjustmentsRoutes.list)
             ? `/pricing/price-rules?productId=${encodeURIComponent(product.id)}`
             : undefined,
         },
       ]}
-      history={
-        canCall(endpoints.audit.list) ? { entity: 'Product', entityId: product.id } : undefined
-      }
+      history={canCall(auditRoutes.list) ? { entity: 'Product', entityId: product.id } : undefined}
     />
   );
 }

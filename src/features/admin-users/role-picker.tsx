@@ -5,7 +5,7 @@ import { ShieldAlert } from 'lucide-react';
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { endpoints } from '@/lib/api/endpoints';
+import { rolesRoutes } from '@/lib/api/routes/roles';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 import { useRoles } from '../roles/queries';
@@ -34,7 +34,7 @@ interface RoleOption {
  */
 export function RolePicker(props: RolePickerProps) {
   const { canCall } = usePermissions();
-  return canCall(endpoints.roles.list) ? (
+  return canCall(rolesRoutes.list) ? (
     <CatalogueRolePicker {...props} />
   ) : (
     <StandardRolePicker {...props} />

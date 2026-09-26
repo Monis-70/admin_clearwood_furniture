@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -130,7 +130,7 @@ export function ProductTiers({ product }: { product: AdminProductDetailDto }) {
               </NativeSelect>
             </div>
           ) : null}
-          {editable && canCall(endpoints.pricing.createTierPrice) ? (
+          {editable && canCall(pricingRoutes.createTierPrice) ? (
             <Button size="sm" onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               Add tier
@@ -161,8 +161,7 @@ export function ProductTiers({ product }: { product: AdminProductDetailDto }) {
               </span>
               {tier.isActive ? null : <Badge tone="neutral">Off</Badge>}
               {editable &&
-              (canCall(endpoints.pricing.updateTierPrice) ||
-                canCall(endpoints.pricing.removeTierPrice)) ? (
+              (canCall(pricingRoutes.updateTierPrice) || canCall(pricingRoutes.removeTierPrice)) ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -175,10 +174,10 @@ export function ProductTiers({ product }: { product: AdminProductDetailDto }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {canCall(endpoints.pricing.updateTierPrice) ? (
+                    {canCall(pricingRoutes.updateTierPrice) ? (
                       <DropdownMenuItem onSelect={() => setEditing(tier)}>Edit</DropdownMenuItem>
                     ) : null}
-                    {canCall(endpoints.pricing.removeTierPrice) ? (
+                    {canCall(pricingRoutes.removeTierPrice) ? (
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onSelect={() => setRemoving(tier)}
@@ -306,7 +305,7 @@ export function ExplainPrice({ product }: { product: AdminProductDetailDto }) {
   const explanation = useQuery({
     queryKey: rulesKeys.explain(product.id),
     queryFn: ({ signal }) => rulesApi.explain(product.id, signal),
-    enabled: open && canCall(endpoints.pricing.explain),
+    enabled: open && canCall(pricingRoutes.explain),
     ...cachePolicy.diagnostic,
   });
   const quantity = Number(qty);

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 
@@ -8,6 +9,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/overlay
 import { isActive, visibleNavigation } from '@/config/navigation';
 import { useSession } from '@/lib/auth/session';
 import { cn } from '@/lib/utils';
+
+/** Icons are decoration (every entry has a text label), so they load after the page. */
+const NavIcon = dynamic(() => import('@/config/nav-icons').then((m) => m.NavIcon), {
+  ssr: false,
+  loading: () => <span aria-hidden className="size-4 shrink-0" />,
+});
 
 interface SidebarNavProps {
   collapsed?: boolean;
@@ -33,7 +40,6 @@ export function SidebarNav({ collapsed = false, onNavigate }: SidebarNavProps) {
           <ul className="flex flex-col gap-0.5">
             {group.items.map((item) => {
               const active = isActive(item, pathname);
-              const Icon = item.icon;
               const link = (
                 <Link
                   href={item.href}
@@ -47,7 +53,7 @@ export function SidebarNav({ collapsed = false, onNavigate }: SidebarNavProps) {
                     collapsed && 'justify-center px-0',
                   )}
                 >
-                  {Icon ? <Icon aria-hidden className="size-4 shrink-0" /> : null}
+                  {item.icon ? <NavIcon name={item.icon} className="size-4 shrink-0" /> : null}
                   {collapsed ? null : <span className="truncate">{item.label}</span>}
                 </Link>
               );

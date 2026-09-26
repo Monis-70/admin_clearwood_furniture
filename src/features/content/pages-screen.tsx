@@ -18,7 +18,7 @@ import { StatusBadge } from '@/components/patterns/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { formatDate, formatDateTime, formatRelative } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -37,7 +37,7 @@ const DuplicatePageDialog = dynamic(
   { ssr: false },
 );
 
-const e = endpoints.content;
+const e = contentRoutes;
 export const editorHref = (id: string) => `/content/pages/edit?id=${encodeURIComponent(id)}`;
 
 export function PagesScreen() {

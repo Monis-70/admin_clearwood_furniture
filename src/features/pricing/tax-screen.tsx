@@ -18,7 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
+import { taxClassesRoutes } from '@/lib/api/routes/taxClasses';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -39,7 +40,7 @@ const formatRate = (bp: number) =>
 
 export function TaxScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.taxClasses.list))
+  if (!canCall(taxClassesRoutes.list))
     return <PermissionNotice area="tax classes" all={['pricing.tax.read']} />;
   return <TaxList />;
 }
@@ -68,7 +69,7 @@ function TaxList() {
     ...cachePolicy.list,
   });
   const refresh = () => void queryClient.invalidateQueries({ queryKey: taxonomyKeys.taxClasses });
-  const canEdit = canCall(endpoints.taxClasses.update);
+  const canEdit = canCall(taxClassesRoutes.update);
 
   const columns: DataTableColumn<TaxClassRow>[] = [
     {
@@ -114,7 +115,7 @@ function TaxList() {
       meta: { label: 'Actions', align: 'right', mobile: 'detail' },
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) =>
-        canEdit || canCall(endpoints.taxClasses.remove) ? (
+        canEdit || canCall(taxClassesRoutes.remove) ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -129,7 +130,7 @@ function TaxList() {
               {canEdit ? (
                 <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
               ) : null}
-              {canCall(endpoints.taxClasses.remove) && !row.original.isDefault ? (
+              {canCall(taxClassesRoutes.remove) && !row.original.isDefault ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -152,7 +153,7 @@ function TaxList() {
         title="Tax & GST"
         description="GST classes assigned to products. Rates here drive the tax the API calculates on every order."
         actions={
-          canCall(endpoints.taxClasses.create) ? (
+          canCall(taxClassesRoutes.create) ? (
             <Button onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               New tax class
@@ -176,7 +177,7 @@ function TaxList() {
           />
         }
       />
-      {canCall(endpoints.pricing.settings) ? (
+      {canCall(pricingRoutes.settings) ? (
         <section aria-labelledby="pricing-settings" className="mt-8 flex flex-col gap-3">
           <h2 id="pricing-settings" className="text-lg font-semibold">
             Pricing &amp; GST settings

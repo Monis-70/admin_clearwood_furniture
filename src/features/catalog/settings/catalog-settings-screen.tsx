@@ -10,7 +10,7 @@ import type { AdminCatalogSettingsDto } from '@shared/types/catalogAdmin';
 import { PageHeader } from '@/components/patterns/page-header';
 import { ErrorState, PermissionNotice, SectionLoader } from '@/components/patterns/states';
 import { Alert } from '@/components/ui/alert';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -103,7 +103,7 @@ export function settingsChanges(
 
 export function CatalogSettingsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.catalog.settings)) {
+  if (!canCall(catalogRoutes.settings)) {
     return <PermissionNotice area="catalog settings" all={['catalog.product.read']} />;
   }
   return <CatalogSettings />;
@@ -117,7 +117,7 @@ function CatalogSettings() {
     queryFn: ({ signal }) => catalogApi.settings(signal),
     ...cachePolicy.detail,
   });
-  const canEdit = canCall(endpoints.catalog.updateSettings);
+  const canEdit = canCall(catalogRoutes.updateSettings);
 
   return (
     <>

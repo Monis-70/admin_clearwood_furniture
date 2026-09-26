@@ -17,7 +17,7 @@ import { EmptyState, ErrorState, PermissionNotice } from '@/components/patterns/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 import { formatCount } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -54,7 +54,7 @@ const SORT_OPTIONS = [
 
 export function MediaLibraryScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.media.list))
+  if (!canCall(mediaRoutes.list))
     return <PermissionNotice area="the media library" all={['media.asset.read']} />;
   return <MediaLibrary />;
 }
@@ -95,7 +95,7 @@ function MediaLibrary() {
   const folders = useQuery({
     queryKey: mediaKeys.folders(),
     queryFn: ({ signal }) => mediaApi.folders(signal),
-    enabled: canCall(endpoints.media.folders),
+    enabled: canCall(mediaRoutes.folders),
     ...cachePolicy.reference,
   });
   const upload = useUploadQueue({
@@ -163,7 +163,7 @@ function MediaLibrary() {
         description="Every uploaded image, video and document. The server makes the resized versions; delete only what nothing uses."
         actions={
           <>
-            {canCall(endpoints.media.folders) ? (
+            {canCall(mediaRoutes.folders) ? (
               <Button variant="outline" onClick={() => setFoldersOpen(true)}>
                 <FolderOpen aria-hidden />
                 Folders
@@ -172,7 +172,7 @@ function MediaLibrary() {
           </>
         }
       />
-      {canCall(endpoints.media.upload) ? (
+      {canCall(mediaRoutes.upload) ? (
         <UploadDropzone
           className="mb-3"
           accept={accept}
@@ -255,7 +255,7 @@ function MediaLibrary() {
           <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
             Clear
           </Button>
-          {canCall(endpoints.media.bulkRemove) ? (
+          {canCall(mediaRoutes.bulkRemove) ? (
             <Button
               size="sm"
               variant="outline"
@@ -303,7 +303,7 @@ function MediaLibrary() {
               key={asset.id}
               asset={asset}
               selected={selected.has(asset.id)}
-              selectable={canCall(endpoints.media.bulkRemove) && !asset.deletedAt}
+              selectable={canCall(mediaRoutes.bulkRemove) && !asset.deletedAt}
               onToggle={() => toggle(asset.id)}
               onOpen={() => params.setFilter('id', asset.id)}
             />

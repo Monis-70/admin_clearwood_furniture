@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/patterns/page-header';
 import { ErrorState, PermissionNotice, SectionLoader } from '@/components/patterns/states';
 import { Alert } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -74,7 +74,7 @@ function toForm(settings: SiteSettings): Values {
 
 export function SiteSettingsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.content.settings))
+  if (!canCall(contentRoutes.settings))
     return <PermissionNotice area="site settings" all={['system.setting.read']} />;
   return <SiteSettingsForm />;
 }
@@ -87,7 +87,7 @@ function SiteSettingsForm() {
     queryFn: ({ signal }) => contentApi.settings(signal),
     ...cachePolicy.config,
   });
-  const canEdit = canCall(endpoints.content.updateSettings);
+  const canEdit = canCall(contentRoutes.updateSettings);
 
   return (
     <>
@@ -212,7 +212,7 @@ function SiteSettingsForm() {
               </CardContent>
             </Card>
           ) : null}
-          {canCall(endpoints.content.rebuildSitemap) ? <SitemapCard /> : null}
+          {canCall(contentRoutes.rebuildSitemap) ? <SitemapCard /> : null}
         </div>
       )}
     </>

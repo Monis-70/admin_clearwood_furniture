@@ -10,7 +10,7 @@ import type {
 } from '@shared/enums';
 
 import { apiRequest } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { systemRoutes } from '@/lib/api/routes/system';
 import { isApiError } from '@/lib/api/errors';
 
 /**
@@ -68,17 +68,17 @@ export const systemKeys = {
 
 export const systemApi = {
   async version(signal?: AbortSignal): Promise<VersionInfo> {
-    return (await apiRequest<VersionInfo>(endpoints.system.version, { signal })).data;
+    return (await apiRequest<VersionInfo>(systemRoutes.version, { signal })).data;
   },
 
   async health(signal?: AbortSignal): Promise<HealthInfo> {
-    return (await apiRequest<HealthInfo>(endpoints.system.health, { signal })).data;
+    return (await apiRequest<HealthInfo>(systemRoutes.health, { signal })).data;
   },
 
   /** A 503 still carries the per-dependency report in `error.details`; that report is the answer. */
   async readiness(signal?: AbortSignal): Promise<ReadinessInfo> {
     try {
-      return (await apiRequest<ReadinessInfo>(endpoints.system.ready, { signal })).data;
+      return (await apiRequest<ReadinessInfo>(systemRoutes.ready, { signal })).data;
     } catch (error) {
       if (isApiError(error) && error.status === 503 && isReadiness(error.details))
         return error.details;

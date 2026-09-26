@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { PageHeader } from '@/components/patterns/page-header';
 import { PermissionNotice, SectionLoader } from '@/components/patterns/states';
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 // The form stack (React Hook Form + Zod) loads after the page shell has painted.
@@ -18,7 +18,7 @@ const ProductCreateForm = dynamic(
 /** A new product starts as a draft with the essentials; everything else is added in the editor. */
 export function ProductCreateScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.products.create)) {
+  if (!canCall(productsRoutes.create)) {
     return <PermissionNotice area="creating products" all={['catalog.product.create']} />;
   }
   return (

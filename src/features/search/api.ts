@@ -7,7 +7,8 @@ import type {
 import type { MediaGarbageReportDto } from '@shared/types/media';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { maintenanceRoutes } from '@/lib/api/routes/maintenance';
+import { searchRoutes } from '@/lib/api/routes/search';
 
 /** `GET /admin/search/synonyms` rows (backend SynonymDto; not in @clearwood/shared). */
 export interface SynonymRow {
@@ -34,55 +35,55 @@ export const searchKeys = {
 
 export const searchApi = {
   async analytics(days: number, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.search.analytics, { query: { days, limit: 20 }, signal }))
+    return (await apiRequest(searchRoutes.analytics, { query: { days, limit: 20 }, signal }))
       .data as SearchAnalyticsDto;
   },
   synonyms(
     query: { page: number; limit: number },
     signal?: AbortSignal,
   ): Promise<Page<SynonymRow>> {
-    return apiPage<SynonymRow>(endpoints.search.synonyms, { query: { ...query }, signal });
+    return apiPage<SynonymRow>(searchRoutes.synonyms, { query: { ...query }, signal });
   },
   async createSynonym(input: SynonymCreateInput) {
-    return (await apiRequest(endpoints.search.createSynonym, { body: input })).data as SynonymRow;
+    return (await apiRequest(searchRoutes.createSynonym, { body: input })).data as SynonymRow;
   },
   async updateSynonym(term: string, input: SynonymUpdateInput) {
-    return (await apiRequest(endpoints.search.updateSynonym, { params: { term }, body: input }))
+    return (await apiRequest(searchRoutes.updateSynonym, { params: { term }, body: input }))
       .data as SynonymRow;
   },
   async removeSynonym(term: string) {
-    await apiRequest(endpoints.search.removeSynonym, { params: { term } });
+    await apiRequest(searchRoutes.removeSynonym, { params: { term } });
   },
   async jobs(signal?: AbortSignal) {
-    return (await apiRequest(endpoints.search.jobs, { signal })).data as SearchIndexJobDto[];
+    return (await apiRequest(searchRoutes.jobs, { signal })).data as SearchIndexJobDto[];
   },
   async job(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.search.job, { params: { id }, signal }))
+    return (await apiRequest(searchRoutes.job, { params: { id }, signal }))
       .data as SearchIndexJobDto;
   },
   async reindex(input: { entityType?: string; full: boolean }) {
     return (
-      await apiRequest(endpoints.search.reindex, {
+      await apiRequest(searchRoutes.reindex, {
         query: { ...(input.entityType ? { entityType: input.entityType } : {}), full: input.full },
       })
     ).data as SearchIndexJobDto;
   },
   async recomputePopularity() {
-    return (await apiRequest(endpoints.search.recomputePopularity)).data as { updated: number };
+    return (await apiRequest(searchRoutes.recomputePopularity)).data as { updated: number };
   },
   async productDocument(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.search.productDocument, { params: { id }, signal }))
+    return (await apiRequest(searchRoutes.productDocument, { params: { id }, signal }))
       .data as SearchDocumentView;
   },
 };
 
 export const maintenanceApi = {
   async evaluateAllCollections() {
-    return (await apiRequest(endpoints.maintenance.evaluateAllCollections))
+    return (await apiRequest(maintenanceRoutes.evaluateAllCollections))
       .data as CollectionEvaluationDto[];
   },
   async storageReport(signal?: AbortSignal) {
-    return (await apiRequest(endpoints.maintenance.storageReport, { signal }))
+    return (await apiRequest(maintenanceRoutes.storageReport, { signal }))
       .data as MediaGarbageReportDto;
   },
 };

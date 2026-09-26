@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -23,7 +23,7 @@ export function usePublishBlockers(
   return useQuery({
     queryKey: [...productKeys.detail(product.id), 'blockers', product.version],
     queryFn: ({ signal }) => productsApi.blockers(product.id, signal),
-    enabled: canCall(endpoints.products.blockers) && !product.deletedAt,
+    enabled: canCall(productsRoutes.blockers) && !product.deletedAt,
     ...cachePolicy.detail,
     staleTime: 0,
   });

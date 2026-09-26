@@ -24,12 +24,15 @@ import type { Permission } from '@shared/enums';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Kbd } from '@/components/ui/surface';
 import { Spinner } from '@/components/ui/spinner';
+import { NAV_ICONS } from '@/config/nav-icons';
 import { visibleNavigation } from '@/config/navigation';
 import { adminUsersApi } from '@/features/admin-users/api';
 import { catalogApi, catalogKeys } from '@/features/catalog/api';
 import { enquiriesApi } from '@/features/enquiries/api';
 import { useDebouncedValue } from '@/hooks/use-browser';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { enquiriesRoutes } from '@/lib/api/routes/enquiries';
+import { usersRoutes } from '@/lib/api/routes/users';
 import { loginHref } from '@/lib/auth/redirects';
 import { useSession } from '@/lib/auth/session';
 import { isSafeHref, useRecentItems } from '@/lib/local-history';
@@ -81,21 +84,21 @@ function useRemoteResults(term: string) {
   const products = useQuery({
     queryKey: ['palette', 'products', term],
     queryFn: ({ signal }) => catalogApi.products({ ...list, q: term }, signal),
-    enabled: enabled && canCall(endpoints.catalog.products),
+    enabled: enabled && canCall(catalogRoutes.products),
     ...cachePolicy.list,
     placeholderData: undefined,
   });
   const users = useQuery({
     queryKey: ['palette', 'admin-users', term],
     queryFn: ({ signal }) => adminUsersApi.list({ ...list, search: term }, signal),
-    enabled: enabled && canCall(endpoints.users.list),
+    enabled: enabled && canCall(usersRoutes.list),
     ...cachePolicy.list,
     placeholderData: undefined,
   });
   const enquiries = useQuery({
     queryKey: ['palette', 'enquiries', term],
     queryFn: ({ signal }) => enquiriesApi.list({ ...list, q: term }, signal),
-    enabled: enabled && canCall(endpoints.enquiries.list),
+    enabled: enabled && canCall(enquiriesRoutes.list),
     ...cachePolicy.list,
     placeholderData: undefined,
   });
@@ -103,7 +106,7 @@ function useRemoteResults(term: string) {
   const categories = useQuery({
     queryKey: catalogKeys.categoryTree(),
     queryFn: ({ signal }) => catalogApi.categoryTree(signal),
-    enabled: enabled && canCall(endpoints.catalog.categoryTree),
+    enabled: enabled && canCall(catalogRoutes.categoryTree),
     ...cachePolicy.reference,
   });
 
@@ -198,7 +201,7 @@ function PaletteBody({ close }: { close(): void }) {
         group: 'Go to',
         label: item.label,
         hint: group ?? undefined,
-        icon: item.icon ?? ArrowRight,
+        icon: item.icon ? NAV_ICONS[item.icon] : ArrowRight,
         href: item.href,
       }));
     pages.push({

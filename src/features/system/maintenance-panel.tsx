@@ -9,7 +9,7 @@ import { LazyConfirmDialog } from '@/components/patterns/lazy-confirm-dialog';
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { maintenanceRoutes } from '@/lib/api/routes/maintenance';
 import { formatNumber } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -20,8 +20,8 @@ import { maintenanceApi } from '@/features/search/api';
 /** Occasional upkeep actions; each is offered only to roles the API allows. */
 export function MaintenancePanel() {
   const { canCall } = usePermissions();
-  const canEvaluate = canCall(endpoints.maintenance.evaluateAllCollections);
-  const canCheck = canCall(endpoints.maintenance.storageReport);
+  const canEvaluate = canCall(maintenanceRoutes.evaluateAllCollections);
+  const canCheck = canCall(maintenanceRoutes.storageReport);
   const [confirming, setConfirming] = useState(false);
   const [checking, setChecking] = useState(false);
   const evaluate = useMutation({ mutationFn: () => maintenanceApi.evaluateAllCollections() });

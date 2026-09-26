@@ -31,7 +31,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -74,7 +74,7 @@ const CONDITIONS: Record<string, { label: string; unit: string }> = {
 
 export function DeliveryScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.pricing.zones)) {
+  if (!canCall(pricingRoutes.zones)) {
     return <PermissionNotice area="delivery charges" all={['pricing.tax.read']} />;
   }
   return <Delivery />;
@@ -100,7 +100,7 @@ function Delivery() {
     null,
   );
   const [removingRate, setRemovingRate] = useState<RateRow | null>(null);
-  const canEdit = canCall(endpoints.pricing.updateZone);
+  const canEdit = canCall(pricingRoutes.updateZone);
   const refresh = () => void queryClient.invalidateQueries({ queryKey: deliveryKeys.all });
   const openZone = zones.data?.find((z) => z.id === params.filters.zone);
 
@@ -110,7 +110,7 @@ function Delivery() {
         title="Delivery charges"
         description="Delivery zones, the rates charged in each and the pincodes they cover. Checkout picks the zone from the pincode and the rate from the cart."
         actions={
-          canCall(endpoints.pricing.createZone) ? (
+          canCall(pricingRoutes.createZone) ? (
             <Button onClick={() => setEditingZone('new')}>
               <Plus aria-hidden />
               New zone

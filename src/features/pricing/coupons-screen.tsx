@@ -39,7 +39,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useIdempotencyKey } from '@/lib/api/idempotency';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { formatDate, formatDateTime, formatNumber } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -116,7 +116,7 @@ function couponState(c: CouponRow, now = Date.now()) {
 
 export function CouponsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.pricing.coupons)) {
+  if (!canCall(pricingRoutes.coupons)) {
     return <PermissionNotice area="coupons" all={['pricing.coupon.read']} />;
   }
   return <Coupons />;
@@ -214,10 +214,10 @@ function Coupons() {
             <DropdownMenuItem onSelect={() => params.setFilter('id', row.original.id)}>
               Details
             </DropdownMenuItem>
-            {canCall(endpoints.pricing.updateCoupon) ? (
+            {canCall(pricingRoutes.updateCoupon) ? (
               <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
             ) : null}
-            {canCall(endpoints.pricing.removeCoupon) ? (
+            {canCall(pricingRoutes.removeCoupon) ? (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -240,7 +240,7 @@ function Coupons() {
         title="Coupons"
         description="Codes customers enter at checkout, and automatic coupons. Whether a coupon applies is decided by the pricing engine."
         actions={
-          canCall(endpoints.pricing.createCoupon) ? (
+          canCall(pricingRoutes.createCoupon) ? (
             <>
               <Button variant="outline" onClick={() => setGenerating(true)}>
                 <Wand2 aria-hidden />
@@ -739,7 +739,7 @@ function CouponSheet({
             <div className="flex flex-wrap gap-2">
               <Badge tone={couponState(coupon.data).tone}>{couponState(coupon.data).label}</Badge>
               <CopyButton value={coupon.data.code} label="Copy code" />
-              {canCall(endpoints.pricing.updateCoupon) ? (
+              {canCall(pricingRoutes.updateCoupon) ? (
                 <Button size="sm" variant="outline" onClick={() => onEdit(coupon.data)}>
                   Edit
                 </Button>

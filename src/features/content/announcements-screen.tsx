@@ -15,7 +15,7 @@ import {
 } from '@/components/patterns/states';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { formatDateTime } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -32,7 +32,7 @@ const AnnouncementDialog = dynamic(
 
 export function AnnouncementsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.content.announcements))
+  if (!canCall(contentRoutes.announcements))
     return <PermissionNotice area="announcements" all={['cms.banner.read']} />;
   return <Announcements />;
 }
@@ -49,8 +49,8 @@ function Announcements() {
   });
   const refresh = () =>
     void queryClient.invalidateQueries({ queryKey: contentKeys.announcements() });
-  const canEdit = canCall(endpoints.content.updateAnnouncement);
-  const canDelete = canCall(endpoints.content.removeAnnouncement);
+  const canEdit = canCall(contentRoutes.updateAnnouncement);
+  const canDelete = canCall(contentRoutes.removeAnnouncement);
 
   return (
     <>
@@ -58,7 +58,7 @@ function Announcements() {
         title="Announcements"
         description="Short messages in the bar above the storefront header, e.g. delivery notices or a sale."
         actions={
-          canCall(endpoints.content.createAnnouncement) ? (
+          canCall(contentRoutes.createAnnouncement) ? (
             <Button onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               New announcement

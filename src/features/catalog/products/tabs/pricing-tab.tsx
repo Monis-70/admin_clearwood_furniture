@@ -8,7 +8,9 @@ import { z } from 'zod';
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
-import { endpoints } from '@/lib/api/endpoints';
+import { priceAdjustmentsRoutes } from '@/lib/api/routes/priceAdjustments';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -50,7 +52,7 @@ export function PricingTab({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
   const taxClasses = useTaxClassOptions();
-  const canEdit = canCall(endpoints.products.update) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.update) && !product.deletedAt;
 
   return (
     <div className="flex flex-col gap-6">
@@ -110,9 +112,9 @@ export function PricingTab({ product }: { product: AdminProductDetailDto }) {
           />
         </FormSection>
       </EditorForm>
-      {canCall(endpoints.priceAdjustments.list) ? <ProductPriceRules product={product} /> : null}
-      {canCall(endpoints.pricing.tierPrices) ? <ProductTiers product={product} /> : null}
-      {canCall(endpoints.pricing.simulate) ? <ExplainPrice product={product} /> : null}
+      {canCall(priceAdjustmentsRoutes.list) ? <ProductPriceRules product={product} /> : null}
+      {canCall(pricingRoutes.tierPrices) ? <ProductTiers product={product} /> : null}
+      {canCall(pricingRoutes.simulate) ? <ExplainPrice product={product} /> : null}
     </div>
   );
 }

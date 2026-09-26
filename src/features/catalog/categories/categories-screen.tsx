@@ -30,7 +30,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { categoriesRoutes } from '@/lib/api/routes/categories';
 import { formatCount, formatNumber, formatRelative } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -62,7 +63,7 @@ const VIEWS = [
 
 export function CategoriesScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.catalog.categoryTree)) {
+  if (!canCall(catalogRoutes.categoryTree)) {
     return <PermissionNotice area="categories" all={['catalog.category.read']} />;
   }
   return <Categories />;
@@ -81,7 +82,7 @@ function Categories() {
       : 'tree';
   const [dialog, setDialog] = useState<CategoryDialog | null>(null);
   const linkedCreate: CategoryDialog | null =
-    params.filters.new === '1' && canCall(endpoints.categories.create)
+    params.filters.new === '1' && canCall(categoriesRoutes.create)
       ? { kind: 'create', parentId: null }
       : null;
   const activeDialog = dialog ?? linkedCreate;
@@ -102,7 +103,7 @@ function Categories() {
         title="Categories"
         description="The category tree customers browse. Names and structure are your data: rename, move and nest them freely."
         actions={
-          canCall(endpoints.categories.create) ? (
+          canCall(categoriesRoutes.create) ? (
             <Button onClick={() => setDialog({ kind: 'create', parentId: null })}>
               <Plus aria-hidden />
               New category
@@ -287,11 +288,11 @@ function TreeItem({
     onError: (error) => notifyError(error, 'Could not change the category'),
   });
   const can = {
-    reorder: canCall(endpoints.categories.reorder),
-    move: canCall(endpoints.categories.move),
-    create: canCall(endpoints.categories.create),
-    toggle: canCall(endpoints.categories.bulk),
-    remove: canCall(endpoints.categories.remove),
+    reorder: canCall(categoriesRoutes.reorder),
+    move: canCall(categoriesRoutes.move),
+    create: canCall(categoriesRoutes.create),
+    toggle: canCall(categoriesRoutes.bulk),
+    remove: canCall(categoriesRoutes.remove),
   };
 
   return (
@@ -489,7 +490,7 @@ function ListView({
       header: 'Updated',
       cell: ({ row }) => formatRelative(row.original.updatedAt),
     },
-    ...(trash && canCall(endpoints.categories.restore)
+    ...(trash && canCall(categoriesRoutes.restore)
       ? [
           {
             id: 'restore',
@@ -530,7 +531,7 @@ function ListView({
       preferenceKey={trash ? 'categories-trash' : 'categories-list'}
       filtered={Boolean(params.q || params.filters.isActive)}
       bulkActions={
-        !trash && canCall(endpoints.categories.bulk)
+        !trash && canCall(categoriesRoutes.bulk)
           ? (selected, clear) => (
               <div className="flex gap-2">
                 {(['ACTIVATE', 'DEACTIVATE'] as const).map((action) => (

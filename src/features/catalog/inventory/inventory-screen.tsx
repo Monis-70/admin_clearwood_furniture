@@ -27,7 +27,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { inventoryRoutes } from '@/lib/api/routes/inventory';
 import { formatDateTime, formatNumber } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -56,11 +57,11 @@ export function InventoryScreen() {
   const { canCall } = usePermissions();
   const params = useListParams<Filter>({ filters: FILTERS });
   if (params.filters.variantId) {
-    if (!canCall(endpoints.inventory.snapshot))
+    if (!canCall(inventoryRoutes.snapshot))
       return <PermissionNotice area="stock history" all={['catalog.inventory.read']} />;
     return <VariantStock variantId={params.filters.variantId} />;
   }
-  if (!canCall(endpoints.catalog.lowStock)) {
+  if (!canCall(catalogRoutes.lowStock)) {
     return <PermissionNotice area="inventory" all={['catalog.inventory.read']} />;
   }
   return <LowStockList params={params} />;
@@ -81,8 +82,8 @@ function LowStockList({ params }: { params: ReturnType<typeof useListParams<Filt
     queryFn: ({ signal }) => catalogApi.lowStock(query, signal),
     ...cachePolicy.list,
   });
-  const canAdjust = canCall(endpoints.inventory.adjust);
-  const canBulk = canCall(endpoints.inventory.bulkAdjust);
+  const canAdjust = canCall(inventoryRoutes.adjust);
+  const canBulk = canCall(inventoryRoutes.bulkAdjust);
   const labelOf = (row: LowStockItemDto) =>
     `${row.productName}${row.variantName ? ` · ${row.variantName}` : ''} (${row.sku})`;
 
@@ -271,7 +272,7 @@ function VariantStock({ variantId }: { variantId: string }) {
   const ledger = useQuery({
     queryKey: productKeys.ledger(variantId, page),
     queryFn: ({ signal }) => inventoryApi.history(variantId, page, signal),
-    enabled: canCall(endpoints.inventory.history),
+    enabled: canCall(inventoryRoutes.history),
     ...cachePolicy.list,
   });
 
@@ -343,7 +344,7 @@ function VariantStock({ variantId }: { variantId: string }) {
                 Inventory
               </Link>
             </Button>
-            {canCall(endpoints.inventory.adjust) && snapshot.data ? (
+            {canCall(inventoryRoutes.adjust) && snapshot.data ? (
               <Button onClick={() => setAdjusting(true)}>Adjust stock…</Button>
             ) : null}
           </>
@@ -372,7 +373,7 @@ function VariantStock({ variantId }: { variantId: string }) {
           </div>
         </dl>
       )}
-      {canCall(endpoints.inventory.history) ? (
+      {canCall(inventoryRoutes.history) ? (
         <DataTable
           label="Stock movements"
           columns={columns}

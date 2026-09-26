@@ -36,7 +36,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useIdempotencyKey } from '@/lib/api/idempotency';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { formatDateTime } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -76,7 +76,7 @@ type Values = z.input<typeof schema>;
 
 export function CustomerGroupsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.pricing.customerGroups)) {
+  if (!canCall(pricingRoutes.customerGroups)) {
     return <PermissionNotice area="customer groups" all={['order.customer.read']} />;
   }
   return <CustomerGroups />;
@@ -99,7 +99,7 @@ function CustomerGroups() {
     ...cachePolicy.list,
   });
   const refresh = () => void queryClient.invalidateQueries({ queryKey: promotionsKeys.groups });
-  const canManage = canCall(endpoints.pricing.updateCustomerGroup);
+  const canManage = canCall(pricingRoutes.updateCustomerGroup);
   const open = groups.data?.items.find((g) => g.id === params.filters.id);
 
   const columns: DataTableColumn<CustomerGroupRow>[] = [
@@ -161,7 +161,7 @@ function CustomerGroups() {
             {canManage ? (
               <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
             ) : null}
-            {canCall(endpoints.pricing.removeCustomerGroup) && !row.original.isDefault ? (
+            {canCall(pricingRoutes.removeCustomerGroup) && !row.original.isDefault ? (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -184,7 +184,7 @@ function CustomerGroups() {
         title="Customer groups"
         description="Groups that receive their own prices: a group discount, price lists and tiers. Shoppers without a group are priced as the default group."
         actions={
-          canCall(endpoints.pricing.createCustomerGroup) ? (
+          canCall(pricingRoutes.createCustomerGroup) ? (
             <Button onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               New group

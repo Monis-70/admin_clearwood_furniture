@@ -14,7 +14,7 @@ import { EmptyState } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -71,7 +71,7 @@ export function RelatedTab({ product }: { product: AdminProductDetailDto }) {
 function RelatedEditor({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
-  const canEdit = canCall(endpoints.products.setRelations) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.setRelations) && !product.deletedAt;
   const [initial] = useState(() => fromProduct(product));
   const [rows, setRows] = useState(initial);
   const [type, setType] = useState<ProductRelationType>('RELATED');

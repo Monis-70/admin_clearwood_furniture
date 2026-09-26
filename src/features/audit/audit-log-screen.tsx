@@ -17,7 +17,7 @@ import { StatusBadge } from '@/components/patterns/status-badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { endpoints } from '@/lib/api/endpoints';
+import { auditRoutes } from '@/lib/api/routes/audit';
 import { formatDateTime, formatRelative } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -66,7 +66,7 @@ const AuditEntrySheet = dynamic(
 
 export function AuditLogScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.audit.list)) {
+  if (!canCall(auditRoutes.list)) {
     return <PermissionNotice area="the audit log" all={['system.audit.read']} />;
   }
   return <AuditLogList />;

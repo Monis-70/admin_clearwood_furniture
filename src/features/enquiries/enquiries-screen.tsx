@@ -17,7 +17,7 @@ import { EmptyState, PermissionNotice } from '@/components/patterns/states';
 import { StatusBadge } from '@/components/patterns/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { enquiriesRoutes } from '@/lib/api/routes/enquiries';
 import { formatDateTime, formatRelative } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -37,7 +37,7 @@ const STATUS_OPTIONS = (Object.keys(ENQUIRY_STATUS) as EnquiryStatus[]).map((val
 
 export function EnquiriesScreen({ formKey }: { formKey?: string }) {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.enquiries.list)) {
+  if (!canCall(enquiriesRoutes.list)) {
     return <PermissionNotice area="enquiries" all={['lead.enquiry.read']} />;
   }
   return <EnquiriesList formKey={formKey} />;

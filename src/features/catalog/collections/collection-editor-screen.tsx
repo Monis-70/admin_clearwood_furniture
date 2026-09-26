@@ -14,7 +14,8 @@ import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { auditRoutes } from '@/lib/api/routes/audit';
+import { collectionsRoutes } from '@/lib/api/routes/collections';
 import { hasCode } from '@/lib/api/errors';
 import { formatCount, formatRelative } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
@@ -61,7 +62,7 @@ export function CollectionEditorScreen() {
   const params = useSearchParams();
   const id = params.get('id');
   const requested = params.get('tab');
-  if (!canCall(endpoints.collections.get))
+  if (!canCall(collectionsRoutes.get))
     return <PermissionNotice area="collections" all={['catalog.collection.read']} />;
   if (!id)
     return (
@@ -100,7 +101,7 @@ function CollectionEditor({ id, tab }: { id: string; tab: CollectionTab }) {
   const tabs = COLLECTION_TABS.filter(
     (t) =>
       (t !== 'rules' || data.type === 'AUTOMATIC') &&
-      (t !== 'history' || canCall(endpoints.audit.list)),
+      (t !== 'history' || canCall(auditRoutes.list)),
   );
   const current = tabs.includes(tab) ? tab : 'details';
   const Section = SECTIONS[current];
@@ -261,7 +262,7 @@ export function CollectionWorkbench({
         actions={
           collection.deletedAt ? null : (
             <>
-              {automatic && rules && canCall(endpoints.collections.evaluate) ? (
+              {automatic && rules && canCall(collectionsRoutes.evaluate) ? (
                 <Button
                   size="sm"
                   variant="outline"
@@ -271,12 +272,12 @@ export function CollectionWorkbench({
                   Re-evaluate now
                 </Button>
               ) : null}
-              {!automatic && canCall(endpoints.collections.setProducts) ? (
+              {!automatic && canCall(collectionsRoutes.setProducts) ? (
                 <Button size="sm" variant="outline" asChild>
                   <Link href={collectionHref(collection.id, 'products')}>Choose products</Link>
                 </Button>
               ) : null}
-              {canCall(endpoints.collections.remove) ? (
+              {canCall(collectionsRoutes.remove) ? (
                 <Button
                   size="sm"
                   variant="outline"
@@ -290,9 +291,7 @@ export function CollectionWorkbench({
           )
         }
         history={
-          canCall(endpoints.audit.list)
-            ? { entity: 'Collection', entityId: collection.id }
-            : undefined
+          canCall(auditRoutes.list) ? { entity: 'Collection', entityId: collection.id } : undefined
         }
       />
       {removing ? (

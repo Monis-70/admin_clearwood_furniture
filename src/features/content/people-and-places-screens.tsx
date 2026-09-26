@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 
 import { PermissionNotice } from '@/components/patterns/states';
 import { Badge } from '@/components/ui/badge';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 import { contentApi, contentKeys, type StoreRow, type TestimonialRow } from './api';
@@ -20,7 +20,7 @@ const StoreDialog = dynamic(() => import('./dialogs/store-dialog').then((m) => m
   ssr: false,
 });
 
-const e = endpoints.content;
+const e = contentRoutes;
 
 export function TestimonialsScreen() {
   const { canCall } = usePermissions();

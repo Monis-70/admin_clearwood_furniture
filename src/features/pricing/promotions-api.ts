@@ -9,7 +9,7 @@ import type { CouponAppliesTo } from '@shared/types/pricing';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
 import type { Dated } from '@/lib/api/dated';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 
 /** Rows as the admin pricing API returns them (Prisma rows; not in @clearwood/shared). */
 export interface CouponRow {
@@ -100,15 +100,15 @@ export interface CouponListQuery {
 
 export const couponsApi = {
   list(query: CouponListQuery, signal?: AbortSignal): Promise<Page<CouponRow>> {
-    return apiPage<CouponRow>(endpoints.pricing.coupons, { query: { ...query }, signal });
+    return apiPage<CouponRow>(pricingRoutes.coupons, { query: { ...query }, signal });
   },
   async get(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.pricing.coupon, { params: { id }, signal }))
+    return (await apiRequest(pricingRoutes.coupon, { params: { id }, signal }))
       .data as CouponDetail;
   },
   async redemptions(id: string, signal?: AbortSignal) {
     return (
-      await apiRequest(endpoints.pricing.couponRedemptions, {
+      await apiRequest(pricingRoutes.couponRedemptions, {
         params: { id },
         signal,
       })
@@ -116,7 +116,7 @@ export const couponsApi = {
   },
   async create(input: Dated<CouponCreateInput>, idempotencyKey: string) {
     return (
-      await apiRequest<CouponRow>(endpoints.pricing.createCoupon, { body: input, idempotencyKey })
+      await apiRequest<CouponRow>(pricingRoutes.createCoupon, { body: input, idempotencyKey })
     ).data;
   },
   async generate(
@@ -126,18 +126,18 @@ export const couponsApi = {
     idempotencyKey: string,
   ) {
     return (
-      await apiRequest<{ codes: string[] }>(endpoints.pricing.generateCoupons, {
+      await apiRequest<{ codes: string[] }>(pricingRoutes.generateCoupons, {
         body: input,
         idempotencyKey,
       })
     ).data;
   },
   async update(id: string, input: Dated<CouponUpdateInput>) {
-    return (await apiRequest(endpoints.pricing.updateCoupon, { params: { id }, body: input }))
+    return (await apiRequest(pricingRoutes.updateCoupon, { params: { id }, body: input }))
       .data as CouponRow;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.pricing.removeCoupon, { params: { id } });
+    await apiRequest(pricingRoutes.removeCoupon, { params: { id } });
   },
 };
 
@@ -146,7 +146,7 @@ export const customerGroupsApi = {
     query: { page: number; limit: number },
     signal?: AbortSignal,
   ): Promise<Page<CustomerGroupRow>> {
-    return apiPage<CustomerGroupRow>(endpoints.pricing.customerGroups, {
+    return apiPage<CustomerGroupRow>(pricingRoutes.customerGroups, {
       query: { ...query },
       signal,
     });
@@ -156,7 +156,7 @@ export const customerGroupsApi = {
   },
   async create(input: CustomerGroupCreateInput, idempotencyKey: string) {
     return (
-      await apiRequest<CustomerGroupRow>(endpoints.pricing.createCustomerGroup, {
+      await apiRequest<CustomerGroupRow>(pricingRoutes.createCustomerGroup, {
         body: input,
         idempotencyKey,
       })
@@ -164,22 +164,22 @@ export const customerGroupsApi = {
   },
   async update(id: string, input: CustomerGroupUpdateInput) {
     return (
-      await apiRequest(endpoints.pricing.updateCustomerGroup, {
+      await apiRequest(pricingRoutes.updateCustomerGroup, {
         params: { id },
         body: input,
       })
     ).data as CustomerGroupRow;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.pricing.removeCustomerGroup, { params: { id } });
+    await apiRequest(pricingRoutes.removeCustomerGroup, { params: { id } });
   },
   async members(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.pricing.groupMembers, { params: { id }, signal }))
+    return (await apiRequest(pricingRoutes.groupMembers, { params: { id }, signal }))
       .data as GroupMemberRow[];
   },
   async addMembers(id: string, customerIds: string[]) {
     return (
-      await apiRequest(endpoints.pricing.addGroupMembers, {
+      await apiRequest(pricingRoutes.addGroupMembers, {
         params: { id },
         body: { customerIds },
       })
@@ -187,7 +187,7 @@ export const customerGroupsApi = {
   },
   async removeMembers(id: string, customerIds: string[]) {
     return (
-      await apiRequest(endpoints.pricing.removeGroupMembers, {
+      await apiRequest(pricingRoutes.removeGroupMembers, {
         params: { id },
         body: { customerIds },
       })

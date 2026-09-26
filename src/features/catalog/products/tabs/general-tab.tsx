@@ -6,7 +6,7 @@ import { z } from 'zod';
 import type { ProductUpdateInput } from '@shared/schemas/catalogAdmin';
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 import {
@@ -48,7 +48,7 @@ export function GeneralTab({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
   const brands = useBrandOptions();
-  const canEdit = canCall(endpoints.products.update) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.update) && !product.deletedAt;
 
   const defaults: Values = {
     name: product.name,
@@ -165,7 +165,7 @@ export function GeneralTab({ product }: { product: AdminProductDetailDto }) {
       </EditorForm>
       <CategoryAssignment
         product={product}
-        canEdit={canEdit && canCall(endpoints.products.setCategories)}
+        canEdit={canEdit && canCall(productsRoutes.setCategories)}
       />
     </div>
   );

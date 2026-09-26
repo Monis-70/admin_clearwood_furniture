@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { usersRoutes } from '@/lib/api/routes/users';
 import { useCurrentAdmin } from '@/lib/auth/session';
 import { formatDateTime, formatRelative } from '@/lib/format/datetime';
 import { useRecentItems } from '@/lib/local-history';
@@ -58,9 +58,9 @@ function RowActions({
   const me = useCurrentAdmin();
   const { canCall } = usePermissions();
   const block = manageBlock(user, { id: me.user.id, roles: me.roles });
-  const canUpdate = canCall(endpoints.users.update) && !block;
-  const canRoles = canCall(endpoints.users.setRoles) && !block;
-  const canDelete = canCall(endpoints.users.remove) && !block;
+  const canUpdate = canCall(usersRoutes.update) && !block;
+  const canRoles = canCall(usersRoutes.setRoles) && !block;
+  const canDelete = canCall(usersRoutes.remove) && !block;
 
   return (
     <DropdownMenu>
@@ -143,7 +143,7 @@ function RowActions({
 
 export function AdminUsersScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.users.list)) {
+  if (!canCall(usersRoutes.list)) {
     return <PermissionNotice area="admin users" all={['system.user.read']} />;
   }
   return <AdminUsersList />;
@@ -153,7 +153,7 @@ function AdminUsersList() {
   const params = useListParams<'status' | 'id' | 'new'>({ filters: ['status', 'id', 'new'] });
   const { canCall } = usePermissions();
   const { record } = useRecentItems();
-  const creating = params.filters.new === '1' && canCall(endpoints.users.create);
+  const creating = params.filters.new === '1' && canCall(usersRoutes.create);
   const setCreating = (open: boolean) => params.setFilter('new', open ? '1' : null);
   const [dialog, setOpenDialog] = useState<Dialog | null>(null);
   const [opened, setOpened] = useState(false);
@@ -287,7 +287,7 @@ function AdminUsersList() {
         title="Admin users"
         description="Who can sign in to this admin, which roles they have, and whether their account is active. Every change is recorded in the audit log."
         actions={
-          <GuardedButton endpoint={endpoints.users.create} onClick={() => setCreating(true)}>
+          <GuardedButton endpoint={usersRoutes.create} onClick={() => setCreating(true)}>
             <UserPlus aria-hidden />
             Add admin
           </GuardedButton>

@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { variantsRoutes } from '@/lib/api/routes/variants';
 import { formatNumber } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -72,13 +72,11 @@ export function VariantsTab({ product }: { product: AdminProductDetailDto }) {
   const [deleting, setDeleting] = useState<AdminVariantDto | null>(null);
   const editable = !product.deletedAt;
   const can = {
-    create: editable && canCall(endpoints.variants.create),
-    update: editable && canCall(endpoints.variants.update),
-    remove: editable && canCall(endpoints.variants.remove),
+    create: editable && canCall(variantsRoutes.create),
+    update: editable && canCall(variantsRoutes.update),
+    remove: editable && canCall(variantsRoutes.remove),
     generate:
-      editable &&
-      canCall(endpoints.variants.matrixPreview) &&
-      canCall(endpoints.variants.matrixGenerate),
+      editable && canCall(variantsRoutes.matrixPreview) && canCall(variantsRoutes.matrixGenerate),
   };
   const variants = [...product.variants].sort((a, b) => a.position - b.position);
   const options = optionAttributes(variants, attributes.data ?? []);

@@ -2,7 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -35,7 +36,7 @@ export function useCollectionChoices(): Choice[] {
   const list = useQuery({
     queryKey: [...catalogKeys.all, 'collections', query],
     queryFn: ({ signal }) => catalogApi.collections(query, signal),
-    enabled: canCall(endpoints.catalog.collections),
+    enabled: canCall(catalogRoutes.collections),
     ...cachePolicy.reference,
   });
   return (list.data?.items ?? []).map((c) => ({ value: c.id, label: c.name }));
@@ -51,7 +52,7 @@ export function useFaqChoices(): Choice[] {
   const list = useQuery({
     queryKey: contentKeys.faqs(),
     queryFn: ({ signal }) => contentApi.faqs(signal),
-    enabled: canCall(endpoints.content.faqs),
+    enabled: canCall(contentRoutes.faqs),
     ...cachePolicy.reference,
   });
   return (list.data ?? []).map((f) => ({ value: f.id, label: f.question }));
@@ -62,7 +63,7 @@ export function useTestimonialChoices(): Choice[] {
   const list = useQuery({
     queryKey: contentKeys.testimonials(),
     queryFn: ({ signal }) => contentApi.testimonials(signal),
-    enabled: canCall(endpoints.content.testimonials),
+    enabled: canCall(contentRoutes.testimonials),
     ...cachePolicy.reference,
   });
   return (list.data ?? []).map((t) => ({
@@ -76,7 +77,7 @@ export function useStoreChoices(): Choice[] {
   const list = useQuery({
     queryKey: contentKeys.stores(),
     queryFn: ({ signal }) => contentApi.stores(signal),
-    enabled: canCall(endpoints.content.stores),
+    enabled: canCall(contentRoutes.stores),
     ...cachePolicy.reference,
   });
   return (list.data ?? []).map((s) => ({ value: s.id, label: `${s.name}, ${s.city}` }));

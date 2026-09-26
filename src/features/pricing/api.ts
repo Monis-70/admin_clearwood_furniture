@@ -6,7 +6,7 @@ import type { PriceAdjustmentConflictDto } from '@shared/types/catalogAdmin';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
 import type { Dated } from '@/lib/api/dated';
-import { endpoints } from '@/lib/api/endpoints';
+import { priceAdjustmentsRoutes } from '@/lib/api/routes/priceAdjustments';
 
 export interface PriceAdjustmentRow {
   id: string;
@@ -53,23 +53,23 @@ export const priceAdjustmentsApi = {
     },
     signal?: AbortSignal,
   ): Promise<Page<PriceAdjustmentRow>> {
-    return apiPage(endpoints.priceAdjustments.list, { query: { ...query }, signal }) as Promise<
+    return apiPage(priceAdjustmentsRoutes.list, { query: { ...query }, signal }) as Promise<
       Page<PriceAdjustmentRow>
     >;
   },
   async conflicts(signal?: AbortSignal) {
-    return (await apiRequest(endpoints.priceAdjustments.conflicts, { signal }))
+    return (await apiRequest(priceAdjustmentsRoutes.conflicts, { signal }))
       .data as PriceAdjustmentConflict[];
   },
   async create(input: Dated<PriceAdjustmentCreateInput>) {
-    return (await apiRequest(endpoints.priceAdjustments.create, { body: input }))
+    return (await apiRequest(priceAdjustmentsRoutes.create, { body: input }))
       .data as PriceAdjustmentRow;
   },
   async update(id: string, input: Dated<PriceAdjustmentUpdateInput>) {
-    return (await apiRequest(endpoints.priceAdjustments.update, { params: { id }, body: input }))
+    return (await apiRequest(priceAdjustmentsRoutes.update, { params: { id }, body: input }))
       .data as PriceAdjustmentRow;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.priceAdjustments.remove, { params: { id } });
+    await apiRequest(priceAdjustmentsRoutes.remove, { params: { id } });
   },
 };

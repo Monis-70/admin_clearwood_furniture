@@ -1,0 +1,92 @@
+import {
+  Activity,
+  Award,
+  BadgePercent,
+  Calculator,
+  CircleHelp,
+  ClipboardList,
+  DatabaseZap,
+  FileText,
+  FolderTree,
+  HardHat,
+  Images,
+  Inbox,
+  IndianRupee,
+  Layers,
+  LayoutDashboard,
+  LifeBuoy,
+  ListTree,
+  Megaphone,
+  Menu,
+  Package,
+  PanelTop,
+  Quote,
+  Receipt,
+  ScrollText,
+  Search,
+  Settings,
+  Settings2,
+  ShieldCheck,
+  Sparkles,
+  Store,
+  Tags,
+  TicketPercent,
+  Truck,
+  Upload,
+  UserCog,
+  Users,
+  Warehouse,
+  type LucideIcon,
+} from 'lucide-react';
+
+/**
+ * Navigation icons, by name. Kept out of src/config/navigation.ts so the sidebar can load them
+ * after the page (they are decoration; every label is text), which keeps them out of every page's
+ * initial JavaScript.
+ */
+export const NAV_ICONS = {
+  Activity,
+  Award,
+  BadgePercent,
+  Calculator,
+  CircleHelp,
+  ClipboardList,
+  DatabaseZap,
+  FileText,
+  FolderTree,
+  HardHat,
+  Images,
+  Inbox,
+  IndianRupee,
+  Layers,
+  LayoutDashboard,
+  LifeBuoy,
+  ListTree,
+  Megaphone,
+  Menu,
+  Package,
+  PanelTop,
+  Quote,
+  Receipt,
+  ScrollText,
+  Search,
+  Settings,
+  Settings2,
+  ShieldCheck,
+  Sparkles,
+  Store,
+  Tags,
+  TicketPercent,
+  Truck,
+  Upload,
+  UserCog,
+  Users,
+  Warehouse,
+} satisfies Record<string, LucideIcon>;
+
+export type NavIconName = keyof typeof NAV_ICONS;
+
+export function NavIcon({ name, className }: { name: NavIconName; className?: string }) {
+  const Icon = NAV_ICONS[name];
+  return <Icon aria-hidden className={className} />;
+}

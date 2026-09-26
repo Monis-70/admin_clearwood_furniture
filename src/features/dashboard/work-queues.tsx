@@ -9,7 +9,9 @@ import { auditApi } from '@/features/audit/api';
 import { catalogApi, type ProductListQuery } from '@/features/catalog/api';
 import { STOCK_STATUS } from '@/features/catalog/model';
 import { enquiriesApi } from '@/features/enquiries/api';
-import { endpoints } from '@/lib/api/endpoints';
+import { auditRoutes } from '@/lib/api/routes/audit';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { enquiriesRoutes } from '@/lib/api/routes/enquiries';
 import { formatNumber, formatRelative } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -49,9 +51,9 @@ function ProductLink({ id, name, sku }: { id: string; name: string; sku: string 
  */
 export function WorkQueues() {
   const { canCall } = usePermissions();
-  const products = canCall(endpoints.catalog.products);
+  const products = canCall(catalogRoutes.products);
   const queues = [
-    canCall(endpoints.enquiries.list) ? (
+    canCall(enquiriesRoutes.list) ? (
       <WorkQueue
         key="enquiries"
         title="New enquiries"
@@ -78,7 +80,7 @@ export function WorkQueues() {
         emptyText="No new enquiries."
       />
     ) : null,
-    canCall(endpoints.catalog.lowStock) ? (
+    canCall(catalogRoutes.lowStock) ? (
       <WorkQueue
         key="low-stock"
         title="Low stock"
@@ -164,7 +166,7 @@ export function WorkQueues() {
         emptyText="Every product is at least half complete."
       />
     ) : null,
-    canCall(endpoints.audit.list) ? (
+    canCall(auditRoutes.list) ? (
       <WorkQueue
         key="activity"
         title="Recent admin activity"

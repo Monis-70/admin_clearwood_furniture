@@ -7,7 +7,7 @@ import type {
 } from '@shared/types/catalogAdmin';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
 
 export interface ProductListQuery {
   page: number;
@@ -69,31 +69,31 @@ export const catalogKeys = {
 
 export const catalogApi = {
   async settings(signal?: AbortSignal) {
-    return (await apiRequest<AdminCatalogSettingsDto>(endpoints.catalog.settings, { signal })).data;
+    return (await apiRequest<AdminCatalogSettingsDto>(catalogRoutes.settings, { signal })).data;
   },
   async updateSettings(input: CatalogSettingsUpdateInput) {
     return (
-      await apiRequest<AdminCatalogSettingsDto>(endpoints.catalog.updateSettings, { body: input })
+      await apiRequest<AdminCatalogSettingsDto>(catalogRoutes.updateSettings, { body: input })
     ).data;
   },
   products(query: ProductListQuery, signal?: AbortSignal): Promise<Page<AdminProductSummaryDto>> {
-    return apiPage<AdminProductSummaryDto>(endpoints.catalog.products, {
+    return apiPage<AdminProductSummaryDto>(catalogRoutes.products, {
       query: { ...query },
       signal,
     });
   },
   /** The whole admin tree as a flat list (parentId links it); one request serves every picker. */
   async categoryTree(signal?: AbortSignal): Promise<AdminCategoryDto[]> {
-    return (await apiRequest<AdminCategoryDto[]>(endpoints.catalog.categoryTree, { signal })).data;
+    return (await apiRequest<AdminCategoryDto[]>(catalogRoutes.categoryTree, { signal })).data;
   },
   collections(query: SimpleListQuery, signal?: AbortSignal): Promise<Page<AdminCollectionRow>> {
-    return apiPage<AdminCollectionRow>(endpoints.catalog.collections, {
+    return apiPage<AdminCollectionRow>(catalogRoutes.collections, {
       query: { ...query },
       signal,
     });
   },
   lowStock(query: SimpleListQuery, signal?: AbortSignal): Promise<Page<LowStockItemDto>> {
-    return apiPage<LowStockItemDto>(endpoints.catalog.lowStock, {
+    return apiPage<LowStockItemDto>(catalogRoutes.lowStock, {
       query: { ...query },
       signal,
     });

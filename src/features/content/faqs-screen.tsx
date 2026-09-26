@@ -15,7 +15,7 @@ import {
 } from '@/components/patterns/states';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -33,7 +33,7 @@ const FaqCategoryDialog = dynamic(
   { ssr: false },
 );
 
-const e = endpoints.content;
+const e = contentRoutes;
 const NONE = '__none';
 
 export function FaqsScreen() {

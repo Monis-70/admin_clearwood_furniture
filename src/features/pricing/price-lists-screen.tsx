@@ -38,7 +38,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useIdempotencyKey } from '@/lib/api/idempotency';
-import { endpoints } from '@/lib/api/endpoints';
+import { pricingRoutes } from '@/lib/api/routes/pricing';
 import { formatDate } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -97,7 +97,7 @@ const windowText = (row: Pick<PriceListRow, 'startsAt' | 'endsAt'>) =>
 
 export function PriceListsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.pricing.priceLists)) {
+  if (!canCall(pricingRoutes.priceLists)) {
     return <PermissionNotice area="price lists" all={['pricing.adjustment.read']} />;
   }
   return <PriceLists />;
@@ -184,10 +184,10 @@ function PriceLists() {
             <DropdownMenuItem onSelect={() => params.setFilter('id', row.original.id)}>
               Prices
             </DropdownMenuItem>
-            {canCall(endpoints.pricing.updatePriceList) ? (
+            {canCall(pricingRoutes.updatePriceList) ? (
               <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
             ) : null}
-            {canCall(endpoints.pricing.removePriceList) ? (
+            {canCall(pricingRoutes.removePriceList) ? (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -210,7 +210,7 @@ function PriceLists() {
         title="Price lists & tiers"
         description="Special prices for a customer group or channel, and quantity breaks. The pricing engine chooses which price applies at checkout."
         actions={
-          canCall(endpoints.pricing.createPriceList) ? (
+          canCall(pricingRoutes.createPriceList) ? (
             <Button onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               New price list
@@ -371,7 +371,7 @@ function PriceListItems({ id }: { id: string }) {
 function ItemsEditor({ id, rows }: { id: string; rows: PriceListItemRow[] }) {
   const { canCall } = usePermissions();
   const queryClient = useQueryClient();
-  const canEdit = canCall(endpoints.pricing.setPriceListItems);
+  const canEdit = canCall(pricingRoutes.setPriceListItems);
   const initial: ItemDraft[] = rows
     .filter((r) => r.productId)
     .map((r) => ({

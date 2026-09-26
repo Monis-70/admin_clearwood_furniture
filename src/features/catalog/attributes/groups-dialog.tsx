@@ -10,7 +10,7 @@ import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { endpoints } from '@/lib/api/endpoints';
+import { attributesRoutes } from '@/lib/api/routes/attributes';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -68,7 +68,7 @@ export function GroupsDialog({ onClose }: { onClose(): void }) {
         <ul className="flex flex-col divide-y rounded-md border">
           {groups.data.map((group) => (
             <li key={group.id} className="flex items-center gap-2 px-3 py-2">
-              {canCall(endpoints.attributes.updateGroup) ? (
+              {canCall(attributesRoutes.updateGroup) ? (
                 <Input
                   aria-label={`Name of ${group.name}`}
                   defaultValue={group.name}
@@ -83,7 +83,7 @@ export function GroupsDialog({ onClose }: { onClose(): void }) {
                 <span className="flex-1 text-sm font-medium">{group.name}</span>
               )}
               <span className="font-mono text-xs text-muted-foreground">{group.code}</span>
-              {canCall(endpoints.attributes.removeGroup) ? (
+              {canCall(attributesRoutes.removeGroup) ? (
                 <Button
                   size="icon-sm"
                   variant="ghost"
@@ -97,7 +97,7 @@ export function GroupsDialog({ onClose }: { onClose(): void }) {
           ))}
         </ul>
       )}
-      {canCall(endpoints.attributes.createGroup) ? (
+      {canCall(attributesRoutes.createGroup) ? (
         <form
           className="flex flex-col gap-2 sm:flex-row sm:items-end"
           onSubmit={(event) => {

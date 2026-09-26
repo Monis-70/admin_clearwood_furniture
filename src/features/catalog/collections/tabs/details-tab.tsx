@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { collectionsRoutes } from '@/lib/api/routes/collections';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 import { catalogKeys } from '../../api';
@@ -13,7 +13,7 @@ import { CollectionFields, collectionDefaults, collectionSchema } from '../colle
 export function DetailsTab({ collection }: { collection: CollectionDetail }) {
   const { canCall } = usePermissions();
   const queryClient = useQueryClient();
-  const canEdit = canCall(endpoints.collections.update) && !collection.deletedAt;
+  const canEdit = canCall(collectionsRoutes.update) && !collection.deletedAt;
   return (
     <EditorForm
       key={collection.version}

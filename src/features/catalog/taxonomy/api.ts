@@ -22,7 +22,10 @@ import type {
 } from '@shared/types/catalogAdmin';
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
+import { attributesRoutes } from '@/lib/api/routes/attributes';
+import { brandsRoutes } from '@/lib/api/routes/brands';
+import { categoriesRoutes } from '@/lib/api/routes/categories';
+import { taxClassesRoutes } from '@/lib/api/routes/taxClasses';
 
 /**
  * Rows as the admin API returns them. Not in @clearwood/shared (the API maps Prisma rows
@@ -135,25 +138,25 @@ export const categoriesApi = {
     query: SimpleQuery & { includeDeleted?: boolean; isActive?: boolean; parentId?: string },
     signal?: AbortSignal,
   ): Promise<Page<AdminCategoryDto>> {
-    return apiPage(endpoints.categories.list, { query: { ...query }, signal }) as Promise<
+    return apiPage(categoriesRoutes.list, { query: { ...query }, signal }) as Promise<
       Page<AdminCategoryDto>
     >;
   },
   async get(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.categories.get, { params: { id }, signal }))
+    return (await apiRequest(categoriesRoutes.get, { params: { id }, signal }))
       .data as AdminCategoryDto;
   },
   async create(input: CategoryCreateInput, idempotencyKey: string) {
-    return (await apiRequest(endpoints.categories.create, { body: input, idempotencyKey }))
+    return (await apiRequest(categoriesRoutes.create, { body: input, idempotencyKey }))
       .data as AdminCategoryDto;
   },
   async update(id: string, input: CategoryUpdateInput) {
-    return (await apiRequest(endpoints.categories.update, { params: { id }, body: input }))
+    return (await apiRequest(categoriesRoutes.update, { params: { id }, body: input }))
       .data as AdminCategoryDto;
   },
   async deleteImpact(id: string, strategy: DeleteStrategy, signal?: AbortSignal) {
     return (
-      await apiRequest(endpoints.categories.deleteImpact, {
+      await apiRequest(categoriesRoutes.deleteImpact, {
         params: { id },
         query: { strategy },
         signal,
@@ -161,71 +164,71 @@ export const categoriesApi = {
     ).data as CategoryDeleteImpactDto;
   },
   async remove(id: string, strategy: DeleteStrategy) {
-    await apiRequest(endpoints.categories.remove, { params: { id }, query: { strategy } });
+    await apiRequest(categoriesRoutes.remove, { params: { id }, query: { strategy } });
   },
   async restore(id: string) {
-    return (await apiRequest(endpoints.categories.restore, { params: { id } }))
+    return (await apiRequest(categoriesRoutes.restore, { params: { id } }))
       .data as AdminCategoryDto;
   },
   async move(id: string, input: { parentId: string | null; position?: number; version: number }) {
-    return (await apiRequest(endpoints.categories.move, { params: { id }, body: input }))
+    return (await apiRequest(categoriesRoutes.move, { params: { id }, body: input }))
       .data as AdminCategoryDto;
   },
   async reorder(items: { id: string; position: number }[]) {
-    await apiRequest(endpoints.categories.reorder, { body: { items } });
+    await apiRequest(categoriesRoutes.reorder, { body: { items } });
   },
   async bulk(ids: string[], action: 'ACTIVATE' | 'DEACTIVATE') {
-    return (await apiRequest(endpoints.categories.bulk, { body: { ids, action } })).data as {
+    return (await apiRequest(categoriesRoutes.bulk, { body: { ids, action } })).data as {
       requested: number;
       updated: number;
     };
   },
   async redirects(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.categories.redirects, { params: { id }, signal }))
+    return (await apiRequest(categoriesRoutes.redirects, { params: { id }, signal }))
       .data as SlugRedirectDto[];
   },
   products(id: string, page: number, signal?: AbortSignal): Promise<Page<AdminCategoryProductDto>> {
-    return apiPage(endpoints.categories.products, {
+    return apiPage(categoriesRoutes.products, {
       params: { id },
       query: { page, limit: 50 },
       signal,
     }) as Promise<Page<AdminCategoryProductDto>>;
   },
   async reorderProducts(id: string, items: { id: string; position: number }[]) {
-    await apiRequest(endpoints.categories.reorderProducts, { params: { id }, body: { items } });
+    await apiRequest(categoriesRoutes.reorderProducts, { params: { id }, body: { items } });
   },
   async attributes(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.categories.attributes, { params: { id }, signal }))
+    return (await apiRequest(categoriesRoutes.attributes, { params: { id }, signal }))
       .data as CategoryAttributeLink[];
   },
   async linkAttribute(id: string, input: CategoryAttributeUpsertInput) {
-    await apiRequest(endpoints.categories.linkAttribute, { params: { id }, body: input });
+    await apiRequest(categoriesRoutes.linkAttribute, { params: { id }, body: input });
   },
   async unlinkAttribute(id: string, attributeId: string) {
-    await apiRequest(endpoints.categories.unlinkAttribute, { params: { id, attributeId } });
+    await apiRequest(categoriesRoutes.unlinkAttribute, { params: { id, attributeId } });
   },
 };
 
 export const attributesApi = {
   async groups(signal?: AbortSignal) {
-    return (await apiRequest(endpoints.attributes.groups, { signal })).data as AttributeGroupRow[];
+    return (await apiRequest(attributesRoutes.groups, { signal })).data as AttributeGroupRow[];
   },
   async createGroup(input: AttributeGroupCreateInput) {
-    return (await apiRequest(endpoints.attributes.createGroup, { body: input }))
+    return (await apiRequest(attributesRoutes.createGroup, { body: input }))
       .data as AttributeGroupRow;
   },
   async updateGroup(id: string, input: AttributeGroupUpdateInput) {
-    return (await apiRequest(endpoints.attributes.updateGroup, { params: { id }, body: input }))
+    return (await apiRequest(attributesRoutes.updateGroup, { params: { id }, body: input }))
       .data as AttributeGroupRow;
   },
   async removeGroup(id: string) {
-    await apiRequest(endpoints.attributes.removeGroup, { params: { id } });
+    await apiRequest(attributesRoutes.removeGroup, { params: { id } });
   },
   list(
     query: SimpleQuery & { groupId?: string; isVariantDefining?: boolean },
     signal?: AbortSignal,
   ): Promise<Page<AttributeRow>> {
-    return apiPage(endpoints.attributes.list, { query: { ...query }, signal }) as Promise<
+    return apiPage(attributesRoutes.list, { query: { ...query }, signal }) as Promise<
       Page<AttributeRow>
     >;
   },
@@ -243,75 +246,72 @@ export const attributesApi = {
     return rows;
   },
   async get(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.attributes.get, { params: { id }, signal }))
+    return (await apiRequest(attributesRoutes.get, { params: { id }, signal }))
       .data as AttributeRow;
   },
   async create(input: AttributeCreateInput) {
-    return (await apiRequest(endpoints.attributes.create, { body: input })).data as AttributeRow;
+    return (await apiRequest(attributesRoutes.create, { body: input })).data as AttributeRow;
   },
   async update(id: string, input: AttributeUpdateInput) {
-    return (await apiRequest(endpoints.attributes.update, { params: { id }, body: input }))
+    return (await apiRequest(attributesRoutes.update, { params: { id }, body: input }))
       .data as AttributeRow;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.attributes.remove, { params: { id } });
+    await apiRequest(attributesRoutes.remove, { params: { id } });
   },
   async reorder(items: { id: string; position: number }[]) {
-    await apiRequest(endpoints.attributes.reorder, { body: { items } });
+    await apiRequest(attributesRoutes.reorder, { body: { items } });
   },
   async createValue(id: string, input: AttributeValueCreateInput) {
-    return (await apiRequest(endpoints.attributes.createValue, { params: { id }, body: input }))
+    return (await apiRequest(attributesRoutes.createValue, { params: { id }, body: input }))
       .data as AttributeValueRow;
   },
   async updateValue(valueId: string, input: AttributeValueUpdateInput) {
-    return (
-      await apiRequest(endpoints.attributes.updateValue, { params: { valueId }, body: input })
-    ).data as AttributeValueRow;
+    return (await apiRequest(attributesRoutes.updateValue, { params: { valueId }, body: input }))
+      .data as AttributeValueRow;
   },
   async removeValue(valueId: string) {
-    await apiRequest(endpoints.attributes.removeValue, { params: { valueId } });
+    await apiRequest(attributesRoutes.removeValue, { params: { valueId } });
   },
 };
 
 export const brandsApi = {
   list(query: SimpleQuery, signal?: AbortSignal): Promise<Page<BrandRow>> {
-    return apiPage(endpoints.brands.list, { query: { ...query }, signal }) as Promise<
-      Page<BrandRow>
-    >;
+    return apiPage(brandsRoutes.list, { query: { ...query }, signal }) as Promise<Page<BrandRow>>;
   },
   async all(signal?: AbortSignal): Promise<BrandRow[]> {
     return (await brandsApi.list({ page: 1, limit: 100, sort: 'position', order: 'asc' }, signal))
       .items;
   },
   async create(input: BrandCreateInput) {
-    return (await apiRequest(endpoints.brands.create, { body: input })).data as BrandRow;
+    return (await apiRequest(brandsRoutes.create, { body: input })).data as BrandRow;
   },
   async update(id: string, input: BrandUpdateInput) {
-    return (await apiRequest(endpoints.brands.update, { params: { id }, body: input }))
+    return (await apiRequest(brandsRoutes.update, { params: { id }, body: input }))
       .data as BrandRow;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.brands.remove, { params: { id } });
+    await apiRequest(brandsRoutes.remove, { params: { id } });
   },
 };
 
 export const taxClassesApi = {
   async all(signal?: AbortSignal): Promise<TaxClassRow[]> {
     return (
-      (await apiPage(endpoints.taxClasses.list, {
+      (await apiPage(taxClassesRoutes.list, {
         query: { page: 1, limit: 100 },
         signal,
       })) as Page<TaxClassRow>
     ).items;
   },
   async create(input: TaxClassCreateInput) {
-    return (await apiRequest(endpoints.taxClasses.create, { body: input })).data as TaxClassRow;
+    return (await apiRequest(taxClassesRoutes.create, { body: input })).data as TaxClassRow;
   },
   async update(id: string, input: TaxClassUpdateInput) {
-    return (await apiRequest(endpoints.taxClasses.update, { params: { id }, body: input }))
+    return (await apiRequest(taxClassesRoutes.update, { params: { id }, body: input }))
       .data as TaxClassRow;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.taxClasses.remove, { params: { id } });
+    await apiRequest(taxClassesRoutes.remove, { params: { id } });
   },
 };

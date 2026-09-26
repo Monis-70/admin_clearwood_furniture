@@ -12,7 +12,7 @@ import { EmptyState, ErrorState, SectionLoader } from '@/components/patterns/sta
 import { StatusBadge } from '@/components/patterns/status-badge';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { collectionsRoutes } from '@/lib/api/routes/collections';
 import { formatNumber } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -42,9 +42,8 @@ export function ProductsTab({ collection }: { collection: CollectionDetail }) {
   const { canCall } = usePermissions();
   const queryClient = useQueryClient();
   const manual = collection.type === 'MANUAL';
-  const canEdit = manual && canCall(endpoints.collections.setProducts) && !collection.deletedAt;
-  const canReorder =
-    manual && canCall(endpoints.collections.reorderProducts) && !collection.deletedAt;
+  const canEdit = manual && canCall(collectionsRoutes.setProducts) && !collection.deletedAt;
+  const canReorder = manual && canCall(collectionsRoutes.reorderProducts) && !collection.deletedAt;
   const members = useQuery({
     queryKey: [...collectionKeys.detail(collection.id), 'members'],
     queryFn: ({ signal }) => allMembers(collection.id, signal),

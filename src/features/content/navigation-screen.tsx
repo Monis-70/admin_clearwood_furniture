@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -33,7 +33,7 @@ const MenuItemDialog = dynamic(
   { ssr: false },
 );
 
-const e = endpoints.content;
+const e = contentRoutes;
 const HREF = '/content/navigation';
 const MAX_DEPTH = 3;
 

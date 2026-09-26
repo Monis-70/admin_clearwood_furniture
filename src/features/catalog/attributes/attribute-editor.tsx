@@ -19,7 +19,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { endpoints } from '@/lib/api/endpoints';
+import { attributesRoutes } from '@/lib/api/routes/attributes';
 import { hasCode } from '@/lib/api/errors';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -158,9 +158,7 @@ function AttributeForm({
 }) {
   const { canCall } = usePermissions();
   const queryClient = useQueryClient();
-  const canSave = attribute
-    ? canCall(endpoints.attributes.update)
-    : canCall(endpoints.attributes.create);
+  const canSave = attribute ? canCall(attributesRoutes.update) : canCall(attributesRoutes.create);
   const originalCode = attribute?.code;
   const validator = attribute
     ? schema.refine((v) => v.code === originalCode || CODE.test(v.code), {
@@ -372,7 +370,7 @@ function ValuesPanel({ attribute }: { attribute: AttributeRow }) {
                 <span className="font-mono text-xs text-muted-foreground">{value.code}</span>
               </span>
               {!value.isActive ? <Badge tone="neutral">Inactive</Badge> : null}
-              {canCall(endpoints.attributes.updateValue) ? (
+              {canCall(attributesRoutes.updateValue) ? (
                 <Button
                   size="icon-sm"
                   variant="ghost"
@@ -382,7 +380,7 @@ function ValuesPanel({ attribute }: { attribute: AttributeRow }) {
                   <Pencil aria-hidden />
                 </Button>
               ) : null}
-              {canCall(endpoints.attributes.removeValue) ? (
+              {canCall(attributesRoutes.removeValue) ? (
                 <Button
                   size="icon-sm"
                   variant="ghost"
@@ -396,7 +394,7 @@ function ValuesPanel({ attribute }: { attribute: AttributeRow }) {
           ))}
         </ul>
       )}
-      {canCall(endpoints.attributes.createValue) ? (
+      {canCall(attributesRoutes.createValue) ? (
         <form
           className="flex flex-col gap-2 rounded-md border border-dashed p-3 sm:flex-row sm:items-end"
           onSubmit={(event) => {

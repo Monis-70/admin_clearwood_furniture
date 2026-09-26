@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 import {
@@ -46,7 +46,7 @@ type Values = z.input<typeof schema>;
 export function FulfilmentTab({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
-  const canEdit = canCall(endpoints.products.update) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.update) && !product.deletedAt;
 
   return (
     <EditorForm

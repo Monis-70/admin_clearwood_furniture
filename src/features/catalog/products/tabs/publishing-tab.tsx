@@ -12,7 +12,7 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { formatDateTime } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -74,7 +74,7 @@ export function PublishingTab({ product }: { product: AdminProductDetailDto }) {
   const actions = useProductActions(product);
   const [publishAt, setPublishAt] = useState('');
   const blockers = usePublishBlockers(product);
-  const canPublish = canCall(endpoints.products.publish) && !product.deletedAt;
+  const canPublish = canCall(productsRoutes.publish) && !product.deletedAt;
   const live = isLive(product);
   const ready = blockers.data?.length === 0;
 

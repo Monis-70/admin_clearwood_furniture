@@ -16,7 +16,7 @@ import {
 } from '@/components/patterns/states';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { formatRelative } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -36,7 +36,7 @@ const HelpArticleDialog = dynamic(
   { ssr: false },
 );
 
-const e = endpoints.content;
+const e = contentRoutes;
 const HREF = '/content/help-centre';
 
 export function HelpCentreScreen() {

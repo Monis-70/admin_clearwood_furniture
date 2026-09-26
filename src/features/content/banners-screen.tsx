@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { formatDate, formatNumber } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -41,7 +41,7 @@ const BannerDialog = dynamic(() => import('./dialogs/banner-dialog').then((m) =>
   ssr: false,
 });
 
-const e = endpoints.content;
+const e = contentRoutes;
 const HREF = '/content/banners';
 const pct = (bp: number) => `${(bp / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}%`;
 

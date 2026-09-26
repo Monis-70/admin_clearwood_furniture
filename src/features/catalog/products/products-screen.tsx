@@ -25,7 +25,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { formatNumber, formatRelative } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -90,7 +91,7 @@ const TRASH_OPTIONS = opts({ true: 'Include deleted' });
 
 export function ProductsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.catalog.products)) {
+  if (!canCall(catalogRoutes.products)) {
     return <PermissionNotice area="products" all={['catalog.product.read']} />;
   }
   return <ProductsList />;
@@ -106,7 +107,7 @@ function ProductsList() {
   const collections = useQuery({
     queryKey: catalogKeys.collections({ page: 1, limit: 100, order: 'asc' }),
     queryFn: ({ signal }) => catalogApi.collections({ page: 1, limit: 100, order: 'asc' }, signal),
-    enabled: canCall(endpoints.catalog.collections),
+    enabled: canCall(catalogRoutes.collections),
     ...cachePolicy.reference,
   });
   const [trashing, setTrashing] = useState<AdminProductSummaryDto | null>(null);
@@ -269,7 +270,7 @@ function ProductsList() {
       cell: ({ row }) => {
         const product = row.original;
         const live = product.publication === 'LIVE' || product.publication === 'SCHEDULED';
-        const canPublish = canCall(endpoints.products.publish) && !product.deletedAt;
+        const canPublish = canCall(productsRoutes.publish) && !product.deletedAt;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -298,7 +299,7 @@ function ProductsList() {
                   {live ? 'Unpublish' : 'Publish now'}
                 </DropdownMenuItem>
               ) : null}
-              {product.deletedAt && canCall(endpoints.products.restore) ? (
+              {product.deletedAt && canCall(productsRoutes.restore) ? (
                 <DropdownMenuItem
                   onSelect={() =>
                     void act('Product restored', async () =>
@@ -309,7 +310,7 @@ function ProductsList() {
                   Restore
                 </DropdownMenuItem>
               ) : null}
-              {!product.deletedAt && canCall(endpoints.products.remove) ? (
+              {!product.deletedAt && canCall(productsRoutes.remove) ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -335,7 +336,7 @@ function ProductsList() {
         title="Products"
         description="Everything in the catalog, with what each product still needs before customers see it."
         actions={
-          canCall(endpoints.products.create) ? (
+          canCall(productsRoutes.create) ? (
             <Button asChild>
               <Link href="/catalog/products/new">
                 <Plus aria-hidden />

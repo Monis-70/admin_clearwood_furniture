@@ -14,7 +14,7 @@ import { LazyConfirmDialog } from '@/components/patterns/lazy-confirm-dialog';
 import { EmptyState, ErrorState } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 import { isApiError } from '@/lib/api/errors';
 import { formatCount } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
@@ -70,7 +70,7 @@ const DeleteFileDialog = dynamic(
 /** Media & Gallery: the images customers see, their order, the primary image and per-variant use. */
 export function MediaTab({ product }: { product: AdminProductDetailDto }) {
   const { canCall } = usePermissions();
-  const canManage = canCall(endpoints.media.productMedia) && !product.deletedAt;
+  const canManage = canCall(mediaRoutes.productMedia) && !product.deletedAt;
   if (!canManage) return <ReadOnlyGallery product={product} />;
   return <ManagedGallery product={product} />;
 }
@@ -136,10 +136,10 @@ type Dialog =
 function ManagedGallery({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
-  const canUpload = canCall(endpoints.media.upload);
-  const canBrowse = canCall(endpoints.media.list);
-  const canEditFile = canCall(endpoints.media.update);
-  const canDeleteFile = canCall(endpoints.media.remove);
+  const canUpload = canCall(mediaRoutes.upload);
+  const canBrowse = canCall(mediaRoutes.list);
+  const canEditFile = canCall(mediaRoutes.update);
+  const canDeleteFile = canCall(mediaRoutes.remove);
   const [dialog, setDialog] = useState<Dialog>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [dragFrom, setDragFrom] = useState<number | null>(null);
@@ -154,7 +154,7 @@ function ManagedGallery({ product }: { product: AdminProductDetailDto }) {
   const config = useQuery({
     queryKey: mediaKeys.config(),
     queryFn: ({ signal }) => mediaApi.config(signal),
-    enabled: canCall(endpoints.media.config),
+    enabled: canCall(mediaRoutes.config),
     ...cachePolicy.config,
   });
   const attributes = useAttributeOptions();

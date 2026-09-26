@@ -6,7 +6,8 @@ import type {
 
 import { apiPage, apiRequest, type Page } from '@/lib/api/client';
 import type { Dated } from '@/lib/api/dated';
-import { endpoints } from '@/lib/api/endpoints';
+import { catalogRoutes } from '@/lib/api/routes/catalog';
+import { collectionsRoutes } from '@/lib/api/routes/collections';
 
 import type { AdminCollectionRow } from '../api';
 
@@ -52,45 +53,44 @@ export const collectionsApi = {
     },
     signal?: AbortSignal,
   ): Promise<Page<CollectionDetail>> {
-    return apiPage(endpoints.catalog.collections, { query: { ...query }, signal }) as Promise<
+    return apiPage(catalogRoutes.collections, { query: { ...query }, signal }) as Promise<
       Page<CollectionDetail>
     >;
   },
   async get(id: string, signal?: AbortSignal) {
-    return (await apiRequest(endpoints.collections.get, { params: { id }, signal }))
+    return (await apiRequest(collectionsRoutes.get, { params: { id }, signal }))
       .data as CollectionDetail;
   },
   async create(input: Dated<CollectionCreateInput>) {
-    return (await apiRequest(endpoints.collections.create, { body: input }))
-      .data as CollectionDetail;
+    return (await apiRequest(collectionsRoutes.create, { body: input })).data as CollectionDetail;
   },
   async update(id: string, input: Dated<CollectionUpdateInput>) {
-    return (await apiRequest(endpoints.collections.update, { params: { id }, body: input }))
+    return (await apiRequest(collectionsRoutes.update, { params: { id }, body: input }))
       .data as CollectionDetail;
   },
   async remove(id: string) {
-    await apiRequest(endpoints.collections.remove, { params: { id } });
+    await apiRequest(collectionsRoutes.remove, { params: { id } });
   },
   async restore(id: string) {
-    return (await apiRequest(endpoints.collections.restore, { params: { id } }))
+    return (await apiRequest(collectionsRoutes.restore, { params: { id } }))
       .data as CollectionDetail;
   },
   async setProducts(id: string, productIds: string[]) {
-    await apiRequest(endpoints.collections.setProducts, { params: { id }, body: { productIds } });
+    await apiRequest(collectionsRoutes.setProducts, { params: { id }, body: { productIds } });
   },
   async reorderProducts(id: string, items: { id: string; position: number }[]) {
-    await apiRequest(endpoints.collections.reorderProducts, { params: { id }, body: { items } });
+    await apiRequest(collectionsRoutes.reorderProducts, { params: { id }, body: { items } });
   },
   async previewRules(rules: CollectionRules, signal?: AbortSignal) {
     return (
-      await apiRequest(endpoints.collections.previewRules, {
+      await apiRequest(collectionsRoutes.previewRules, {
         body: { rules, sampleSize: 10 },
         signal,
       })
     ).data as RulePreview;
   },
   async evaluate(id: string) {
-    return (await apiRequest(endpoints.collections.evaluate, { params: { id } })).data as Record<
+    return (await apiRequest(collectionsRoutes.evaluate, { params: { id } })).data as Record<
       string,
       unknown
     >;

@@ -22,7 +22,7 @@ import {
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/surface';
-import { endpoints } from '@/lib/api/endpoints';
+import { rolesRoutes } from '@/lib/api/routes/roles';
 import { isApiError } from '@/lib/api/errors';
 import { useRecentItems } from '@/lib/local-history';
 import { notifySuccess } from '@/lib/notify';
@@ -52,7 +52,7 @@ function RoleBadges({ role }: { role: RoleDto }) {
 export function RolesScreen() {
   const { canCall } = usePermissions();
   const id = useSearchParams().get('id');
-  if (!canCall(endpoints.roles.list)) {
+  if (!canCall(rolesRoutes.list)) {
     return <PermissionNotice area="roles and permissions" all={['system.role.read']} />;
   }
   return id ? <RoleDetail id={id} /> : <RolesList />;
@@ -63,7 +63,7 @@ function RolesList() {
   const router = useRouter();
   const params = useSearchParams();
   const { canCall } = usePermissions();
-  const creating = params.get('new') === '1' && canCall(endpoints.roles.create);
+  const creating = params.get('new') === '1' && canCall(rolesRoutes.create);
   const setCreating = (open: boolean) =>
     router.replace(open ? '/system/roles?new=1' : '/system/roles', { scroll: false });
 
@@ -73,7 +73,7 @@ function RolesList() {
         title="Roles & permissions"
         description="A role is a named set of permissions. Every admin gets one or more roles; the server checks their permissions on every action."
         actions={
-          <GuardedButton endpoint={endpoints.roles.create} onClick={() => setCreating(true)}>
+          <GuardedButton endpoint={rolesRoutes.create} onClick={() => setCreating(true)}>
             <Plus aria-hidden />
             New role
           </GuardedButton>
@@ -182,7 +182,7 @@ function RoleDetail({ id }: { id: string }) {
           <>
             <GuardedButton
               variant="outline"
-              endpoint={endpoints.roles.update}
+              endpoint={rolesRoutes.update}
               unavailableReason={
                 isSuper
                   ? 'Super Admin always allows everything; there is nothing to edit.'
@@ -196,7 +196,7 @@ function RoleDetail({ id }: { id: string }) {
             {data.isSystem ? null : (
               <GuardedButton
                 variant="outline"
-                endpoint={endpoints.roles.remove}
+                endpoint={rolesRoutes.remove}
                 onClick={() => setDeleting(true)}
               >
                 <Trash2 aria-hidden />

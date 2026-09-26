@@ -8,7 +8,7 @@ import { useController, type FieldPath, type FieldValues } from 'react-hook-form
 import { FormField } from '@/components/patterns/form/form-field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
 const MediaPicker = dynamic(() => import('../../media/media-picker').then((m) => m.MediaPicker), {
@@ -32,7 +32,7 @@ export function MediaField<T extends FieldValues>({
   const { field } = useController<T>({ name });
   const [picking, setPicking] = useState(false);
   const value = (field.value as string | undefined) ?? '';
-  const canPick = canCall(endpoints.media.list);
+  const canPick = canCall(mediaRoutes.list);
   return (
     <FormField<T> name={name} label={label} description={description}>
       {(control) => (

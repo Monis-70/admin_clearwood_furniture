@@ -20,7 +20,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 import { formatDateTime } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -104,7 +104,7 @@ function Detail({
   const [confirm, setConfirm] = useState<'trash' | 'permanent' | null>(null);
   const [focal, setFocal] = useState(asset.focalPoint);
   const refresh = () => void queryClient.invalidateQueries({ queryKey: mediaKeys.all });
-  const canEdit = canCall(endpoints.media.update) && !asset.deletedAt;
+  const canEdit = canCall(mediaRoutes.update) && !asset.deletedAt;
   const image = asset.kind === 'IMAGE';
 
   const action = useMutation({
@@ -290,7 +290,7 @@ function Detail({
             >
               Replace file…
             </Button>
-            {canCall(endpoints.media.reprocess) ? (
+            {canCall(mediaRoutes.reprocess) ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -306,7 +306,7 @@ function Detail({
           </>
         ) : null}
         {asset.deletedAt ? (
-          canCall(endpoints.media.restore) ? (
+          canCall(mediaRoutes.restore) ? (
             <Button
               size="sm"
               onClick={() =>
@@ -318,7 +318,7 @@ function Detail({
               Restore
             </Button>
           ) : null
-        ) : canCall(endpoints.media.remove) ? (
+        ) : canCall(mediaRoutes.remove) ? (
           <Button
             size="sm"
             variant="outline"
@@ -328,7 +328,7 @@ function Detail({
             Move to trash…
           </Button>
         ) : null}
-        {asset.deletedAt && canCall(endpoints.media.removePermanently) ? (
+        {asset.deletedAt && canCall(mediaRoutes.removePermanently) ? (
           <Button
             size="sm"
             variant="destructive"

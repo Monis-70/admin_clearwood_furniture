@@ -7,7 +7,7 @@ import { z } from 'zod';
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
-import { endpoints } from '@/lib/api/endpoints';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { formatDate, formatNumber } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -40,7 +40,7 @@ type Values = z.input<typeof schema>;
 export function SeoTab({ product }: { product: AdminProductDetailDto }) {
   const queryClient = useQueryClient();
   const { canCall } = usePermissions();
-  const canEdit = canCall(endpoints.products.update) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.update) && !product.deletedAt;
 
   return (
     <div className="flex flex-col gap-6">
@@ -87,7 +87,7 @@ export function SeoTab({ product }: { product: AdminProductDetailDto }) {
           <TextAreaField<Values> name="searchKeywords" label="Search keywords" rows={2} />
         </FormSection>
       </EditorForm>
-      {canCall(endpoints.products.redirects) ? <Redirects product={product} /> : null}
+      {canCall(productsRoutes.redirects) ? <Redirects product={product} /> : null}
       <SearchAndSeoPanels product={product} />
     </div>
   );

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { mediaRoutes } from '@/lib/api/routes/media';
 import { notifyError, notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -58,7 +58,7 @@ export function FoldersDialog({ folders, onClose }: { folders: FlatFolder[]; onC
             className="flex items-center gap-2 px-3 py-2"
             style={{ paddingLeft: `${0.75 + folder.depth}rem` }}
           >
-            {canCall(endpoints.media.updateFolder) && !folder.isSystem ? (
+            {canCall(mediaRoutes.updateFolder) && !folder.isSystem ? (
               <Input
                 aria-label={`Name of ${folder.name}`}
                 defaultValue={folder.name}
@@ -74,7 +74,7 @@ export function FoldersDialog({ folders, onClose }: { folders: FlatFolder[]; onC
             )}
             {folder.isSystem ? <Badge tone="neutral">System</Badge> : null}
             <span className="tabular text-xs text-muted-foreground">{folder.mediaCount ?? 0}</span>
-            {canCall(endpoints.media.removeFolder) && !folder.isSystem ? (
+            {canCall(mediaRoutes.removeFolder) && !folder.isSystem ? (
               <Button
                 size="icon-sm"
                 variant="ghost"
@@ -87,7 +87,7 @@ export function FoldersDialog({ folders, onClose }: { folders: FlatFolder[]; onC
           </li>
         ))}
       </ul>
-      {canCall(endpoints.media.createFolder) ? (
+      {canCall(mediaRoutes.createFolder) ? (
         <form
           className="flex flex-col gap-2"
           onSubmit={(event) => {

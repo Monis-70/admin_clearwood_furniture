@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { brandsRoutes } from '@/lib/api/routes/brands';
 import { formatRelative } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -35,7 +35,7 @@ const BrandDialog = dynamic(() => import('./brand-dialog').then((m) => m.BrandDi
 
 export function BrandsScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.brands.list))
+  if (!canCall(brandsRoutes.list))
     return <PermissionNotice area="brands" all={['catalog.product.read']} />;
   return <BrandsList />;
 }
@@ -57,7 +57,7 @@ function BrandsList() {
     ...cachePolicy.list,
   });
   const refresh = () => void queryClient.invalidateQueries({ queryKey: taxonomyKeys.brands });
-  const canEdit = canCall(endpoints.brands.update);
+  const canEdit = canCall(brandsRoutes.update);
 
   const columns: DataTableColumn<BrandRow>[] = [
     {
@@ -111,7 +111,7 @@ function BrandsList() {
       meta: { label: 'Actions', align: 'right', mobile: 'detail' },
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) =>
-        canEdit || canCall(endpoints.brands.remove) ? (
+        canEdit || canCall(brandsRoutes.remove) ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -126,7 +126,7 @@ function BrandsList() {
               {canEdit ? (
                 <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
               ) : null}
-              {canCall(endpoints.brands.remove) ? (
+              {canCall(brandsRoutes.remove) ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -149,7 +149,7 @@ function BrandsList() {
         title="Brands"
         description="Brand names shown on products and used as a storefront filter."
         actions={
-          canCall(endpoints.brands.create) ? (
+          canCall(brandsRoutes.create) ? (
             <Button onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               New brand

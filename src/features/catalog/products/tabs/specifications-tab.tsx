@@ -14,7 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
-import { endpoints } from '@/lib/api/endpoints';
+import { categoriesRoutes } from '@/lib/api/routes/categories';
+import { productsRoutes } from '@/lib/api/routes/products';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
@@ -79,10 +80,10 @@ export function SpecificationsTab({ product }: { product: AdminProductDetailDto 
   const links = useQuery({
     queryKey: taxonomyKeys.categoryPart(primary ?? '-', 'attributes'),
     queryFn: ({ signal }) => categoriesApi.attributes(primary!, signal),
-    enabled: Boolean(primary) && canCall(endpoints.categories.attributes),
+    enabled: Boolean(primary) && canCall(categoriesRoutes.attributes),
     ...cachePolicy.reference,
   });
-  const canEdit = canCall(endpoints.products.setAttributeValues) && !product.deletedAt;
+  const canEdit = canCall(productsRoutes.setAttributeValues) && !product.deletedAt;
   const gate = usePublishBlockers(product);
   const foreign = new Set(
     (gate.data ?? [])

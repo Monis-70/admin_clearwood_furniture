@@ -9,7 +9,7 @@ import type { AdminProductDetailDto, AdminVariantDto } from '@shared/types/catal
 import { StatusBadge } from '@/components/patterns/status-badge';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { inventoryRoutes } from '@/lib/api/routes/inventory';
 import { formatNumber } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -27,7 +27,7 @@ export const variantLabel = (variant: Pick<AdminVariantDto, 'name' | 'sku'>) =>
 export function InventoryTab({ product }: { product: AdminProductDetailDto }) {
   const { canCall } = usePermissions();
   const [adjusting, setAdjusting] = useState<AdminVariantDto | null>(null);
-  const canAdjust = canCall(endpoints.inventory.adjust) && !product.deletedAt;
+  const canAdjust = canCall(inventoryRoutes.adjust) && !product.deletedAt;
   const variants = product.variants;
 
   return (
@@ -113,7 +113,7 @@ export function InventoryTab({ product }: { product: AdminProductDetailDto }) {
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex justify-end gap-2">
-                      {canCall(endpoints.inventory.history) ? (
+                      {canCall(inventoryRoutes.history) ? (
                         <Button asChild size="sm" variant="ghost">
                           <Link
                             href={`/catalog/inventory?variantId=${encodeURIComponent(variant.id)}`}

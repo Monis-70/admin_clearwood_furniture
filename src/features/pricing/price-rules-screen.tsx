@@ -23,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { endpoints } from '@/lib/api/endpoints';
+import { priceAdjustmentsRoutes } from '@/lib/api/routes/priceAdjustments';
 import { formatDate } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -46,7 +46,7 @@ const SCOPE_OPTIONS = Object.entries(ADJUSTMENT_SCOPES).map(([value, label]) => 
 
 export function PriceRulesScreen() {
   const { canCall } = usePermissions();
-  if (!canCall(endpoints.priceAdjustments.list))
+  if (!canCall(priceAdjustmentsRoutes.list))
     return <PermissionNotice area="price rules" all={['pricing.adjustment.read']} />;
   return <PriceRules />;
 }
@@ -79,7 +79,7 @@ function PriceRules() {
   const conflicts = useQuery({
     queryKey: pricingKeys.conflicts(),
     queryFn: ({ signal }) => priceAdjustmentsApi.conflicts(signal),
-    enabled: canCall(endpoints.priceAdjustments.conflicts),
+    enabled: canCall(priceAdjustmentsRoutes.conflicts),
     ...cachePolicy.list,
   });
   const refresh = () => void queryClient.invalidateQueries({ queryKey: pricingKeys.adjustments });
@@ -169,7 +169,7 @@ function PriceRules() {
       meta: { label: 'Actions', align: 'right', mobile: 'detail' },
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) =>
-        canCall(endpoints.priceAdjustments.update) || canCall(endpoints.priceAdjustments.remove) ? (
+        canCall(priceAdjustmentsRoutes.update) || canCall(priceAdjustmentsRoutes.remove) ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -181,10 +181,10 @@ function PriceRules() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {canCall(endpoints.priceAdjustments.update) ? (
+              {canCall(priceAdjustmentsRoutes.update) ? (
                 <DropdownMenuItem onSelect={() => setEditing(row.original)}>Edit</DropdownMenuItem>
               ) : null}
-              {canCall(endpoints.priceAdjustments.remove) ? (
+              {canCall(priceAdjustmentsRoutes.remove) ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -207,7 +207,7 @@ function PriceRules() {
         title="Price rules"
         description="Discounts and surcharges the pricing engine applies on top of base prices, in priority order (lowest number first)."
         actions={
-          canCall(endpoints.priceAdjustments.create) ? (
+          canCall(priceAdjustmentsRoutes.create) ? (
             <Button onClick={() => setEditing('new')}>
               <Plus aria-hidden />
               New price rule

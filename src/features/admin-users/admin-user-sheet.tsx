@@ -17,7 +17,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { endpoints } from '@/lib/api/endpoints';
+import { rolesRoutes } from '@/lib/api/routes/roles';
 import { formatDateTime, formatRelative } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -33,7 +33,7 @@ function EffectivePermissions({ user }: { user: AdminUserDto }) {
   const details = useRoleDetails(roleIds);
   const registry = usePermissionRegistry();
 
-  if (!canCall(endpoints.roles.get)) {
+  if (!canCall(rolesRoutes.get)) {
     return <PermissionNotice area="what each role allows" all={['system.role.read']} compact />;
   }
   if (user.roles.length === 0) {

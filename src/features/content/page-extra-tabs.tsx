@@ -13,7 +13,7 @@ import {
   SectionLoader,
 } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
 import { formatDateTime } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
 import { usePermissions } from '@/lib/permissions/use-permissions';
@@ -36,7 +36,7 @@ export function PageHistory({
     queryFn: ({ signal }) => contentApi.revisions(page.id, signal),
     ...cachePolicy.list,
   });
-  if (!canCall(endpoints.content.revisions))
+  if (!canCall(contentRoutes.revisions))
     return <PermissionNotice area="page history" all={['cms.page.read']} compact />;
   if (revisions.isPending) return <SectionLoader label="Loading history…" />;
   if (revisions.error)
@@ -50,7 +50,7 @@ export function PageHistory({
         compact
       />
     );
-  const canRestore = canCall(endpoints.content.restoreRevision);
+  const canRestore = canCall(contentRoutes.restoreRevision);
   return (
     <>
       <ol className="flex flex-col divide-y rounded-md border bg-card" aria-label="Page versions">
@@ -160,10 +160,10 @@ export function PageSeo({ page }: { page: CmsPage }) {
   const meta = useQuery({
     queryKey: contentKeys.seoPreview('PAGE', page.id),
     queryFn: ({ signal }) => contentApi.seoPreview('PAGE', page.id, signal),
-    enabled: canCall(endpoints.content.seoPreview),
+    enabled: canCall(contentRoutes.seoPreview),
     ...cachePolicy.diagnostic,
   });
-  if (!canCall(endpoints.content.seoPreview))
+  if (!canCall(contentRoutes.seoPreview))
     return <PermissionNotice area="the search preview" all={['cms.page.read']} compact />;
   if (meta.isPending) return <SectionLoader label="Loading preview…" />;
   if (meta.error)

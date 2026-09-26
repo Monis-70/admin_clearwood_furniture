@@ -21,7 +21,8 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { endpoints } from '@/lib/api/endpoints';
+import { auditRoutes } from '@/lib/api/routes/audit';
+import { categoriesRoutes } from '@/lib/api/routes/categories';
 import { hasCode } from '@/lib/api/errors';
 import { formatCount, formatDate, formatNumber, formatRelative } from '@/lib/format/datetime';
 import { notifyError, notifySuccess } from '@/lib/notify';
@@ -129,7 +130,7 @@ function Editor({
 }) {
   const { canCall } = usePermissions();
   const queryClient = useQueryClient();
-  const canEdit = canCall(endpoints.categories.update) && !category.deletedAt;
+  const canEdit = canCall(categoriesRoutes.update) && !category.deletedAt;
 
   const issues: WorkbenchIssue[] = [];
   if (!category.isActive)
@@ -178,7 +179,7 @@ function Editor({
         ]}
         actions={
           <>
-            {canCall(endpoints.categories.create) && !category.deletedAt ? (
+            {canCall(categoriesRoutes.create) && !category.deletedAt ? (
               <Button
                 size="sm"
                 variant="outline"
@@ -187,7 +188,7 @@ function Editor({
                 Add subcategory
               </Button>
             ) : null}
-            {canCall(endpoints.categories.move) && !category.deletedAt ? (
+            {canCall(categoriesRoutes.move) && !category.deletedAt ? (
               <Button
                 size="sm"
                 variant="outline"
@@ -196,7 +197,7 @@ function Editor({
                 Move…
               </Button>
             ) : null}
-            {canCall(endpoints.categories.remove) && !category.deletedAt ? (
+            {canCall(categoriesRoutes.remove) && !category.deletedAt ? (
               <Button
                 size="sm"
                 variant="outline"
@@ -209,13 +210,13 @@ function Editor({
           </>
         }
         history={
-          canCall(endpoints.audit.list) ? { entity: 'Category', entityId: category.id } : undefined
+          canCall(auditRoutes.list) ? { entity: 'Category', entityId: category.id } : undefined
         }
       />
       <Tabs defaultValue="details">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="details">Details</TabsTrigger>
-          {canCall(endpoints.categories.attributes) ? (
+          {canCall(categoriesRoutes.attributes) ? (
             <TabsTrigger value="attributes">Attributes</TabsTrigger>
           ) : null}
           <TabsTrigger value="products">Products</TabsTrigger>
@@ -308,7 +309,7 @@ function Editor({
             </FormSection>
           </EditorForm>
         </TabsContent>
-        {canCall(endpoints.categories.attributes) ? (
+        {canCall(categoriesRoutes.attributes) ? (
           <TabsContent value="attributes" className="pt-4">
             <CategoryAttributes category={category} />
           </TabsContent>
@@ -334,7 +335,7 @@ function CategoryAttributes({ category }: { category: AdminCategoryDto }) {
     queryFn: ({ signal }) => categoriesApi.attributes(category.id, signal),
     ...cachePolicy.detail,
   });
-  const canEdit = canCall(endpoints.categories.linkAttribute) && !category.deletedAt;
+  const canEdit = canCall(categoriesRoutes.linkAttribute) && !category.deletedAt;
   const refresh = () =>
     void queryClient.invalidateQueries({
       queryKey: taxonomyKeys.categoryPart(category.id, 'attributes'),
@@ -405,7 +406,7 @@ function CategoryAttributes({ category }: { category: AdminCategoryDto }) {
                       : 'Variant option'}
                 </label>
               ))}
-              {canCall(endpoints.categories.unlinkAttribute) && !category.deletedAt ? (
+              {canCall(categoriesRoutes.unlinkAttribute) && !category.deletedAt ? (
                 <Button
                   size="icon-sm"
                   variant="ghost"
@@ -479,7 +480,7 @@ function CategoryProducts({ category }: { category: AdminCategoryDto }) {
       }),
     onError: (error) => notifyError(error, 'Could not reorder'),
   });
-  const canReorder = canCall(endpoints.categories.reorderProducts) && !category.deletedAt;
+  const canReorder = canCall(categoriesRoutes.reorderProducts) && !category.deletedAt;
 
   if (products.isPending) return <SectionLoader label="Loading products…" />;
   if (products.error)

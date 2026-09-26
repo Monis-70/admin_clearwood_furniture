@@ -7,7 +7,8 @@ import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
 
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/api/endpoints';
+import { contentRoutes } from '@/lib/api/routes/content';
+import { searchRoutes } from '@/lib/api/routes/search';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 import { cachePolicy } from '@/lib/query/policies';
 
@@ -54,7 +55,7 @@ export function SearchAndSeoPanels({ product }: { product: AdminProductDetailDto
 
   return (
     <>
-      {canCall(endpoints.content.seoPreview) ? (
+      {canCall(contentRoutes.seoPreview) ? (
         <section
           aria-labelledby="seo-preview"
           className="flex flex-col gap-3 rounded-lg border bg-card p-4 sm:p-5"
@@ -87,7 +88,7 @@ export function SearchAndSeoPanels({ product }: { product: AdminProductDetailDto
           ) : null}
         </section>
       ) : null}
-      {canCall(endpoints.search.productDocument) ? (
+      {canCall(searchRoutes.productDocument) ? (
         <section
           aria-labelledby="search-document"
           className="flex flex-col gap-3 rounded-lg border bg-card p-4 sm:p-5"
