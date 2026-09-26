@@ -7,8 +7,8 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 
-# tests
-coverage/
+# tests (root-level output only: scripts/coverage/ is the coverage gate's source)
+/coverage/
 playwright-report/
 test-results/
 blob-report/
