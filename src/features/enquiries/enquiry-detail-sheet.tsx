@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { KeyValueList } from '@/components/patterns/key-value-list';
+import { EntityHistory } from '@/features/audit/entity-history';
 import { ErrorState, SectionLoader } from '@/components/patterns/states';
 import { StatusBadge } from '@/components/patterns/status-badge';
 import {
@@ -129,6 +130,12 @@ function EnquiryDetail({ id }: { id: string }) {
           </div>
         ) : null}
         <EnquiryActions enquiry={e} />
+        <details>
+          <summary className="cursor-pointer text-sm font-semibold">Change history</summary>
+          <div className="mt-2">
+            <EntityHistory entity="Enquiry" entityId={e.id} />
+          </div>
+        </details>
         <p className="text-xs text-muted-foreground">
           An enquiry is never an order: prices, quotes and any order are handled outside it. The API
           keeps status, assignment and one internal note; it has no quote or conversation history.

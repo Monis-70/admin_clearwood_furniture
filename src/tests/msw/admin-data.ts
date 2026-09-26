@@ -584,4 +584,13 @@ export const adminDataHandlers = [
       );
     }),
   ),
+  // Order work queues on the dashboard: an empty store by default.
+  http.get(
+    `${API}/admin/orders`,
+    route(['order.order.read'], (request) => paged(request, [])),
+  ),
+  http.get(
+    `${API}/admin/ndr`,
+    route(['order.order.read'], (request) => paged(request, [])),
+  ),
 ];

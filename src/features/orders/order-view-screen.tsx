@@ -23,6 +23,7 @@ import { StatusBadge } from '@/components/patterns/status-badge';
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { EntityHistory } from '@/features/audit/entity-history';
 import { useIdempotencyKey } from '@/lib/api/idempotency';
 import { ordersRoutes } from '@/lib/api/routes/orders';
 import { formatDateTime } from '@/lib/format/datetime';
@@ -489,6 +490,25 @@ function Documents({ order }: { order: AdminOrderDetailDto }) {
 
 function History({ order }: { order: AdminOrderDetailDto }) {
   const entries = [...order.timeline].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return (
+    <div className="flex flex-col gap-6">
+      <section aria-labelledby="order-timeline" className="flex flex-col gap-2">
+        <h2 id="order-timeline" className="text-sm font-semibold">
+          Status history
+        </h2>
+        <Timeline entries={entries} />
+      </section>
+      <section aria-labelledby="order-audit" className="flex flex-col gap-2">
+        <h2 id="order-audit" className="text-sm font-semibold">
+          Admin actions
+        </h2>
+        <EntityHistory entity="Order" entityId={order.id} />
+      </section>
+    </div>
+  );
+}
+
+function Timeline({ entries }: { entries: AdminOrderDetailDto['timeline'] }) {
   if (entries.length === 0) return <EmptyState title="No history yet" compact />;
   return (
     <ol className="flex flex-col divide-y rounded-md border" aria-label="Order history">

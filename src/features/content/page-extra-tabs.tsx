@@ -13,6 +13,7 @@ import {
   SectionLoader,
 } from '@/components/patterns/states';
 import { Button } from '@/components/ui/button';
+import { EntityHistory } from '@/features/audit/entity-history';
 import { contentRoutes } from '@/lib/api/routes/content';
 import { formatDateTime } from '@/lib/format/datetime';
 import { notifySuccess } from '@/lib/notify';
@@ -53,6 +54,13 @@ export function PageHistory({
   const canRestore = canCall(contentRoutes.restoreRevision);
   return (
     <>
+      <section aria-labelledby="page-audit" className="mb-4 flex flex-col gap-2">
+        <h2 id="page-audit" className="text-sm font-semibold">
+          Who changed what
+        </h2>
+        <EntityHistory entity="Page" entityId={page.id} />
+      </section>
+      <h2 className="mb-2 text-sm font-semibold">Saved versions</h2>
       <ol className="flex flex-col divide-y rounded-md border bg-card" aria-label="Page versions">
         {[...revisions.data]
           .sort((a, b) => b.version - a.version)

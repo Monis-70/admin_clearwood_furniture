@@ -103,6 +103,18 @@ describe('HomeScreen', () => {
     expect(hrefs).not.toContain('/system/roles');
   });
 
+  it('shows order work to order roles only', async () => {
+    signInAs(account({ role: 'ORDER_MANAGER' }));
+    renderHome();
+    const orders = (await screen.findByRole('heading', { name: 'Orders to prepare' })).closest(
+      'section',
+    )!;
+    expect(await within(orders).findByText('No confirmed order is waiting.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Delivery problems' })).toBeInTheDocument();
+    const call = callsTo('/api/v1/admin/orders')[0]!;
+    expect(call).toBeDefined();
+  });
+
   it('lists no "being built" areas once every phase is delivered, and offers the new ones', async () => {
     signInAs(account({ role: 'CATALOG_MANAGER' }));
     renderHome();

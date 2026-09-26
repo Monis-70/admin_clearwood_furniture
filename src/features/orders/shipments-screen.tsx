@@ -55,6 +55,10 @@ const CancelShipmentDialog = dynamic(
 const NdrActionDialog = dynamic(() => import('./shipment-dialogs').then((m) => m.NdrActionDialog), {
   ssr: false,
 });
+const EntityHistory = dynamic(
+  () => import('@/features/audit/entity-history').then((m) => m.EntityHistory),
+  { ssr: false },
+);
 
 const HREF = '/orders/shipments';
 
@@ -340,6 +344,12 @@ function ShipmentSheet({ shipmentNumber, onClose }: { shipmentNumber: string; on
                   </ol>
                 )}
               </section>
+              <details>
+                <summary className="cursor-pointer text-sm font-semibold">Admin actions</summary>
+                <div className="mt-2">
+                  <EntityHistory entity="Shipment" entityId={s.id} />
+                </div>
+              </details>
             </div>
             {dialog === 'awb' ? (
               <AwbDialog shipment={s} onClose={() => setDialog(null)} onDone={done} />

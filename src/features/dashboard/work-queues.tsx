@@ -1,6 +1,15 @@
 'use client';
 
-import { FileWarning, ImageOff, Inbox, PackageOpen, ScrollText, Warehouse } from 'lucide-react';
+import {
+  FileWarning,
+  ImageOff,
+  Inbox,
+  PackageOpen,
+  ScrollText,
+  ShoppingBag,
+  TriangleAlert,
+  Warehouse,
+} from 'lucide-react';
 import Link from 'next/link';
 
 import { StatusBadge } from '@/components/patterns/status-badge';
@@ -9,9 +18,12 @@ import { auditApi } from '@/features/audit/api';
 import { catalogApi, type ProductListQuery } from '@/features/catalog/api';
 import { STOCK_STATUS } from '@/features/catalog/model';
 import { enquiriesApi } from '@/features/enquiries/api';
+import { ordersApi, shipmentsApi } from '@/features/orders/api';
 import { auditRoutes } from '@/lib/api/routes/audit';
 import { catalogRoutes } from '@/lib/api/routes/catalog';
 import { enquiriesRoutes } from '@/lib/api/routes/enquiries';
+import { ordersRoutes } from '@/lib/api/routes/orders';
+import { shipmentsRoutes } from '@/lib/api/routes/shipments';
 import { formatNumber, formatRelative } from '@/lib/format/datetime';
 import { usePermissions } from '@/lib/permissions/use-permissions';
 
@@ -29,6 +41,8 @@ const INCOMPLETE = productQueue({ completenessMax: 49 });
 const NEW_ENQUIRIES = { ...TOP, order: 'desc' as const, status: 'NEW' as const };
 const LOW_STOCK = { ...TOP, order: 'desc' as const };
 const ACTIVITY = { ...TOP, order: 'desc' as const };
+const TO_PREPARE = { ...TOP, order: 'asc' as const, sort: 'createdAt', status: 'CONFIRMED' };
+const NDR_OPEN = { ...TOP, status: 'OPEN' };
 
 function ProductLink({ id, name, sku }: { id: string; name: string; sku: string }) {
   return (
@@ -53,6 +67,57 @@ export function WorkQueues() {
   const { canCall } = usePermissions();
   const products = canCall(catalogRoutes.products);
   const queues = [
+    canCall(ordersRoutes.list) ? (
+      <WorkQueue
+        key="orders"
+        title="Orders to prepare"
+        description="Confirmed orders not yet being processed, oldest first."
+        icon={ShoppingBag}
+        queryKey={['dashboard', 'orders', TO_PREPARE]}
+        load={(signal) => ordersApi.list(TO_PREPARE, signal)}
+        rowKey={(row) => row.id}
+        renderRow={(row) => (
+          <>
+            <Link
+              href={`/orders/view?id=${encodeURIComponent(row.id)}`}
+              className="min-w-0 truncate font-medium hover:underline"
+            >
+              {row.orderNumber}
+            </Link>
+            <span className="shrink-0 text-xs text-muted-foreground">
+              {formatRelative(row.placedAt ?? row.createdAt)}
+            </span>
+          </>
+        )}
+        href="/orders?status=CONFIRMED"
+        emptyText="No confirmed order is waiting."
+      />
+    ) : null,
+    canCall(shipmentsRoutes.ndr) ? (
+      <WorkQueue
+        key="ndr"
+        title="Delivery problems"
+        description="Failed delivery attempts waiting for a decision."
+        icon={TriangleAlert}
+        tone="danger"
+        queryKey={['dashboard', 'ndr', NDR_OPEN]}
+        load={(signal) => shipmentsApi.ndr(NDR_OPEN, signal)}
+        rowKey={(row) => row.id}
+        renderRow={(row) => (
+          <>
+            <span className="min-w-0 truncate">
+              <span className="font-medium">{row.shipmentNumber}</span>{' '}
+              <span className="text-muted-foreground">{row.reason}</span>
+            </span>
+            <span className="shrink-0 text-xs text-muted-foreground">
+              {formatRelative(row.raisedAt)}
+            </span>
+          </>
+        )}
+        href="/orders/shipments?tab=ndr"
+        emptyText="No open delivery problems."
+      />
+    ) : null,
     canCall(enquiriesRoutes.list) ? (
       <WorkQueue
         key="enquiries"
