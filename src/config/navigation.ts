@@ -4,6 +4,7 @@ import {
   BadgePercent,
   Calculator,
   ClipboardList,
+  DatabaseZap,
   FileText,
   FolderTree,
   HardHat,
@@ -12,10 +13,12 @@ import {
   IndianRupee,
   Layers,
   LayoutDashboard,
+  ListTree,
   Package,
   PanelTop,
   Receipt,
   ScrollText,
+  Search,
   Settings2,
   ShieldCheck,
   Sparkles,
@@ -275,28 +278,28 @@ export const NAVIGATION: readonly NavGroup[] = [
         id: 'search-insights',
         label: 'Search insights',
         href: '/search/insights',
-        // icon: Search
+        icon: Search,
         requires: { all: ['catalog.product.update'] },
         phase: 6,
-        // description: 'What customers search for and miss.'
+        description: 'What customers search for and miss.',
       },
       {
         id: 'synonyms',
         label: 'Synonyms',
         href: '/search/synonyms',
-        // icon: ListTree
+        icon: ListTree,
         requires: { all: ['catalog.product.update'] },
         phase: 6,
-        // description: 'Words that should find the same products.'
+        description: 'Words that should find the same products.',
       },
       {
         id: 'search-index',
         label: 'Index maintenance',
         href: '/search/index',
-        // icon: Activity
+        icon: DatabaseZap,
         requires: { all: ['catalog.product.update'] },
         phase: 6,
-        // description: 'Rebuild the search index and popularity.'
+        description: 'Rebuild the search index and popularity.',
       },
     ],
   },

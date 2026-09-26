@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import { z } from 'zod';
 
 import type { AdminProductDetailDto } from '@shared/types/catalogAdmin';
@@ -22,6 +23,11 @@ import {
 import { productsApi, productKeys } from '../api';
 
 import { ReadOnlyNotice, productConflict, saveProduct } from './shared';
+
+const SearchAndSeoPanels = dynamic(
+  () => import('./seo/search-and-seo-panels').then((m) => m.SearchAndSeoPanels),
+  { ssr: false },
+);
 
 const schema = z.object({
   seoTitle: optionalText(180),
@@ -82,6 +88,7 @@ export function SeoTab({ product }: { product: AdminProductDetailDto }) {
         </FormSection>
       </EditorForm>
       {canCall(endpoints.products.redirects) ? <Redirects product={product} /> : null}
+      <SearchAndSeoPanels product={product} />
     </div>
   );
 }

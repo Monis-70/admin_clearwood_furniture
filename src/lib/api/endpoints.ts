@@ -453,6 +453,46 @@ export const endpoints = {
       access: requires('pricing.tax.update'),
     }),
   },
+  search: {
+    analytics: endpoint('GET', '/admin/search/analytics', {
+      access: requires('catalog.product.update'),
+    }),
+    synonyms: endpoint('GET', '/admin/search/synonyms', {
+      access: requires('catalog.product.update'),
+    }),
+    createSynonym: endpoint('POST', '/admin/search/synonyms', {
+      access: requires('catalog.product.update'),
+    }),
+    updateSynonym: endpoint('PATCH', '/admin/search/synonyms/{term}', {
+      access: requires('catalog.product.update'),
+    }),
+    removeSynonym: endpoint('DELETE', '/admin/search/synonyms/{term}', {
+      access: requires('catalog.product.update'),
+    }),
+    jobs: endpoint('GET', '/admin/search/jobs', { access: requires('catalog.product.update') }),
+    job: endpoint('GET', '/admin/search/jobs/{id}', { access: requires('catalog.product.update') }),
+    reindex: endpoint('POST', '/admin/search/reindex', {
+      access: requires('catalog.product.update'),
+      long: true,
+    }),
+    recomputePopularity: endpoint('POST', '/admin/search/popularity/recompute', {
+      access: requires('catalog.product.update'),
+      long: true,
+    }),
+    productDocument: endpoint('GET', '/admin/catalog/products/{id}/search-document', {
+      access: requires('catalog.product.read'),
+    }),
+  },
+  maintenance: {
+    evaluateAllCollections: endpoint('POST', '/admin/collections/evaluate-all', {
+      access: requires('catalog.collection.update'),
+      long: true,
+    }),
+    storageReport: endpoint('GET', '/admin/media/gc', {
+      access: requires('media.asset.delete'),
+      long: true,
+    }),
+  },
   importExport: {
     exportCsv: endpoint('GET', '/admin/catalog/export/{entity}', {
       access: requires('catalog.product.export'),
@@ -531,6 +571,13 @@ export const endpoints = {
   content: {
     pages: endpoint('GET', '/admin/cms/pages', { access: requires('cms.page.read') }),
     banners: endpoint('GET', '/admin/cms/banners', { access: requires('cms.banner.read') }),
+    seoPreview: endpoint('GET', '/admin/seo/preview/{type}/{id}', {
+      access: requires('cms.page.read'),
+    }),
+    rebuildSitemap: endpoint('POST', '/admin/seo/sitemap/rebuild', {
+      access: requires('cms.page.update'),
+      long: true,
+    }),
   },
   enquiries: {
     list: endpoint('GET', '/admin/enquiries', { access: requires('lead.enquiry.read') }),

@@ -1,4 +1,4 @@
-import { apiPage, type Page } from '@/lib/api/client';
+import { apiPage, apiRequest, type Page } from '@/lib/api/client';
 import { endpoints } from '@/lib/api/endpoints';
 
 /** Fields of `GET /admin/cms/pages` rows the list shows (the API also returns every block). */
@@ -53,9 +53,19 @@ export const contentKeys = {
   all: ['content'] as const,
   pages: (query: PageListQuery) => [...contentKeys.all, 'pages', query] as const,
   banners: (query: BannerListQuery) => [...contentKeys.all, 'banners', query] as const,
+  seoPreview: (type: string, id: string) => [...contentKeys.all, 'seo', type, id] as const,
 };
 
 export const contentApi = {
+  async seoPreview(type: string, id: string, signal?: AbortSignal) {
+    return (await apiRequest(endpoints.content.seoPreview, { params: { type, id }, signal }))
+      .data as Record<string, unknown>;
+  },
+  async rebuildSitemap() {
+    return (await apiRequest(endpoints.content.rebuildSitemap)).data as {
+      sections?: Record<string, number>;
+    };
+  },
   pages(query: PageListQuery, signal?: AbortSignal): Promise<Page<CmsPageRow>> {
     return apiPage<CmsPageRow>(endpoints.content.pages, { query: { ...query }, signal });
   },

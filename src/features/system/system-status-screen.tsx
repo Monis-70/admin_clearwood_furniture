@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 import { KeyValueList } from '@/components/patterns/key-value-list';
 import { ON_HOLD_COPY } from '@/components/patterns/on-hold-notice';
@@ -22,6 +23,13 @@ import { cachePolicy } from '@/lib/query/policies';
 
 import { systemApi, systemKeys, type DependencyStatus, type ReadinessInfo } from './api';
 import { integrationsFrom, type IntegrationState } from './integrations';
+
+const MaintenancePanel = dynamic(
+  () => import('./maintenance-panel').then((m) => m.MaintenancePanel),
+  {
+    ssr: false,
+  },
+);
 
 const READINESS: StatusRegistry<ReadinessInfo['status']> = {
   ready: { label: 'Ready', tone: 'success', description: 'Database and cache are answering.' },
@@ -249,6 +257,7 @@ export function SystemStatusScreen() {
           )}
         </CardContent>
       </Card>
+      <MaintenancePanel />
     </>
   );
 }
