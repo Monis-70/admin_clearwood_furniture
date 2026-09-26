@@ -3,6 +3,7 @@ import {
   Award,
   BadgePercent,
   Calculator,
+  CircleHelp,
   ClipboardList,
   DatabaseZap,
   FileText,
@@ -13,15 +14,21 @@ import {
   IndianRupee,
   Layers,
   LayoutDashboard,
+  LifeBuoy,
   ListTree,
+  Megaphone,
+  Menu,
   Package,
   PanelTop,
+  Quote,
   Receipt,
   ScrollText,
   Search,
+  Settings,
   Settings2,
   ShieldCheck,
   Sparkles,
+  Store,
   Tags,
   TicketPercent,
   Truck,
@@ -331,64 +338,64 @@ export const NAVIGATION: readonly NavGroup[] = [
         id: 'announcements',
         label: 'Announcements',
         href: '/content/announcements',
-        // icon: Megaphone
+        icon: Megaphone,
         requires: { all: ['cms.banner.read'] },
         phase: 7,
-        // description: 'The announcement bar above the storefront.'
+        description: 'The announcement bar above the storefront.',
       },
       {
         id: 'faqs',
         label: 'FAQs',
         href: '/content/faqs',
-        // icon: CircleHelp
+        icon: CircleHelp,
         requires: { all: ['cms.faq.read'] },
         phase: 7,
-        // description: 'Questions and answers by category.'
+        description: 'Questions and answers by category.',
       },
       {
         id: 'help-centre',
         label: 'Help centre',
         href: '/content/help-centre',
-        // icon: LifeBuoy
+        icon: LifeBuoy,
         requires: { all: ['cms.page.read'] },
         phase: 7,
-        // description: 'Help articles and their categories.'
+        description: 'Help articles and their categories.',
       },
       {
         id: 'testimonials',
         label: 'Testimonials',
         href: '/content/testimonials',
-        // icon: Quote
+        icon: Quote,
         requires: { all: ['cms.page.read'] },
         phase: 7,
-        // description: 'Customer quotes shown on the storefront.'
+        description: 'Customer quotes shown on the storefront.',
       },
       {
         id: 'stores',
         label: 'Stores',
         href: '/content/stores',
-        // icon: Store
+        icon: Store,
         requires: { all: ['cms.page.read'] },
         phase: 7,
-        // description: 'Showroom locations and opening hours.'
+        description: 'Showroom locations and opening hours.',
       },
       {
         id: 'navigation',
         label: 'Navigation menus',
         href: '/content/navigation',
-        // icon: Menu
+        icon: Menu,
         requires: { all: ['cms.navigation.read'] },
         phase: 7,
-        // description: 'Header, footer and mobile menus.'
+        description: 'Header, footer and top-bar menus.',
       },
       {
         id: 'site-settings',
         label: 'Site & SEO settings',
         href: '/content/site-settings',
-        // icon: Settings
+        icon: Settings,
         requires: { all: ['system.setting.read'] },
         phase: 7,
-        // description: 'Store details, SEO defaults and sitemap.'
+        description: 'Contact details, SEO defaults and sitemap.',
       },
     ],
   },

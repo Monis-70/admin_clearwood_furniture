@@ -3,4 +3,4 @@
  * Navigation shows entries up to this phase; `npm run coverage:check` requires every route
  * planned for this phase or earlier to be wired in the endpoint registry.
  */
-export const IMPLEMENTED_THROUGH_PHASE = 6;
+export const IMPLEMENTED_THROUGH_PHASE = 7;
