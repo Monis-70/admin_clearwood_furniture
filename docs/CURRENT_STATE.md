@@ -80,6 +80,8 @@ Status values: FIXED · STILL OPEN · INTENTIONALLY ACCEPTED · OUT OF SCOPE · 
 | E1 | Business enquiries have no quote amount, no discussion history and no link to the resulting order | NEEDS PRODUCT DECISION | flow today: enquiry → assign → status CONTACTED/QUOTED with one note → the customer places a normal order |
 | E2 | Orders console (P9) while order verification is limited | NEEDS PRODUCT DECISION | unchanged from ADMIN_ARCHITECTURE §15 |
 | T1 | E2E runs leave soft-deleted, run-labelled rows in the local database (API deletes are soft) | INTENTIONALLY ACCEPTED | local only; `stack.ps1 reset` starts clean; no live E2E record remains |
+| G1 | `.gitignore` pattern `coverage/` also hid `scripts/coverage/` (the coverage gate's source), so a clone could not run `coverage:check` or build | FIXED | pattern anchored to `/coverage/`; the sources are committed |
+| G2 | With `core.autocrlf=true` a fresh clone checked out CRLF files and `format:check` failed | FIXED | `.gitattributes` (`* text=auto eol=lf`); every non-build `verify` step passed in a fresh clone (the build step cannot use a linked `node_modules`; it passed in the working copy) |
 | D1 | Production values (origins, cookies, storage/CDN, trust proxy) | OUT OF SCOPE | no deployment in this phase (ADMIN_ARCHITECTURE §15) |
 
 ## 5. Remaining capabilities for the final UI phase
