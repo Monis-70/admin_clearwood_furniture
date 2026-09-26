@@ -64,7 +64,7 @@ export const blockerTab = (blocker: PublishBlockerDto): ProductTab | null =>
 
 export const PRODUCT_TYPE_LABELS: Record<string, string> = {
   SIMPLE: 'Simple (one version)',
-  VARIABLE: 'With variants (sizes, colours…)',
+  VARIABLE: 'With variants',
   CONFIGURABLE: 'Configurable',
   MADE_TO_ORDER: 'Made to order',
   BUNDLE: 'Bundle',

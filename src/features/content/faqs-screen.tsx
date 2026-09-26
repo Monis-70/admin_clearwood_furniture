@@ -185,7 +185,14 @@ function Faqs() {
                 onDelete={canCall(e.removeFaq) ? () => setRemoving(faq) : undefined}
               />
             )}
-            empty={<EmptyState icon={CircleHelp} title="No questions here yet" compact />}
+            empty={
+              <EmptyState
+                icon={CircleHelp}
+                title="No questions here yet"
+                description="Add a question and answer; they show on the storefront in this order."
+                compact
+              />
+            }
           />
         </section>
       </div>

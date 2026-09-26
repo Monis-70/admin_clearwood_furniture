@@ -497,7 +497,11 @@ function SearchIndex() {
         ) : jobs.error ? (
           <ErrorState error={jobs.error} onRetry={() => void jobs.refetch()} compact />
         ) : jobs.data.length === 0 ? (
-          <EmptyState title="No rebuilds yet" compact />
+          <EmptyState
+            title="No rebuilds yet"
+            description="Rebuilds you start appear here with their status and how long they took."
+            compact
+          />
         ) : (
           <ul
             className="flex flex-col divide-y rounded-md border text-sm"

@@ -267,7 +267,8 @@ export function WorkQueues() {
       <h2 id="work-queues" className="text-base font-semibold">
         Needs attention
       </h2>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{queues}</div>
+      {/* grid-cols-1 (minmax(0,1fr)) so a card's nowrap row cannot widen the page on a phone. */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">{queues}</div>
     </section>
   );
 }

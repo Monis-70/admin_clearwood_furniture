@@ -391,12 +391,7 @@ export function EditorForm<Values extends FieldValues, Output, Record>({
         <FormAlert error={submitError} messages={formMessages} />
         {children}
         {readOnly ? null : (
-          <div
-            className={cn(
-              'sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-2 border-t bg-background/95 px-1 py-3 backdrop-blur',
-              !isDirty && 'opacity-90',
-            )}
-          >
+          <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-2 border-t bg-background px-1 py-3">
             <span role="status" className="mr-auto text-sm text-muted-foreground">
               {isDirty ? 'Unsaved changes' : 'All changes saved'}
             </span>

@@ -341,7 +341,12 @@ export function Pincodes({ zoneId, canEdit }: { zoneId: string; canEdit: boolean
       ) : pincodes.error ? (
         <ErrorState error={pincodes.error} onRetry={() => void pincodes.refetch()} compact />
       ) : pincodes.data.length === 0 ? (
-        <EmptyState icon={MapPin} title="No pincodes in this zone" compact />
+        <EmptyState
+          icon={MapPin}
+          title="No pincodes in this zone"
+          description="Add pincodes above, or upload a range. A zone with none delivers nowhere."
+          compact
+        />
       ) : (
         <>
           <ul className="flex flex-col divide-y rounded-md border text-sm" aria-label="Pincodes">

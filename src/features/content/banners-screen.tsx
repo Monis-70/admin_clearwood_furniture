@@ -198,7 +198,13 @@ function BannersList() {
             ) : null}
           </div>
         }
-        empty={<EmptyState icon={PanelTop} title="No banners yet" />}
+        empty={
+          <EmptyState
+            icon={PanelTop}
+            title="No banners yet"
+            description="Create one to show an image or promotion in a chosen place on the storefront."
+          />
+        }
         emptyFiltered={
           <EmptyState
             title="No banner matches these filters"

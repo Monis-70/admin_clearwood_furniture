@@ -63,6 +63,7 @@ export function TestimonialsScreen() {
       remove={contentApi.removeTestimonial}
       reorder={(ids) => contentApi.reorderTestimonials(reorderBody(ids))}
       deleteWarning="The quote disappears from every page that shows testimonials."
+      emptyHint="Add a customer quote here, then place a testimonial block on a page to show it."
     />
   );
 }
@@ -101,6 +102,7 @@ export function StoresScreen() {
       remove={contentApi.removeStore}
       reorder={(ids) => contentApi.reorderStores(reorderBody(ids))}
       deleteWarning="The store disappears from the store locator."
+      emptyHint="Add a showroom with its address and opening hours so customers can find it."
     />
   );
 }

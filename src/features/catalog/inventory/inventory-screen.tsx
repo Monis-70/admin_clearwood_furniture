@@ -93,10 +93,12 @@ function LowStockList({ params }: { params: ReturnType<typeof useListParams<Filt
       meta: { label: 'Product', pinned: true, mobile: 'title' },
       header: 'Product',
       cell: ({ row }) => (
-        <div className="flex min-w-0 flex-col">
+        // Capped so the whole table (including the actions menu) fits a 1366 px screen.
+        <div className="flex max-w-56 min-w-0 flex-col">
           <Link
             href={productHref(row.original.productId, 'inventory')}
             className="truncate font-medium hover:underline"
+            title={row.original.productName}
           >
             {row.original.productName}
           </Link>
@@ -110,9 +112,10 @@ function LowStockList({ params }: { params: ReturnType<typeof useListParams<Filt
     },
     {
       id: 'sku',
-      meta: { label: 'Variant SKU', mobile: 'detail' },
+      // A SKU broken across lines at its hyphens is unreadable and easy to mis-copy.
+      meta: { label: 'Variant SKU', mobile: 'detail', className: 'whitespace-nowrap' },
       header: 'Variant SKU',
-      cell: ({ row }) => <span className="font-mono text-sm">{row.original.sku}</span>,
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original.sku}</span>,
     },
     {
       id: 'status',

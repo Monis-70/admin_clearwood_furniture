@@ -171,7 +171,11 @@ export function CartDetailSheet({
             ) : cart.error ? (
               <ErrorState error={cart.error} onRetry={() => void cart.refetch()} compact />
             ) : (
-              <EmptyState title="This customer has no active cart" compact />
+              <EmptyState
+                title="This customer has no active cart"
+                description="Their basket is empty, or they checked out and the cart became an order."
+                compact
+              />
             )}
           </div>
         ) : (

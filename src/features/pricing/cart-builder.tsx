@@ -188,7 +188,7 @@ export function CartBuilder({
               value={cart.shippingMethod ?? ''}
               onChange={(event) => set({ shippingMethod: event.target.value })}
             >
-              <option value="">The cheapest available</option>
+              <option value="">Cheapest available</option>
               {Object.entries(shippingMethods).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}

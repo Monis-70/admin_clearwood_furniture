@@ -229,7 +229,7 @@ function ProductsList() {
     },
     {
       id: 'stock',
-      meta: { label: 'Stock', align: 'right', mobile: 'detail' },
+      meta: { label: 'Stock', align: 'right', mobile: 'detail', className: 'whitespace-nowrap' },
       header: 'Stock',
       cell: ({ row }) => (
         <span className="tabular">
@@ -259,7 +259,12 @@ function ProductsList() {
     },
     {
       id: 'updatedAt',
-      meta: { label: 'Updated', sortKey: 'updatedAt', mobile: 'hidden' },
+      meta: {
+        label: 'Updated',
+        sortKey: 'updatedAt',
+        mobile: 'hidden',
+        className: 'whitespace-nowrap',
+      },
       header: 'Updated',
       cell: ({ row }) => formatRelative(row.original.updatedAt),
     },

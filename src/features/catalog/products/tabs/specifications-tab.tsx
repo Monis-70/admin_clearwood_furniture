@@ -278,7 +278,7 @@ export function SpecificationsTab({ product }: { product: AdminProductDetailDto 
         </fieldset>
       ))}
       {canEdit ? (
-        <div className="sticky bottom-0 z-10 flex items-center justify-end gap-2 border-t bg-background/95 py-3 backdrop-blur">
+        <div className="sticky bottom-0 z-10 flex items-center justify-end gap-2 border-t bg-background py-3">
           <span role="status" className="mr-auto text-sm text-muted-foreground">
             {dirty ? 'Unsaved changes' : 'All changes saved'}
           </span>

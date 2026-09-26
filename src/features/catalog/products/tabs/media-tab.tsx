@@ -447,7 +447,7 @@ function ManagedGallery({ product }: { product: AdminProductDetailDto }) {
       )}
 
       {dirty || save.isPending || save.error ? (
-        <div className="sticky bottom-0 z-10 -mx-1 flex flex-col gap-2 border-t bg-background/95 px-1 py-3 backdrop-blur">
+        <div className="sticky bottom-0 z-10 -mx-1 flex flex-col gap-2 border-t bg-background px-1 py-3">
           <FormAlert error={save.error} />
           <div className="flex flex-wrap items-center justify-end gap-2">
             <span role="status" className="mr-auto text-sm text-muted-foreground">

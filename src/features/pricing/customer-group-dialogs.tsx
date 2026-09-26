@@ -187,7 +187,11 @@ export function Members({ id, canManage }: { id: string; canManage: boolean }) {
       ) : members.error ? (
         <ErrorState error={members.error} onRetry={() => void members.refetch()} compact />
       ) : members.data.length === 0 ? (
-        <EmptyState title="No members yet" compact />
+        <EmptyState
+          title="No members yet"
+          description="Add customer ids above. Members get this group's price list and discounts."
+          compact
+        />
       ) : (
         <>
           <ul className="flex flex-col divide-y rounded-md border text-sm" aria-label="Members">

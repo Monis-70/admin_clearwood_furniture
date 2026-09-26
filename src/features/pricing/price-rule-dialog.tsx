@@ -408,7 +408,11 @@ function TargetFields({ scope }: { scope: string }) {
             }}
           />
         )}
-        {error ? <p className="text-sm text-danger">{String(error)}</p> : null}
+        {error ? (
+          <p role="alert" className="text-sm text-danger">
+            {String(error)}
+          </p>
+        ) : null}
         {scope === 'VARIANT' && productId ? (
           <SelectField<Values>
             name="variantId"

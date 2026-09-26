@@ -206,7 +206,11 @@ function ItemsEditor({ id, rows }: { id: string; rows: PriceListItemRow[] }) {
       ) : null}
       <FormAlert error={save.error} messages={problem ? [problem] : []} />
       {drafts.length === 0 ? (
-        <EmptyState title="No product prices" compact />
+        <EmptyState
+          title="No product prices"
+          description="This list changes nothing until you add a product below. Base prices apply meanwhile."
+          compact
+        />
       ) : (
         <ul className="flex flex-col divide-y rounded-md border" aria-label="Prices in this list">
           {drafts.map((d, index) => (

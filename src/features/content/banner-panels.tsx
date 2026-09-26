@@ -62,7 +62,13 @@ export function OrderDialog({
               onSaved();
               onClose();
             }}
-            empty={<EmptyState title="No banners in this placement" compact />}
+            empty={
+              <EmptyState
+                title="No banners in this placement"
+                description="Create a banner and choose this placement; the order is set here."
+                compact
+              />
+            }
           />
         )}
       </DialogContent>

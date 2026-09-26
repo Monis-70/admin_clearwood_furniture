@@ -327,7 +327,22 @@ function summary(block: PageBlock): string {
           .replace(/([A-Z])/g, ' $1')
           .toLowerCase()}`,
     );
-  return [text as string | undefined, ...lists].filter(Boolean).join(' · ');
+  const parts = [text as string | undefined, ...lists].filter(Boolean);
+  // Blocks that carry only copy (rich text, a quote, a video) would otherwise be indistinguishable
+  // from every other block of the same type. Rendered as text, never as markup.
+  if (parts.length === 0) {
+    const body = [c.html, c.body, c.text, c.quote, c.caption, c.url].find(
+      (v) => typeof v === 'string' && v.trim(),
+    ) as string | undefined;
+    if (body) {
+      const plain = body
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (plain) return plain.length > 80 ? `${plain.slice(0, 79)}…` : plain;
+    }
+  }
+  return parts.join(' · ');
 }
 
 function Blocks({ page, onPage }: { page: CmsPage; onPage(page: CmsPage): void }) {

@@ -205,7 +205,13 @@ function PagesList() {
             />
           </div>
         }
-        empty={<EmptyState icon={FileText} title="No pages yet" />}
+        empty={
+          <EmptyState
+            icon={FileText}
+            title="No pages yet"
+            description="Create a page such as About us or Delivery; each is built from blocks."
+          />
+        }
         emptyFiltered={
           <EmptyState
             title="No page matches these filters"

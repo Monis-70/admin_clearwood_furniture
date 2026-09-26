@@ -455,7 +455,11 @@ function Documents({ order }: { order: AdminOrderDetailDto }) {
       ) : docs.error ? (
         <ErrorState error={docs.error} onRetry={() => void docs.refetch()} compact />
       ) : docs.data.length === 0 ? (
-        <EmptyState title="No documents yet" compact />
+        <EmptyState
+          title="No documents yet"
+          description="The tax invoice appears here once it is issued. Packing slips follow a shipment."
+          compact
+        />
       ) : (
         <ul className="flex flex-col divide-y rounded-md border" aria-label="Order documents">
           {docs.data.map((d) => (
@@ -509,7 +513,14 @@ function History({ order }: { order: AdminOrderDetailDto }) {
 }
 
 function Timeline({ entries }: { entries: AdminOrderDetailDto['timeline'] }) {
-  if (entries.length === 0) return <EmptyState title="No history yet" compact />;
+  if (entries.length === 0)
+    return (
+      <EmptyState
+        title="No history yet"
+        description="Every status change is recorded here, with who made it and when."
+        compact
+      />
+    );
   return (
     <ol className="flex flex-col divide-y rounded-md border" aria-label="Order history">
       {entries.map((t) => (

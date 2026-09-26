@@ -194,7 +194,12 @@ function Menu({ menuKey }: { menuKey: string }) {
         ) : null}
       </div>
       {tree.length === 0 ? (
-        <EmptyState icon={ListTree} title="This menu is empty" compact />
+        <EmptyState
+          icon={ListTree}
+          title="This menu is empty"
+          description="Add an item to make this menu appear on the storefront."
+          compact
+        />
       ) : (
         renderLevel(tree, `${menu.data.name} items`)
       )}

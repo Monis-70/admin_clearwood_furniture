@@ -126,6 +126,7 @@ export function GeneralTab({ product }: { product: AdminProductDetailDto }) {
             <SelectField<Values>
               name="productType"
               label="Product type"
+              description="Variants are versions of the same product, such as sizes or colours."
               options={Object.entries(PRODUCT_TYPE_LABELS).map(([value, label]) => ({
                 value,
                 label,

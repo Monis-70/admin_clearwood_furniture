@@ -151,6 +151,7 @@ function Orders() {
               value={params.q}
               onSearch={params.setSearch}
               label="Search order number, name or email"
+              placeholder="Order number, name or email"
               minLength={2}
             />
             <FilterSelect

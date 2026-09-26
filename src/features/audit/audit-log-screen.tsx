@@ -229,7 +229,13 @@ function AuditLogList() {
             </div>
           </div>
         }
-        empty={<EmptyState icon={ScrollText} title="No activity recorded yet" />}
+        empty={
+          <EmptyState
+            icon={ScrollText}
+            title="No activity recorded yet"
+            description="Every change an admin makes is recorded here, with who made it and when."
+          />
+        }
         emptyFiltered={
           <EmptyState
             title="Nothing matches these filters"

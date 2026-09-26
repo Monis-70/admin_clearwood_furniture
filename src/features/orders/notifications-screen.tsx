@@ -148,7 +148,13 @@ function Notifications() {
             />
           </div>
         }
-        empty={<EmptyState icon={Bell} title="Nothing sent yet" />}
+        empty={
+          <EmptyState
+            icon={Bell}
+            title="Nothing sent yet"
+            description="Order e-mails and messages are listed here once the API sends them."
+          />
+        }
         emptyFiltered={
           <EmptyState
             title="No message matches these filters"

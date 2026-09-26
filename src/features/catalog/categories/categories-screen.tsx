@@ -590,7 +590,17 @@ function ListView({
           description={trash ? 'Deleted categories appear here and can be restored.' : undefined}
         />
       }
-      emptyFiltered={<EmptyState title="No category matches" />}
+      emptyFiltered={
+        <EmptyState
+          title="No category matches"
+          description="Try a different word, or clear the filters to see the whole tree."
+          action={
+            <Button variant="outline" onClick={params.clearAll}>
+              Clear filters
+            </Button>
+          }
+        />
+      }
     />
   );
 }

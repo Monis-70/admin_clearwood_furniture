@@ -249,7 +249,9 @@ export function SystemStatusScreen() {
                         Still works: {ON_HOLD_COPY[row.hold].stillWorks}
                       </span>
                     ) : null}
-                    <span className="font-mono text-xs text-muted-foreground">{row.technical}</span>
+                    <span className="text-xs text-muted-foreground">
+                      Server setting: <span className="font-mono">{row.technical}</span>
+                    </span>
                   </div>
                 </li>
               ))}

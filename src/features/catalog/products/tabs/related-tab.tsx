@@ -256,7 +256,7 @@ function RelatedEditor({ product }: { product: AdminProductDetailDto }) {
       )}
 
       {canEdit ? (
-        <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-2 border-t bg-background/95 px-1 py-3 backdrop-blur">
+        <div className="sticky bottom-0 z-10 -mx-1 flex items-center justify-end gap-2 border-t bg-background px-1 py-3">
           <span role="status" className="mr-auto text-sm text-muted-foreground">
             {dirty ? 'Unsaved changes' : 'All changes saved'}
           </span>

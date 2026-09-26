@@ -77,3 +77,40 @@ test('account sessions and the command palette @mobile', async ({ page }) => {
   );
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+/**
+ * A phone must never scroll sideways: browsers zoom the whole page out to fit, which shrinks every
+ * touch target. One nowrap row inside a grid track that may size to min-content is enough to cause
+ * it, so this sweeps the busiest screen of each area with real data.
+ */
+test('no screen scrolls sideways on a phone @mobile', async ({ page }) => {
+  await signInAsSuperAdmin(page);
+  const routes = [
+    '/',
+    '/catalog/products',
+    '/catalog/inventory',
+    '/catalog/categories',
+    '/media',
+    '/orders',
+    '/orders/shipments',
+    '/enquiries',
+    '/content/pages',
+    '/pricing/price-rules',
+    '/system/users',
+    '/system/audit-log',
+  ];
+  const wide: string[] = [];
+  for (const route of routes) {
+    await page.goto(route);
+    await page.waitForLoadState('networkidle');
+    // Queues and images below the fold load when scrolled into view, and their rows are what can
+    // widen a track: measure with the whole page rendered, not just the first screenful.
+    await page.mouse.wheel(0, 20_000);
+    await page.waitForLoadState('networkidle');
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    if (overflow > 0) wide.push(`${route}: +${overflow}px`);
+  }
+  expect(wide, wide.join('\n')).toEqual([]);
+});

@@ -157,6 +157,7 @@ function Shipments() {
               value={params.q}
               onSearch={params.setSearch}
               label="Search shipment, order or tracking number"
+              placeholder="Shipment, order or AWB"
               minLength={2}
             />
             <FilterSelect

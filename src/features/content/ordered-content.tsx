@@ -37,6 +37,7 @@ export function OrderedContent<T extends { id: string; position: number }>({
   remove,
   reorder,
   deleteWarning,
+  emptyHint,
 }: {
   title: string;
   description: string;
@@ -51,6 +52,8 @@ export function OrderedContent<T extends { id: string; position: number }>({
   remove(id: string): Promise<void>;
   reorder(ids: string[]): Promise<void>;
   deleteWarning: string;
+  /** What the first record is for, shown while the list is empty. */
+  emptyHint: string;
 }) {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<T | 'new' | null>(null);
@@ -97,7 +100,18 @@ export function OrderedContent<T extends { id: string; position: number }>({
               onDelete={can.remove ? () => setRemoving(row) : undefined}
             />
           )}
-          empty={<EmptyState icon={icon} title={`No ${title.toLowerCase()} yet`} />}
+          empty={
+            <EmptyState
+              icon={icon}
+              title={`No ${title.toLowerCase()} yet`}
+              description={emptyHint}
+              action={
+                can.create ? (
+                  <Button onClick={() => setEditing('new')}>Add the first {noun}</Button>
+                ) : null
+              }
+            />
+          }
         />
       )}
       {editing ? (

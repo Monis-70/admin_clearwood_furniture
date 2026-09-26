@@ -662,4 +662,20 @@ describe('TestimonialsScreen', () => {
       mediaIds: [],
     });
   });
+
+  it('says what the list is for while it is empty and starts the first record', async () => {
+    server.use(
+      http.get(
+        `${API}/admin/cms/testimonials`,
+        guarded(() => ok([])),
+      ),
+    );
+    const user = userEvent.setup();
+    render(<TestimonialsScreen />, 'CONTENT_MANAGER', '/content/testimonials');
+
+    expect(await screen.findByText('No testimonials yet')).toBeInTheDocument();
+    expect(screen.getByText(/place a testimonial block on a page/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Add the first testimonial' }));
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+  });
 });

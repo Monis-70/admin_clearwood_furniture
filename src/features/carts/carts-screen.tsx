@@ -253,6 +253,7 @@ function Carts() {
               value={params.q}
               onSearch={params.setSearch}
               label="Search shopper name or email"
+              placeholder="Shopper name or email"
               minLength={2}
             />
             <FilterSelect
@@ -286,7 +287,13 @@ function Carts() {
             ) : null}
           </div>
         }
-        empty={<EmptyState icon={ShoppingCart} title="No carts yet" />}
+        empty={
+          <EmptyState
+            icon={ShoppingCart}
+            title="No carts yet"
+            description="A cart appears as soon as a customer puts something in their basket."
+          />
+        }
         emptyFiltered={
           <EmptyState
             title="No cart matches these filters"
