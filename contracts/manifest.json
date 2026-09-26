@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "backend": {
+    "commit": "3a8132535d442f45e598e7b991c9f80256447ca8",
+    "branch": "main",
+    "dirty": true,
+    "dirtyFiles": [
+      "backend/src/modules/catalog-admin/inventory.service.ts"
+    ]
+  },
+  "shared": {
+    "source": "shared/src",
+    "files": {
+      "cms/blockRegistry.ts": "7395b22a71357e58ca990ac7018ba2a539cf513174c92c49b2868ee324db16cb",
+      "constants.ts": "244d4e3c8eaf19ea588754263e3946bba1f9ad907d5f7c0bec7944f67d1de08d",
+      "enums.ts": "29c3f612273305ca6e52255702ca0ec03e6dc337c430f7cc488ff4b98659af24",
+      "index.ts": "41aceca7a8f30c3ad71488ae4dd037197cf93650cb4e6d7d3300c5f2e0df3bba",
+      "money.ts": "7e2cd6eb746b38d1382a07b91fde47e9a888d84ce361e081ae8bd5ae70b3b872",
+      "schemas/auth.ts": "dbe58a3bddef5e34972137da4a6404ba20209c179de5956bcc95735e93fd6f50",
+      "schemas/cart.ts": "a0dd8a05a66987d1bbe414ef766809de8f5e78972294a55e1f698882b2c73cae",
+      "schemas/catalog.ts": "99d5a5d26cd9c73c74453040360205924cb41e8f0c6b37347b9f631d7b1046aa",
+      "schemas/catalogAdmin.ts": "ded23f565b4e9513d081215f5e41bcc53248f214a64be9cdc90bc10ce3941cbc",
+      "schemas/cms.ts": "081de57ae9ec994b3da3d34df8b3e9183c2ffee8024e6b810c641aef3fb3b958",
+      "schemas/common.ts": "8c5d4529dbe03bdad725cf82eb45e7cfd59029bf2fcc95c64206e01361e28333",
+      "schemas/enquiry.ts": "d8fe6b1165c2004d1bd923319150cf71dc37abc4eeacb218c8358a068977ab9a",
+      "schemas/fulfilment.ts": "1ea4fa11d6ef6f3781b6712fb69fdd72e7c41ed3a916edb976854ca5091eb5e9",
+      "schemas/media.ts": "af95e87a0d9b04396e3c71f832a9edb4ad94c6bb58944bc9f9083591e2681ec3",
+      "schemas/order.ts": "9ba661f3955eb8fcbf80390624800c187125162442d783ff0ccc8b1db50f47bf",
+      "schemas/pricing.ts": "95946f1d2d0506a9d6165205778a5636b47b7d34f3aeedb202aafbdac79b2f39",
+      "schemas/storefront.ts": "ba5b278e6d87b3fa94e77bdf919cb6aa9f2d007908c05f96652d5ca06b9a6515",
+      "types/api.ts": "8a6b9ea5345cb640f3d89a82a82058605819dacf2f3aeb5523242bad119ba851",
+      "types/auth.ts": "b75ccc649a5196007e084cc1bc473d1e26e7fccb580c0f2fc34465a2b45e18f2",
+      "types/cart.ts": "bf62226a11bbb0c477cbd110be7006bc88ffa990653c09fcccc50a9f60a133a8",
+      "types/catalog.ts": "6d3724549d348f94393a2186cf168d61989f526f13cd5579f763e722c6690dea",
+      "types/catalogAdmin.ts": "fdcb7d73e0b03dae92eedbe4d570bdf730a6f4700a88faa48bb6ed9c159f77c7",
+      "types/enquiry.ts": "b1e0e625c88f9896cdf7d392bef39fe99cbd62e8c8cbd696e844b25311fff4c4",
+      "types/fulfilment.ts": "963741c020f9174559c4afc01730fb6e3567166c971c920f1b1b616d72ff0a33",
+      "types/media.ts": "7a31646d856aebd4457670fc675abc5a483e3bc7d66528b7cdd83d7a0ebb607c",
+      "types/order.ts": "a1c657616496f2337382940e5d4243517fd18bfb71e2a01de4a1ae3fe21c4fbd",
+      "types/pricing.ts": "72e8167e66a559d5673031379dd94286a68223f2898e6679913a0c8748f65430",
+      "types/storefront.ts": "37ff8f82d081d6f22a4ffd58e431f659fbb1e53cd78e22904535bdbc6740df12"
+    }
+  },
+  "inventory": {
+    "file": "contracts/route-inventory.json",
+    "sha256": "c73d0a3e8cfe0700e57a93becee70ac05c4a325e244e1a159cb5ab99379bd9ed",
+    "routes": 437,
+    "adminRoutes": 318
+  }
+}

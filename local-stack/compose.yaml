@@ -1,0 +1,50 @@
+# Local-only dependencies for running the ClearWood backend + admin on one workstation.
+# Bound to 127.0.0.1 only. Never point this at, or copy data from, production.
+# 3307 is deliberately avoided: the backend docs use it for the SSH tunnel to the hosted database.
+name: clearwood-local
+
+services:
+  mysql:
+    image: mysql:8.0
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?run stack.ps1 init first}
+      MYSQL_DATABASE: clearwood_local
+      MYSQL_USER: clearwood
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?run stack.ps1 init first}
+    ports:
+      - '127.0.0.1:3317:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    command:
+      [
+        'redis-server',
+        '--save',
+        '',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '128mb',
+        '--maxmemory-policy',
+        'allkeys-lru',
+      ]
+    ports:
+      - '127.0.0.1:6381:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql-data:

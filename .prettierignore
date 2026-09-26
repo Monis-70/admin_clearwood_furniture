@@ -1,0 +1,12 @@
+.next
+out
+node_modules
+coverage
+playwright-report
+test-results
+next-env.d.ts
+package-lock.json
+src/contracts/shared
+contracts/route-inventory.json
+contracts/manifest.json
+docs

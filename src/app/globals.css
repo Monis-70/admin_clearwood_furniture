@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/*
+ * ClearWood admin tokens (docs/ADMIN_COMPONENT_SYSTEM.md §2). Values come from the shared brand
+ * preset (backend shared/tailwind-preset.cjs); contrast of every text pair was measured (WCAG 2.x).
+ * clay #B4613A is 4.46:1 on white, so it is used for non-text accents only; text and filled
+ * buttons use clay-dark #8F4A2B (6.60:1 with white).
+ */
+:root {
+  --radius: 0.375rem;
+
+  --background: #faf7f2;
+  --foreground: #1e1a16;
+  --card: #ffffff;
+  --card-foreground: #1e1a16;
+  --popover: #ffffff;
+  --popover-foreground: #1e1a16;
+
+  --primary: #8f4a2b;
+  --primary-hover: #7a3f24;
+  --primary-foreground: #ffffff;
+  --secondary: #f2ece3;
+  --secondary-foreground: #1e1a16;
+  --muted: #f2ece3;
+  --muted-foreground: #6b6058;
+  --accent: #f2ece3;
+  --accent-foreground: #1e1a16;
+  --destructive: #b23b3b;
+  --destructive-hover: #9a3232;
+  --destructive-foreground: #ffffff;
+
+  /* Decorative dividers only (1.38:1); input borders use --input (3.65:1). */
+  --border: #e3dace;
+  --input: #8f847a;
+  --ring: #b4613a;
+  --brand: #b4613a;
+  --wood: #8a5a3b;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1e1a16;
+  --sidebar-muted: #6b6058;
+  --sidebar-accent: #f2ece3;
+  --sidebar-border: #e3dace;
+
+  --success: #24664a;
+  --success-bg: #e7f4ee;
+  --danger: #b23b3b;
+  --danger-bg: #fbeaea;
+  --warning: #8a5300;
+  --warning-bg: #fff4e0;
+  --info: #1f5a8a;
+  --info-bg: #e8f1fa;
+  --neutral: #4a433d;
+  --neutral-bg: #efeae4;
+
+  --shadow-card: 0 1px 2px rgb(30 26 22 / 0.06);
+  --shadow-overlay: 0 18px 48px rgb(30 26 22 / 0.12);
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-hover: var(--destructive-hover);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-wood: var(--wood);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-neutral: var(--neutral);
+  --color-neutral-bg: var(--neutral-bg);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-overlay: var(--shadow-overlay);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-sm text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  [data-slot='table'] td,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,338 @@
+import type {
+  BulkActionType,
+  DeleteStrategy,
+  ImportEntity,
+  ImportStatus,
+  InventoryReason,
+  ProductBadgeCode,
+  ProductRelationType,
+  PublicationState,
+  SlugEntityType,
+} from '../enums';
+
+/** Response shapes for the Prompt 5 admin catalog API. */
+
+export interface AdminCategoryDto {
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+  path: string;
+  depth: number;
+  position: number;
+  kind: string;
+  isActive: boolean;
+  showInMenu: boolean;
+  menuColumn: number | null;
+  isFeatured: boolean;
+  leadFormKey: string | null;
+  shortDescription: string | null;
+  description: string | null;
+  iconMediaId: string | null;
+  bannerMediaId: string | null;
+  mobileBannerMediaId: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
+  deleteStrategyNote: string | null;
+  productCountCache: number;
+  childCount: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface AdminCategoryTreeNode extends AdminCategoryDto {
+  children: AdminCategoryTreeNode[];
+}
+
+/** The storefront's catalog settings as an admin edits them. */
+export interface AdminCatalogSettingsDto {
+  defaultPageSize: number;
+  maxPageSize: number;
+  showOutOfStock: boolean;
+  /** 0: only a product's own isNewArrival flag makes it new. */
+  newArrivalDays: number;
+  /** Codes absent here are never shown on a card. */
+  badges: Partial<Record<ProductBadgeCode, { label: string; color: string | null }>>;
+}
+
+/** One product linked to a category, in that category's curated order (CURATED sort). */
+export interface AdminCategoryProductDto {
+  productId: string;
+  sku: string;
+  name: string;
+  slug: string;
+  status: string;
+  visibility: string;
+  publication: PublicationState;
+  isPrimary: boolean;
+  position: number;
+}
+
+/** What a delete would actually touch, so the UI can warn before anything happens. */
+export interface CategoryDeleteImpactDto {
+  categoryId: string;
+  strategy: DeleteStrategy;
+  directChildren: number;
+  descendants: number;
+  directProducts: number;
+  descendantProducts: number;
+  blocked: boolean;
+  blockReason: string | null;
+}
+
+export interface SlugRedirectDto {
+  id: string;
+  entityType: SlugEntityType;
+  fromSlug: string;
+  toSlug: string;
+  entityId: string;
+  statusCode: number;
+  hitCount: number;
+  createdAt: string;
+}
+
+export interface PublishBlockerDto {
+  code: string;
+  message: string;
+  field?: string;
+  details?: Record<string, unknown>;
+}
+
+export interface CompletenessFactorDto {
+  key: string;
+  label: string;
+  weight: number;
+  satisfied: boolean;
+}
+
+export interface ProductCompletenessDto {
+  score: number;
+  factors: CompletenessFactorDto[];
+}
+
+export interface ProductRelationDto {
+  id: string;
+  relatedProductId: string;
+  relatedProductName: string;
+  relatedProductSku: string;
+  type: ProductRelationType;
+  position: number;
+}
+
+export interface AdminVariantDto {
+  id: string;
+  productId: string;
+  sku: string;
+  name: string | null;
+  pricePaise: number | null;
+  compareAtPricePaise: number | null;
+  costPricePaise: number | null;
+  position: number;
+  isDefault: boolean;
+  isActive: boolean;
+  stockQty: number;
+  reservedQty: number;
+  availableQty: number;
+  stockStatus: string;
+  lowStockThreshold: number;
+  allowBackorder: boolean;
+  barcode: string | null;
+  weightGrams: number | null;
+  leadTimeDays: number | null;
+  lengthMm: number | null;
+  widthMm: number | null;
+  heightMm: number | null;
+  attributeValues: { attributeId: string; attributeValueId: string }[];
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminProductSummaryDto {
+  id: string;
+  sku: string;
+  slug: string;
+  name: string;
+  status: string;
+  productType: string;
+  visibility: string;
+  brandId: string | null;
+  taxClassId: string | null;
+  basePricePaise: number;
+  completenessScore: number;
+  variantCount: number;
+  mediaCount: number;
+  totalStock: number;
+  primaryCategoryId: string | null;
+  publishedAt: string | null;
+  lastPublishedAt: string | null;
+  /** Derived from status + publishedAt: SCHEDULED is ACTIVE with a future publishedAt. */
+  publication: PublicationState;
+  isFeatured: boolean;
+  isNewArrival: boolean;
+  allowCustomization: boolean;
+  /** The primary image's smallest rendition, for the admin table. */
+  thumbnailUrl: string | null;
+  createdAt: string;
+  version: number;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface AdminProductDetailDto extends AdminProductSummaryDto {
+  subtitle: string | null;
+  shortDescription: string | null;
+  description: string | null;
+  compareAtPricePaise: number | null;
+  costPricePaise: number | null;
+  isMadeToOrder: boolean;
+  leadTimeDays: number | null;
+  allowCustomization: boolean;
+  manufacturedInHouse: boolean;
+  manufacturingNote: string | null;
+  warrantyMonths: number | null;
+  careInstructions: string | null;
+  assemblyRequired: boolean;
+  weightGrams: number | null;
+  lengthMm: number | null;
+  widthMm: number | null;
+  heightMm: number | null;
+  seatHeightMm: number | null;
+  isFeatured: boolean;
+  featuredUntil: string | null;
+  isNewArrival: boolean;
+  isSpecialCollection: boolean;
+  isBestSeller: boolean;
+  badgeText: string | null;
+  badgeColor: string | null;
+  minOrderQty: number;
+  maxOrderQty: number | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
+  searchKeywords: string | null;
+  categories: { categoryId: string; isPrimary: boolean; position: number }[];
+  attributeValues: {
+    attributeId: string;
+    attributeValueId: string | null;
+    valueText: string | null;
+    valueNumber: number | null;
+    valueBoolean: boolean | null;
+    position: number;
+  }[];
+  variants: AdminVariantDto[];
+  media: {
+    id: string;
+    mediaId: string;
+    role: string;
+    position: number;
+    deviceTarget: string;
+    attributeValueId: string | null;
+    variantId: string | null;
+    url: string;
+    status: string;
+  }[];
+  relations: ProductRelationDto[];
+  priceAdjustmentIds: string[];
+  completeness: ProductCompletenessDto;
+  publishBlockers: PublishBlockerDto[];
+}
+
+export interface MatrixCombinationDto {
+  key: string;
+  values: { attributeId: string; attributeValueId: string; label: string }[];
+  sku: string;
+  name: string;
+  exists: boolean;
+  existingVariantId: string | null;
+}
+
+export interface VariantMatrixPreviewDto {
+  productId: string;
+  total: number;
+  newCount: number;
+  existingCount: number;
+  orphanedVariantIds: string[];
+  combinations: MatrixCombinationDto[];
+}
+
+export interface InventoryLedgerEntryDto {
+  id: string;
+  variantId: string;
+  delta: number;
+  balanceAfter: number;
+  reason: InventoryReason;
+  refType: string | null;
+  refId: string | null;
+  note: string | null;
+  actorType: string;
+  actorId: string | null;
+  createdAt: string;
+}
+
+export interface InventorySnapshotDto {
+  variantId: string;
+  sku: string;
+  stockQty: number;
+  reservedQty: number;
+  availableQty: number;
+  stockStatus: string;
+  lowStockThreshold: number;
+  allowBackorder: boolean;
+}
+
+/** One row of the low-stock report: the snapshot plus what an operator needs to recognise it. */
+export interface LowStockItemDto extends InventorySnapshotDto {
+  productId: string;
+  productName: string;
+  variantName: string | null;
+}
+
+export interface ImportRowErrorDto {
+  row: number;
+  column: string | null;
+  message: string;
+}
+
+export interface ImportJobDto {
+  id: string;
+  entity: ImportEntity;
+  status: ImportStatus;
+  fileName: string;
+  dryRun: boolean;
+  totalRows: number;
+  processedRows: number;
+  successRows: number;
+  errorRows: number;
+  errors: ImportRowErrorDto[];
+  summary: Record<string, number> | null;
+  startedAt: string | null;
+  finishedAt: string | null;
+  createdAt: string;
+}
+
+export interface BulkActionItemResultDto {
+  id: string;
+  ok: boolean;
+  code: string | null;
+  message: string | null;
+}
+
+export interface BulkActionResultDto {
+  action: BulkActionType;
+  requested: number;
+  succeeded: number;
+  failed: number;
+  results: BulkActionItemResultDto[];
+}
+
+export interface PriceAdjustmentConflictDto {
+  scope: string;
+  priority: number;
+  window: { startsAt: string | null; endsAt: string | null };
+  adjustmentIds: string[];
+  names: string[];
+}

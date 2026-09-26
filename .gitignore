@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# env (only .env.example is committed)
+.env
+.env.*
+!.env.example
+
+# local stack (generated secrets and local uploads)
+local-stack/secrets.env
+local-stack/data/
+
+# os / editors
+.DS_Store
+Thumbs.db
+*.log
