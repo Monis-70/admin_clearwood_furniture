@@ -103,17 +103,12 @@ describe('HomeScreen', () => {
     expect(hrefs).not.toContain('/system/roles');
   });
 
-  it('lists upcoming areas outside production, limited to what the role will be able to open', async () => {
+  it('lists no "being built" areas once every phase is delivered, and offers the new ones', async () => {
     signInAs(account({ role: 'CATALOG_MANAGER' }));
     renderHome();
-    const upcoming = (await screen.findByRole('heading', { name: 'Being built' })).closest(
-      'section',
-    )!;
-    expect(within(upcoming).getByText('Reports')).toBeInTheDocument();
-    expect(within(upcoming).queryByText('Synonyms')).not.toBeInTheDocument();
-    expect(within(upcoming).queryByText('Pages')).not.toBeInTheDocument();
-    expect(within(upcoming).queryByText('Merchandising')).not.toBeInTheDocument();
-    expect(within(upcoming).queryByText('Attributes')).not.toBeInTheDocument();
-    expect(within(upcoming).queryByText('Admin users')).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /Reports/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Merchandising/ })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Being built' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Admin users/ })).not.toBeInTheDocument();
   });
 });

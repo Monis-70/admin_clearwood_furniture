@@ -7,12 +7,12 @@
 
 ## 1. Every backend route, by class
 
-Implemented through phase **P8**.
+Implemented through phase **P9**.
 
 | Class | Meaning | Admin routes | Other routes | Total |
 | --- | --- | ---: | ---: | ---: |
-| UI required: built | wired in the endpoint registry and used by a screen | 263 | 4 | 267 |
-| UI required: final UI phase | classified for a screen (P3 and later), not wired yet | 19 | 2 | 21 |
+| UI required: built | wired in the endpoint registry and used by a screen | 282 | 4 | 286 |
+| UI required: final UI phase | classified for a screen (P3 and later), not wired yet | 0 | 2 | 2 |
 | On hold (integration) | payments, refunds, returns, courier or e-mail: hidden until the integration is live | 35 | 0 | 35 |
 | Internal / system | never called by the UI (see ADMIN_API_COVERAGE.md §4) | 1 | 0 | 1 |
 | Not applicable to the admin | storefront and customer API; the admin does not call it | 0 | 113 | 113 |
@@ -46,38 +46,14 @@ Implemented through phase **P8**.
 | Catalog · Import & export | 6 | 6 | 0 | 0 | 0 | 4 |
 | Catalog · Inventory | 5 | 5 | 0 | 0 | 0 | 4 |
 | Catalog · Settings | 2 | 2 | 0 | 0 | 0 | 0 |
-| Orders (limited verification) | 25 | 0 | 19 | 6 | 0 | 0 |
+| Orders (limited verification) | 25 | 19 | 0 | 6 | 0 | 0 |
 | Enquiries | 4 | 4 | 0 | 0 | 0 | 0 |
 | On hold · Notifications | 2 | 0 | 0 | 2 | 0 | 0 |
 | On hold · Refunds & returns | 12 | 0 | 0 | 12 | 0 | 0 |
 
-## 3. Remaining UI capabilities for the final UI phase (19 admin routes)
+## 3. Remaining UI capabilities for the final UI phase (0 admin routes)
 
 Grouped by module; the status is the planned phase. Screens and actions come from the coverage table.
-
-### Orders (limited verification) (19)
-
-| Status | Method | Path | Purpose | Screen → action | Permission | Destructive |
-| --- | --- | --- | --- | --- | --- | --- |
-| P9 | GET | `/documents/{documentNumber}/download` | Download a checksum-verified document | /orders/view?id=&tab=documents → Download PDF | `order.order.read` | — |
-| P9 | GET | `/ndr` | Failed deliveries awaiting a decision | /orders/shipments?tab=ndr → Failed deliveries | `order.order.read` | — |
-| P9 | GET | `/notifications/logs` | What was sent / skipped / failed | /orders/notifications → Notification log | `order.order.read` | — |
-| P9 | GET | `/orders` | Browse orders | /orders → Orders table | `order.order.read` | — |
-| P9 | GET | `/orders/{id}` | Order with payments, allocations and ledger check | /orders/view?id= → Order detail | `order.order.read` | — |
-| P9 | GET | `/orders/{id}/ledger-check` | Does the order's money balance? | /orders/view?id= → Ledger check (advanced) | `order.order.read` | — |
-| P9 | GET | `/orders/{orderNumber}/documents` | Documents issued for an order | /orders/view?id=&tab=documents → Documents | `order.order.read` | — |
-| P9 | GET | `/orders/{orderNumber}/shipments` | Shipments and unshipped quantities of an order | /orders/view?id=&tab=fulfilment → Fulfilment panel | `order.order.read` | — |
-| P9 | GET | `/reports` | Operational reports (CSV or JSON totals) | /orders/reports → Generate report | computed per request | — |
-| P9 | GET | `/shipments` | List shipments | /orders/shipments → Shipments table | `order.order.read` | — |
-| P9 | GET | `/shipments/{shipmentNumber}` | Shipment with full timeline | /orders/shipments?n= → Shipment drawer | `order.order.read` | — |
-| P9 | POST | `/ndr/{id}/action` | Reattempt / return / contact buyer | /orders/shipments?tab=ndr → Decide | `order.order.fulfil` | — |
-| P9 | POST | `/orders/{id}/cancel` | Cancel an order | /orders/view?id= → Cancel order | `order.order.cancel` | irreversible |
-| P9 | POST | `/orders/{id}/status` | Guarded status transition | /orders/view?id= → Change status | `order.order.update` | — |
-| P9 | POST | `/orders/{orderNumber}/documents/invoice` | Issue the GST tax invoice (once; never regenerated) | /orders/view?id=&tab=documents → Issue invoice | `order.order.update` | irreversible |
-| P9 | POST | `/orders/{orderNumber}/shipments` | Draft a shipment (manual: true) | /orders/view?id=&tab=fulfilment → Create manual shipment | `order.order.fulfil` | — |
-| P9 | POST | `/shipments/{shipmentNumber}/awb` | Assign an AWB (courier) or record a manual docket | /orders/shipments?n= → Record docket number | `order.order.fulfil` | — |
-| P9 | POST | `/shipments/{shipmentNumber}/cancel` | Cancel a shipment | /orders/shipments?n= → Cancel shipment | `order.order.fulfil` | irreversible |
-| P9 | POST | `/shipments/{shipmentNumber}/status` | Move a shipment by hand (state machine) | /orders/shipments?n= → Update status | `order.order.fulfil` | — |
 
 ## 4. Permission matrix
 
@@ -129,10 +105,10 @@ and the password-reset pair, which is on hold).
 | `media.asset.upload` | ✓ | ✓ | ✓ |  | ✓ | 2 | 1 | 0 | 1 |
 | `media.asset.update` | ✓ | ✓ | ✓ |  | ✓ | 5 | 5 | 0 | 0 |
 | `media.asset.delete` | ✓ | ✓ | ✓ |  | ✓ | 6 | 6 | 0 | 0 |
-| `order.order.read` | ✓ | ✓ |  | ✓ |  | 13 | 0 | 10 | 3 |
-| `order.order.update` | ✓ | ✓ |  | ✓ |  | 8 | 0 | 2 | 6 |
-| `order.order.cancel` | ✓ | ✓ |  | ✓ |  | 1 | 0 | 1 | 0 |
-| `order.order.fulfil` | ✓ | ✓ |  | ✓ |  | 8 | 0 | 5 | 3 |
+| `order.order.read` | ✓ | ✓ |  | ✓ |  | 13 | 10 | 0 | 3 |
+| `order.order.update` | ✓ | ✓ |  | ✓ |  | 8 | 2 | 0 | 6 |
+| `order.order.cancel` | ✓ | ✓ |  | ✓ |  | 1 | 1 | 0 | 0 |
+| `order.order.fulfil` | ✓ | ✓ |  | ✓ |  | 8 | 5 | 0 | 3 |
 | `order.refund.read` | ✓ | ✓ |  | ✓ |  | 2 | 0 | 0 | 2 |
 | `order.refund.create` | ✓ | ✓ |  | ✓ |  | 2 | 0 | 0 | 2 |
 | `order.refund.approve` | ✓ | ✓ |  |  |  | 3 | 0 | 0 | 3 |
@@ -399,14 +375,14 @@ Permissions that guard no admin route (5): `order.order.export`, `order.customer
 | POST | `/media/upload` | UP | - | `media.asset.upload` | yes | — | — | media-upload | UI required: built |
 | POST | `/navigation/{key}/items` | C | - | `cms.navigation.update` | yes | params: menuKeyParamSchema; body: navigationItemCreateSchema | — | — | UI required: built |
 | POST | `/navigation/{key}/reorder` | R | - | `cms.navigation.update` | yes | params: menuKeyParamSchema; body: cmsReorderSchema | — | — | UI required: built |
-| POST | `/ndr/{id}/action` | A | - | `order.order.fulfil` | yes | params: idParamSchema; body: ndrActionSchema | — | — | UI required: final UI phase |
-| POST | `/orders/{id}/cancel` | A | X | `order.order.cancel` | yes | params: idParamSchema; body: orderCancelSchema | — | — | UI required: final UI phase |
+| POST | `/ndr/{id}/action` | A | - | `order.order.fulfil` | yes | params: idParamSchema; body: ndrActionSchema | — | — | UI required: built |
+| POST | `/orders/{id}/cancel` | A | X | `order.order.cancel` | yes | params: idParamSchema; body: orderCancelSchema | — | — | UI required: built |
 | POST | `/orders/{id}/retry-transfers` | A | - | `payment.split.update` | yes | params: idParamSchema | — | — | On hold (integration) |
-| POST | `/orders/{id}/status` | A | - | `order.order.update` | yes | params: idParamSchema; body: adminOrderStatusSchema | — | — | UI required: final UI phase |
-| POST | `/orders/{orderNumber}/documents/invoice` | A | X | `order.order.update` | yes | params: orderNumberParamSchema | yes | — | UI required: final UI phase |
+| POST | `/orders/{id}/status` | A | - | `order.order.update` | yes | params: idParamSchema; body: adminOrderStatusSchema | — | — | UI required: built |
+| POST | `/orders/{orderNumber}/documents/invoice` | A | X | `order.order.update` | yes | params: orderNumberParamSchema | yes | — | UI required: built |
 | POST | `/orders/{orderNumber}/refunds` | C | - | `order.refund.create` | yes | params: orderNumberParamSchema; body: refundRequestSchema | yes | — | On hold (integration) |
 | POST | `/orders/{orderNumber}/refunds/preview` | P | - | `order.refund.read` | yes | params: orderNumberParamSchema; body: refundPreviewSchema | — | — | On hold (integration) |
-| POST | `/orders/{orderNumber}/shipments` | C | - | `order.order.fulfil` | yes | params: orderNumberParamSchema; body: shipmentCreateSchema | yes | — | UI required: final UI phase |
+| POST | `/orders/{orderNumber}/shipments` | C | - | `order.order.fulfil` | yes | params: orderNumberParamSchema; body: shipmentCreateSchema | yes | — | UI required: built |
 | POST | `/orders/reconcile` | A | - | `order.order.update` | yes | body: reconcileSchema | — | — | On hold (integration) |
 | POST | `/payments/split-accounts` | C | - | `payment.settings.update` | yes | body: splitAccountCreateSchema | — | — | On hold (integration) |
 | POST | `/payments/split-rules` | C | - | `payment.split.update` | yes | body: splitRuleCreateSchema | — | — | On hold (integration) |
@@ -439,10 +415,10 @@ Permissions that guard no admin route (5): `order.order.export`, `order.customer
 | POST | `/search/reindex` | A | - | `catalog.product.update` | yes | query: reindexQuerySchema | — | — | UI required: built |
 | POST | `/search/synonyms` | C | - | `catalog.product.update` | yes | body: synonymCreateSchema | — | — | UI required: built |
 | POST | `/seo/sitemap/rebuild` | A | - | `cms.page.update` | yes | — | — | — | UI required: built |
-| POST | `/shipments/{shipmentNumber}/awb` | A | - | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: assignAwbSchema | yes | — | UI required: final UI phase |
-| POST | `/shipments/{shipmentNumber}/cancel` | A | X | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: shipmentCancelSchema | — | — | UI required: final UI phase |
+| POST | `/shipments/{shipmentNumber}/awb` | A | - | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: assignAwbSchema | yes | — | UI required: built |
+| POST | `/shipments/{shipmentNumber}/cancel` | A | X | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: shipmentCancelSchema | — | — | UI required: built |
 | POST | `/shipments/{shipmentNumber}/pickup` | A | - | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: schedulePickupSchema | — | — | On hold (integration) |
-| POST | `/shipments/{shipmentNumber}/status` | A | - | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: shipmentStatusSchema | — | — | UI required: final UI phase |
+| POST | `/shipments/{shipmentNumber}/status` | A | - | `order.order.fulfil` | yes | params: shipmentNumberParamSchema; body: shipmentStatusSchema | — | — | UI required: built |
 | POST | `/shipments/{shipmentNumber}/sync` | A | - | `order.order.fulfil` | yes | params: shipmentNumberParamSchema | — | — | On hold (integration) |
 | POST | `/users` | C | - | `system.user.create` | yes | body: adminUserCreateSchema | — | — | UI required: built |
 | POST | `/users/{id}/password` | A | X | `system.user.update` | yes | params: idParamSchema; body: adminPasswordSetSchema | — | — | UI required: built |

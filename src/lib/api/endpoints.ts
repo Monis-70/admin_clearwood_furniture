@@ -20,6 +20,8 @@ import { mediaRoutes } from './routes/media';
 import { contentRoutes } from './routes/content';
 import { enquiriesRoutes } from './routes/enquiries';
 import { cartsRoutes } from './routes/carts';
+import { ordersRoutes } from './routes/orders';
+import { shipmentsRoutes } from './routes/shipments';
 import { systemRoutes } from './routes/system';
 
 /**
@@ -54,5 +56,7 @@ export const endpoints = {
   content: contentRoutes,
   enquiries: enquiriesRoutes,
   carts: cartsRoutes,
+  orders: ordersRoutes,
+  shipments: shipmentsRoutes,
   system: systemRoutes,
 } as const;

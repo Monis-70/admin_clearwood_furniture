@@ -7,7 +7,7 @@
 ## 1. Summary
 
 318 admin routes are mounted under `/api/v1/admin`; every one is classified. 282 have a screen, 36 are deliberately screen-less (§4).
-Implemented through phase **P8**: routes marked ✓ are wired in the endpoint registry.
+Implemented through phase **P9**: routes marked ✓ are wired in the endpoint registry.
 
 | Status | Meaning | Routes |
 | --- | --- | --- |
@@ -422,31 +422,31 @@ Implemented through phase **P8**: routes marked ✓ are wired in the endpoint re
 
 | Method | Path | Purpose | Permission | CSRF | Screen → Action | Roles | Destructive | Kind | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GET | `/orders` | Browse orders | `order.order.read` | — | /orders → Orders table | SA AD OM | — | L | **P9** |  |
-| GET | `/orders/{id}` | Order with payments, allocations and ledger check | `order.order.read` | — | /orders/view?id= → Order detail | SA AD OM | — | G | **P9** |  |
-| GET | `/orders/{id}/ledger-check` | Does the order's money balance? | `order.order.read` | — | /orders/view?id= → Ledger check (advanced) | SA AD OM | — | G | **P9** |  |
-| POST | `/orders/{id}/status` | Guarded status transition | `order.order.update` | yes | /orders/view?id= → Change status | SA AD OM | — | A | **P9** | Allowed transitions live only in the backend state machine |
-| POST | `/orders/{id}/cancel` | Cancel an order | `order.order.cancel` | yes | /orders/view?id= → Cancel order | SA AD OM | Irreversible | A | **P9** |  |
+| GET | `/orders` | Browse orders | `order.order.read` | — | /orders → Orders table | SA AD OM | — | L | **P9** ✓ |  |
+| GET | `/orders/{id}` | Order with payments, allocations and ledger check | `order.order.read` | — | /orders/view?id= → Order detail | SA AD OM | — | G | **P9** ✓ |  |
+| GET | `/orders/{id}/ledger-check` | Does the order's money balance? | `order.order.read` | — | /orders/view?id= → Ledger check (advanced) | SA AD OM | — | G | **P9** ✓ |  |
+| POST | `/orders/{id}/status` | Guarded status transition | `order.order.update` | yes | /orders/view?id= → Change status | SA AD OM | — | A | **P9** ✓ | Allowed transitions live only in the backend state machine |
+| POST | `/orders/{id}/cancel` | Cancel an order | `order.order.cancel` | yes | /orders/view?id= → Cancel order | SA AD OM | Irreversible | A | **P9** ✓ |  |
 | GET | `/orders/{id}/split-preview` | What the payout split would allocate | `payment.split.read` | — | (hidden) → — | SA AD | — | G | **hold:payments** |  |
 | POST | `/orders/{id}/retry-transfers` | Retry failed payout legs | `payment.split.update` | yes | (hidden) → — | SA | — | A | **hold:payments** |  |
 | POST | `/orders/reconcile` | Payment reconciliation sweep | `order.order.update` | yes | (hidden) → — | SA AD OM | — | A | **hold:payments** | Pending online payments only exist when Razorpay is live |
-| GET | `/orders/{orderNumber}/shipments` | Shipments and unshipped quantities of an order | `order.order.read` | — | /orders/view?id=&tab=fulfilment → Fulfilment panel | SA AD OM | — | G | **P9** |  |
-| POST | `/orders/{orderNumber}/shipments` | Draft a shipment (manual: true) | `order.order.fulfil` | yes | /orders/view?id=&tab=fulfilment → Create manual shipment | SA AD OM | — | C | **P9** | UI always sends manual: true while the courier integration is on hold; Idempotency-Key; Idempotency-Key |
+| GET | `/orders/{orderNumber}/shipments` | Shipments and unshipped quantities of an order | `order.order.read` | — | /orders/view?id=&tab=fulfilment → Fulfilment panel | SA AD OM | — | G | **P9** ✓ |  |
+| POST | `/orders/{orderNumber}/shipments` | Draft a shipment (manual: true) | `order.order.fulfil` | yes | /orders/view?id=&tab=fulfilment → Create manual shipment | SA AD OM | — | C | **P9** ✓ | UI always sends manual: true while the courier integration is on hold; Idempotency-Key; Idempotency-Key |
 | GET | `/orders/{orderNumber}/serviceability` | Courier options for an order | `order.order.fulfil` | — | (hidden) → — | SA AD OM | — | G | **hold:shipping** |  |
-| GET | `/shipments` | List shipments | `order.order.read` | — | /orders/shipments → Shipments table | SA AD OM | — | L | **P9** |  |
-| GET | `/shipments/{shipmentNumber}` | Shipment with full timeline | `order.order.read` | — | /orders/shipments?n= → Shipment drawer | SA AD OM | — | G | **P9** |  |
-| POST | `/shipments/{shipmentNumber}/awb` | Assign an AWB (courier) or record a manual docket | `order.order.fulfil` | yes | /orders/shipments?n= → Record docket number | SA AD OM | — | A | **P9** | Only manualAwb + manualCourierName; the courierId path is HOLD-SHIP; Idempotency-Key |
+| GET | `/shipments` | List shipments | `order.order.read` | — | /orders/shipments → Shipments table | SA AD OM | — | L | **P9** ✓ |  |
+| GET | `/shipments/{shipmentNumber}` | Shipment with full timeline | `order.order.read` | — | /orders/shipments?n= → Shipment drawer | SA AD OM | — | G | **P9** ✓ |  |
+| POST | `/shipments/{shipmentNumber}/awb` | Assign an AWB (courier) or record a manual docket | `order.order.fulfil` | yes | /orders/shipments?n= → Record docket number | SA AD OM | — | A | **P9** ✓ | Only manualAwb + manualCourierName; the courierId path is HOLD-SHIP; Idempotency-Key |
 | POST | `/shipments/{shipmentNumber}/pickup` | Schedule a courier pickup | `order.order.fulfil` | yes | (hidden) → — | SA AD OM | — | A | **hold:shipping** |  |
-| POST | `/shipments/{shipmentNumber}/cancel` | Cancel a shipment | `order.order.fulfil` | yes | /orders/shipments?n= → Cancel shipment | SA AD OM | Irreversible | A | **P9** |  |
-| POST | `/shipments/{shipmentNumber}/status` | Move a shipment by hand (state machine) | `order.order.fulfil` | yes | /orders/shipments?n= → Update status | SA AD OM | — | A | **P9** |  |
+| POST | `/shipments/{shipmentNumber}/cancel` | Cancel a shipment | `order.order.fulfil` | yes | /orders/shipments?n= → Cancel shipment | SA AD OM | Irreversible | A | **P9** ✓ |  |
+| POST | `/shipments/{shipmentNumber}/status` | Move a shipment by hand (state machine) | `order.order.fulfil` | yes | /orders/shipments?n= → Update status | SA AD OM | — | A | **P9** ✓ |  |
 | POST | `/shipments/{shipmentNumber}/sync` | Pull current state from the courier | `order.order.fulfil` | yes | (hidden) → — | SA AD OM | — | A | **hold:shipping** |  |
-| GET | `/ndr` | Failed deliveries awaiting a decision | `order.order.read` | — | /orders/shipments?tab=ndr → Failed deliveries | SA AD OM | — | L | **P9** | Decisions are recorded locally when no courier can act |
-| POST | `/ndr/{id}/action` | Reattempt / return / contact buyer | `order.order.fulfil` | yes | /orders/shipments?tab=ndr → Decide | SA AD OM | — | A | **P9** |  |
-| GET | `/orders/{orderNumber}/documents` | Documents issued for an order | `order.order.read` | — | /orders/view?id=&tab=documents → Documents | SA AD OM | — | L | **P9** |  |
-| POST | `/orders/{orderNumber}/documents/invoice` | Issue the GST tax invoice (once; never regenerated) | `order.order.update` | yes | /orders/view?id=&tab=documents → Issue invoice | SA AD OM | Irreversible | A | **P9** | Idempotency-Key; Idempotency-Key |
-| GET | `/documents/{documentNumber}/download` | Download a checksum-verified document | `order.order.read` | — | /orders/view?id=&tab=documents → Download PDF | SA AD OM | — | DL | **P9** |  |
-| GET | `/notifications/logs` | What was sent / skipped / failed | `order.order.read` | — | /orders/notifications → Notification log | SA AD OM | — | L | **P9** | Read-only; delivery is on hold (MAIL_DRIVER=log) |
-| GET | `/reports` | Operational reports (CSV or JSON totals) | computed per request | — | /orders/reports → Generate report | per kind (see notes) | — | DL | **P9** | Permission per kind: SALES_SUMMARY, GST_HSN_SUMMARY, TOP_PRODUCTS need order.order.export; INVENTORY_MOVEMENT needs catalog.inventory.read. REFUND_SUMMARY and SPLIT_PAYOUT belong to on-hold domains and are never offered |
+| GET | `/ndr` | Failed deliveries awaiting a decision | `order.order.read` | — | /orders/shipments?tab=ndr → Failed deliveries | SA AD OM | — | L | **P9** ✓ | Decisions are recorded locally when no courier can act |
+| POST | `/ndr/{id}/action` | Reattempt / return / contact buyer | `order.order.fulfil` | yes | /orders/shipments?tab=ndr → Decide | SA AD OM | — | A | **P9** ✓ |  |
+| GET | `/orders/{orderNumber}/documents` | Documents issued for an order | `order.order.read` | — | /orders/view?id=&tab=documents → Documents | SA AD OM | — | L | **P9** ✓ |  |
+| POST | `/orders/{orderNumber}/documents/invoice` | Issue the GST tax invoice (once; never regenerated) | `order.order.update` | yes | /orders/view?id=&tab=documents → Issue invoice | SA AD OM | Irreversible | A | **P9** ✓ | Idempotency-Key; Idempotency-Key |
+| GET | `/documents/{documentNumber}/download` | Download a checksum-verified document | `order.order.read` | — | /orders/view?id=&tab=documents → Download PDF | SA AD OM | — | DL | **P9** ✓ |  |
+| GET | `/notifications/logs` | What was sent / skipped / failed | `order.order.read` | — | /orders/notifications → Notification log | SA AD OM | — | L | **P9** ✓ | Read-only; delivery is on hold (MAIL_DRIVER=log) |
+| GET | `/reports` | Operational reports (CSV or JSON totals) | computed per request | — | /orders/reports → Generate report | per kind (see notes) | — | DL | **P9** ✓ | Permission per kind: SALES_SUMMARY, GST_HSN_SUMMARY, TOP_PRODUCTS need order.order.export; INVENTORY_MOVEMENT needs catalog.inventory.read. REFUND_SUMMARY and SPLIT_PAYOUT belong to on-hold domains and are never offered |
 
 ### On hold · Payments (13)
 

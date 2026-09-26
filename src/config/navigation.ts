@@ -408,28 +408,37 @@ export const NAVIGATION: readonly NavGroup[] = [
         id: 'orders',
         label: 'Orders',
         href: '/orders',
-        // icon: ClipboardList
+        icon: 'ShoppingBag',
         requires: { all: ['order.order.read'] },
         phase: 9,
-        // description: 'Cash-on-delivery orders and their status.'
+        description: 'Orders: confirm, ship, invoice or cancel them.',
       },
       {
         id: 'shipments',
         label: 'Shipments',
         href: '/orders/shipments',
-        // icon: Truck
+        icon: 'PackageCheck',
         requires: { all: ['order.order.read'] },
         phase: 9,
-        // description: 'Manual shipments and delivery exceptions.'
+        description: 'Manual shipments, tracking numbers and delivery problems.',
       },
       {
         id: 'reports',
         label: 'Reports',
         href: '/orders/reports',
-        // icon: FileSpreadsheet
+        icon: 'FileSpreadsheet',
         requires: { any: ['order.order.export', 'catalog.inventory.read'] },
         phase: 9,
-        // description: 'Sales, GST and inventory reports.'
+        description: 'Sales, GST and inventory reports.',
+      },
+      {
+        id: 'notifications',
+        label: 'Notification log',
+        href: '/orders/notifications',
+        icon: 'Bell',
+        requires: { all: ['order.order.read'] },
+        phase: 9,
+        description: 'Messages sent, or not, to customers.',
       },
     ],
   },
