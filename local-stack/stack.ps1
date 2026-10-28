@@ -92,7 +92,7 @@ function Get-BackendEnv {
     TRUST_PROXY               = 'false'
     WEB_ORIGIN                = 'http://localhost:3001'
     ADMIN_ORIGIN              = "http://localhost:$AdminPort"
-    CORS_ORIGINS              = "http://localhost:$AdminPort,http://localhost:$PreviewPort,http://localhost:$RealE2ePort"
+    CORS_ORIGINS              = "http://localhost:$AdminPort,http://localhost:$PreviewPort,http://localhost:$RealE2ePort,http://localhost:3001,http://localhost:3101"
     DATABASE_PROVIDER         = 'mysql'
     DATABASE_URL              = "mysql://clearwood:$($s.MYSQL_PASSWORD)@127.0.0.1:$MysqlPort/clearwood_local"
     SHADOW_DATABASE_URL       = "mysql://root:$($s.MYSQL_ROOT_PASSWORD)@127.0.0.1:$MysqlPort/clearwood_local_shadow"

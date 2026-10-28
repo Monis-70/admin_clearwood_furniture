@@ -83,7 +83,7 @@ test('account sessions and the command palette @mobile', async ({ page }) => {
  * touch target. One nowrap row inside a grid track that may size to min-content is enough to cause
  * it, so this sweeps the busiest screen of each area with real data.
  */
-test('no screen scrolls sideways on a phone @mobile', async ({ page }) => {
+test('no screen scrolls sideways on a phone or tablet @mobile', async ({ page }) => {
   await signInAsSuperAdmin(page);
   const routes = [
     '/',
@@ -99,6 +99,9 @@ test('no screen scrolls sideways on a phone @mobile', async ({ page }) => {
     '/system/users',
     '/system/audit-log',
   ];
+  // The narrowest phone, the widest phone, and the two tablet widths. 768 is the band where the
+  // sidebar is still a drawer but the top bar already carries its full-size controls.
+  const widths = [375, 412, 768, 820];
   const wide: string[] = [];
   for (const route of routes) {
     await page.goto(route);
@@ -107,10 +110,13 @@ test('no screen scrolls sideways on a phone @mobile', async ({ page }) => {
     // widen a track: measure with the whole page rendered, not just the first screenful.
     await page.mouse.wheel(0, 20_000);
     await page.waitForLoadState('networkidle');
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    );
-    if (overflow > 0) wide.push(`${route}: +${overflow}px`);
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      if (overflow > 0) wide.push(`${route} at ${width}px: +${overflow}px`);
+    }
   }
   expect(wide, wide.join('\n')).toEqual([]);
 });

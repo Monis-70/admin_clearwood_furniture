@@ -15,6 +15,7 @@ export interface CollectionDetail extends AdminCollectionRow {
   rulesJson: string | null;
   imageMediaId: string | null;
   bannerMediaId: string | null;
+  mobileBannerMediaId: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   version: number;

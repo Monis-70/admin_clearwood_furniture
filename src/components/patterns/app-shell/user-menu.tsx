@@ -59,7 +59,8 @@ export function UserMenu() {
           >
             {initials(me.user.name)}
           </span>
-          <span className="hidden max-w-40 flex-col items-start leading-tight md:flex">
+          {/* Only once the sidebar takes over the brand and menu button, or the bar overflows. */}
+          <span className="hidden max-w-40 flex-col items-start leading-tight lg:flex">
             <span className="truncate text-sm font-medium">{me.user.name}</span>
             <span className="truncate text-xs text-muted-foreground">{roleNames}</span>
           </span>

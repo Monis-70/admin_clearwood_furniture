@@ -1,86 +1,21 @@
 'use client';
 
-import { ImagePlus, X } from 'lucide-react';
-import dynamic from 'next/dynamic';
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useController, type FieldPath, type FieldValues } from 'react-hook-form';
 
-import { FormField } from '@/components/patterns/form/form-field';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { mediaRoutes } from '@/lib/api/routes/media';
-import { usePermissions } from '@/lib/permissions/use-permissions';
+import { ImageField } from '@/features/media/image-field';
 
-const MediaPicker = dynamic(() => import('../../media/media-picker').then((m) => m.MediaPicker), {
-  ssr: false,
-});
-
-/**
- * One image from the media library, stored as its id. With media access the admin picks from the
- * library; without it the id can still be typed (the API checks it exists).
- */
+/** One image of a content record: upload a new one or choose from the library, with a preview. */
 export function MediaField<T extends FieldValues>({
   name,
   label,
   description,
 }: {
   name: FieldPath<T>;
-  label: ReactNode;
-  description?: ReactNode;
+  label: string;
+  description?: string;
 }) {
-  const { canCall } = usePermissions();
-  const { field } = useController<T>({ name });
-  const [picking, setPicking] = useState(false);
-  const value = (field.value as string | undefined) ?? '';
-  const canPick = canCall(mediaRoutes.list);
-  return (
-    <FormField<T> name={name} label={label} description={description}>
-      {(control) => (
-        <div className="flex flex-wrap items-center gap-2">
-          <Input
-            {...control}
-            name={field.name}
-            ref={field.ref}
-            value={value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-            placeholder="No image"
-            className="max-w-xs font-mono text-xs"
-            readOnly={canPick}
-            disabled={field.disabled}
-          />
-          {canPick && !field.disabled ? (
-            <Button type="button" variant="outline" size="sm" onClick={() => setPicking(true)}>
-              <ImagePlus aria-hidden />
-              {value ? 'Change' : 'Choose image'}
-            </Button>
-          ) : null}
-          {value && !field.disabled ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => field.onChange('')}
-              aria-label={`Remove ${typeof label === 'string' ? label : 'image'}`}
-            >
-              <X aria-hidden />
-            </Button>
-          ) : null}
-          {picking ? (
-            <MediaPicker
-              title="Choose an image"
-              multiple={false}
-              onClose={() => setPicking(false)}
-              onChoose={(assets) => {
-                if (assets[0]) field.onChange(assets[0].id);
-                setPicking(false);
-              }}
-            />
-          ) : null}
-        </div>
-      )}
-    </FormField>
-  );
+  return <ImageField<T> name={name} label={label} description={description} />;
 }
 
 /** Several choices from a known list, stored as an array of values. */

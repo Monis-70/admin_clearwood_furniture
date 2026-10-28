@@ -4,6 +4,26 @@ import { RUN, expectAccessible, signInAsSuperAdmin, trackApi } from './stack';
 
 test.describe.configure({ mode: 'serial' });
 
+// Runs even when the role test above stops half-way, so no E2E_ role is left in the database
+// (roles from an earlier interrupted run are swept up too).
+test.afterAll(async ({ browser }, testInfo) => {
+  const context = await browser.newContext(testInfo.project.use);
+  const page = await context.newPage();
+  await signInAsSuperAdmin(page);
+  const csrf = (await context.cookies()).find((cookie) => cookie.name === 'cw_adm_csrf');
+  const roles = await page.request.get('/api/v1/admin/roles?limit=200');
+  const body = (await roles.json()) as {
+    data: { id: string; code: string }[] | { items?: { id: string; code: string }[] };
+  };
+  const rows = Array.isArray(body.data) ? body.data : (body.data.items ?? []);
+  for (const role of rows.filter((r) => r.code.startsWith('E2E_'))) {
+    await page.request.delete(`/api/v1/admin/roles/${role.id}`, {
+      headers: { 'x-csrf-token': decodeURIComponent(csrf!.value) },
+    });
+  }
+  await context.close();
+});
+
 test('roles: details in plain language, create and delete a custom role', async ({ page }) => {
   await signInAsSuperAdmin(page);
   await page.goto('/system/roles');
@@ -185,4 +205,35 @@ test('the session-expiry warning appears before the session ends and renews it',
   await notice.getByRole('button', { name: 'Stay signed in' }).click();
   expect((await refresh).status()).toBe(200);
   await expect(notice).toHaveCount(0);
+});
+
+test('the session tokens never reach anything a script on the page can read', async ({ page }) => {
+  await signInAsSuperAdmin(page);
+  await page.goto('/catalog/products');
+  await page.goto('/system/users');
+
+  const cookies = await page.context().cookies();
+  for (const name of ['cw_adm_at', 'cw_adm_rt']) {
+    const cookie = cookies.find((c) => c.name === name);
+    expect(cookie, `${name} is missing`).toBeDefined();
+    expect(cookie!.httpOnly, `${name} must be httpOnly`).toBe(true);
+    expect(cookie!.path, `${name} must stay on the admin API path`).toBe('/api/v1/admin');
+  }
+  // The double-submit token is meant to be readable, and only on the document path.
+  const csrf = cookies.find((c) => c.name === 'cw_adm_csrf');
+  expect(csrf?.httpOnly).toBe(false);
+  expect(csrf?.path).toBe('/');
+
+  const exposed = await page.evaluate(() => ({
+    documentCookie: document.cookie,
+    /* eslint-disable no-restricted-properties -- the test inspects what the app stored */
+    local: JSON.stringify({ ...window.localStorage }),
+    session: JSON.stringify({ ...window.sessionStorage }),
+    /* eslint-enable no-restricted-properties */
+  }));
+  for (const [where, value] of Object.entries(exposed)) {
+    expect(value, `${where} must not carry a session cookie`).not.toContain('cw_adm_at');
+    expect(value, `${where} must not carry a session cookie`).not.toContain('cw_adm_rt');
+    expect(value, `${where} must not carry a JWT`).not.toMatch(/eyJ[A-Za-z0-9_-]{10,}\./);
+  }
 });

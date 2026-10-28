@@ -28,7 +28,12 @@ function EnvironmentBadge() {
   if (IS_PRODUCTION_ENV) return null;
   return (
     <Badge tone="warning" className="uppercase" title="This is not the production admin">
-      {APP_ENV}
+      {/* Abbreviated on the narrowest phones: at full length it pushes the top bar off-screen. */}
+      <span aria-hidden className="sm:hidden">
+        {APP_ENV.slice(0, 3)}
+      </span>
+      <span className="hidden sm:inline">{APP_ENV}</span>
+      <span className="sr-only sm:hidden">{APP_ENV}</span>
     </Badge>
   );
 }

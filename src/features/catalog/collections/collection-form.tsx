@@ -2,6 +2,8 @@
 
 import { z } from 'zod';
 
+import { ImageField } from '@/features/media/image-field';
+
 import {
   CheckField,
   FieldGrid,
@@ -32,6 +34,9 @@ export const collectionSchema = z
       .transform((v) => v || undefined),
     type: z.enum(['MANUAL', 'AUTOMATIC']),
     description: optionalText(10_000),
+    imageMediaId: optionalText(40),
+    bannerMediaId: optionalText(40),
+    mobileBannerMediaId: optionalText(40),
     isActive: z.boolean(),
     position: requiredInt(0, 10_000, 'Order'),
     startsAt: optionalDateTime(),
@@ -52,6 +57,9 @@ export function collectionDefaults(c: CollectionDetail | null): CollectionValues
     slug: textInput(c?.slug),
     type: c?.type ?? 'MANUAL',
     description: textInput(c?.description),
+    imageMediaId: textInput(c?.imageMediaId),
+    bannerMediaId: textInput(c?.bannerMediaId),
+    mobileBannerMediaId: textInput(c?.mobileBannerMediaId),
     isActive: c?.isActive ?? true,
     position: intInput(c?.position ?? 0),
     startsAt: dateTimeInput(c?.startsAt),
@@ -103,6 +111,26 @@ export function CollectionFields({ creating }: { creating: boolean }) {
           <TextField<CollectionValues> name="endsAt" label="Show until" type="datetime-local" />
         </FieldGrid>
       </FormSection>
+      {creating ? null : (
+        <FormSection title="Images">
+          <ImageField<CollectionValues>
+            name="imageMediaId"
+            label="Image"
+            shape="square"
+            description="Shown where the collection appears as a card or tile."
+          />
+          <ImageField<CollectionValues>
+            name="bannerMediaId"
+            label="Banner"
+            description="A wide image across the top of the collection page."
+          />
+          <ImageField<CollectionValues>
+            name="mobileBannerMediaId"
+            label="Banner for phones"
+            description="Optional: a version of the banner shaped for small screens."
+          />
+        </FormSection>
+      )}
       <FormSection title="SEO">
         <TextField<CollectionValues> name="seoTitle" label="SEO title" />
         <TextAreaField<CollectionValues> name="seoDescription" label="SEO description" rows={2} />

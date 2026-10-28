@@ -76,7 +76,7 @@ export function PaletteTrigger() {
     <>
       <Button
         variant="outline"
-        className="h-9 w-9 justify-center gap-2 px-0 text-muted-foreground sm:w-64 sm:justify-start sm:px-3"
+        className="h-9 w-9 justify-center gap-2 px-0 text-muted-foreground sm:w-48 sm:justify-start sm:px-3 lg:w-64"
         onClick={() => {
           setLoaded(true);
           setOpen(true);
@@ -86,7 +86,7 @@ export function PaletteTrigger() {
       >
         <Search aria-hidden />
         <span className="hidden flex-1 text-left sm:inline">Search or jump to…</span>
-        <Kbd className="hidden sm:inline-flex">{shortcut}</Kbd>
+        <Kbd className="hidden lg:inline-flex">{shortcut}</Kbd>
       </Button>
       {loaded ? <CommandPalette open={open} onOpenChange={setOpen} /> : null}
     </>

@@ -1,4 +1,4 @@
-# ClearWood Admin — Current State (master completion, 27 Sep 2026)
+# ClearWood Admin — Current State (master completion, 27 Sep 2026; updated 28 Oct 2026)
 
 Verified against the actual heads, not earlier reports. Generated detail lives in
 [ADMIN_CAPABILITY_MATRIX.md](ADMIN_CAPABILITY_MATRIX.md) (every route by class, permission matrix,
@@ -11,19 +11,19 @@ closure) and §22 (this pass).
 
 | | State |
 | --- | --- |
-| Backend (`clearwood-backend-repo`) | `main` at `c553f92`, unchanged in this pass. Three local commits on `origin/main` (`3a81325`), **not pushed**: `a03a1b4` F13, `127dd5d` F14, `c553f92` minimum product image. Working tree clean |
-| Admin (this repository) | local commits `012bebe` … `0cede44` plus the closing commit of this pass on `14590b9`; no remote |
-| Pinned contracts | `contracts/manifest.json`: backend `c553f92`, `dirty: false`, 437 routes (318 admin); no drift |
-| Deployment | none. Nothing pushed, no remote created, no production change |
+| Backend (`clearwood-backend-repo`) | checked out on branch `feat/storefront-media-contract` at `cad49c2` (6 commits on top of `main` `c553f92`, made for the storefront, **not merged**). The admin runs against it: the real-backend specs passed on it on 8 Oct |
+| Admin (this repository) | `main`, pushed to `origin` = `github.com/Monis-70/admin_clearwood_furniture` on 28 Oct |
+| Pinned contracts | `contracts/manifest.json`: backend `c553f92`, 437 routes (318 admin). `contracts:check -- --against-backend` reports drift against `cad49c2` (shared schemas/types and route middleware): run `npm run contracts:sync` once that branch is merged |
+| Deployment | none yet. Plan: [ADMIN_DEPLOYMENT_PLAN.md](ADMIN_DEPLOYMENT_PLAN.md) (static export behind nginx) |
 
 ## 2. Gates and exact test counts (final run of this pass)
 
 | Gate | Result |
 | --- | --- |
 | `npm run verify` (contracts, coverage, both generated docs, typecheck, lint, format, unit/component tests, build, bundle budgets) | green |
-| Unit and component tests (Vitest, MSW, axe) | **354 passed** in 59 files |
+| Unit and component tests (Vitest, MSW, axe) | **358 passed** in 60 files (28 Oct) |
 | Browser, fake API (`npx playwright test`) | **14 passed** |
-| Browser, real local API (`npx playwright test -c playwright.real.config.ts`, desktop + mobile, axe) | **66 passed** in 10 files, 0 failed, 0 skipped |
+| Browser, real local API (`npx playwright test -c playwright.real.config.ts`, desktop + mobile, axe) | **76 passed** in 11 files (last full run 27 Sep; the specs touched on 8 Oct re-ran green: 62 passed) |
 | Browser, real 429 (`npm run e2e:ratelimit`) | **1 passed** |
 | Backend suite (`stack.ps1 backend-test`, Redis tests enabled) | **1157 tests in 81 files: 1152 passed, 5 skipped, 0 failed** (78 files passed, 3 opt-in files skipped) |
 | Backend static gates | unchanged since `c553f92` (green in the pre-final closure) |

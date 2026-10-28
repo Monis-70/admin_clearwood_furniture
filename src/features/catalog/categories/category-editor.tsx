@@ -22,6 +22,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ImageField } from '@/features/media/image-field';
 import { auditRoutes } from '@/lib/api/routes/audit';
 import { categoriesRoutes } from '@/lib/api/routes/categories';
 import { hasCode } from '@/lib/api/errors';
@@ -76,6 +77,9 @@ const schema = z.object({
     .transform((value) => value || null),
   shortDescription: optionalText(400),
   description: optionalText(20_000),
+  iconMediaId: optionalText(40),
+  bannerMediaId: optionalText(40),
+  mobileBannerMediaId: optionalText(40),
   seoTitle: optionalText(180),
   seoDescription: optionalText(400),
   seoKeywords: optionalText(400),
@@ -242,6 +246,9 @@ function Editor({
               leadFormKey: textInput(category.leadFormKey),
               shortDescription: textInput(category.shortDescription),
               description: textInput(category.description),
+              iconMediaId: textInput(category.iconMediaId),
+              bannerMediaId: textInput(category.bannerMediaId),
+              mobileBannerMediaId: textInput(category.mobileBannerMediaId),
               seoTitle: textInput(category.seoTitle),
               seoDescription: textInput(category.seoDescription),
               seoKeywords: textInput(category.seoKeywords),
@@ -258,6 +265,9 @@ function Editor({
                 { key: 'showInMenu', label: 'In the menu' },
                 { key: 'leadFormKey', label: 'Enquiry form' },
                 { key: 'description', label: 'Description' },
+                { key: 'iconMediaId', label: 'Icon' },
+                { key: 'bannerMediaId', label: 'Banner' },
+                { key: 'mobileBannerMediaId', label: 'Banner for phones' },
               ],
               yours: (values) => values as unknown as Partial<AdminCategoryDto>,
               loadLatest: () => categoriesApi.get(category.id),
@@ -306,6 +316,24 @@ function Editor({
             <FormSection title="Description">
               <TextAreaField<Values> name="shortDescription" label="Short description" rows={2} />
               <TextAreaField<Values> name="description" label="Description" rows={5} />
+            </FormSection>
+            <FormSection title="Images">
+              <ImageField<Values>
+                name="iconMediaId"
+                label="Icon"
+                shape="square"
+                description="A small square image, for example in menus and category tiles."
+              />
+              <ImageField<Values>
+                name="bannerMediaId"
+                label="Banner"
+                description="A wide image across the top of the category page."
+              />
+              <ImageField<Values>
+                name="mobileBannerMediaId"
+                label="Banner for phones"
+                description="Optional: a version of the banner shaped for small screens."
+              />
             </FormSection>
             <FormSection title="SEO">
               <TextField<Values> name="seoTitle" label="SEO title" />
