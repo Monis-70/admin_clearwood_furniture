@@ -1,0 +1,70 @@
+# ClearWood Admin: a static export served from disk, with the API proxied on the same origin
+# (docs/ADMIN_DEPLOYMENT_PLAN.md, Option A). No Node process runs for the admin.
+# Rendered to /etc/nginx/sites-available/clearwood-admin.conf by deploy/scripts/render-nginx.sh.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __ADMIN_HOST__;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        default_type text/plain;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name __ADMIN_HOST__;
+    include /etc/nginx/snippets/clearwood-admin-tls.conf;
+
+    root __APP_DIR__/current;
+    index index.html;
+    server_tokens off;
+
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+
+    # Pages: /catalog/products/edit -> edit.html; record ids travel in the query string.
+    location / {
+        try_files $uri $uri.html $uri/ =404;
+        include /etc/nginx/snippets/clearwood-admin-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+
+    # Content-hashed bundles never change, so browsers keep them for a year.
+    location ^~ /_next/static/ {
+        try_files $uri =404;
+        include /etc/nginx/snippets/clearwood-admin-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+    }
+
+    error_page 404 /404.html;
+
+    # Same-origin API: the browser only ever talks to this host.
+    location ~ ^/(api/|media/|health$|ready$) {
+        proxy_pass http://127.0.0.1:__API_PORT__;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # The admin's session cookie carries its permission list; a Super Admin's Set-Cookie
+        # is larger than nginx's 4k default and would otherwise fail with 502.
+        proxy_buffer_size 16k;
+        proxy_buffers 8 16k;
+        client_max_body_size 64m;
+        # CSV imports and image renditions run inside the request.
+        proxy_read_timeout 180s;
+        proxy_send_timeout 180s;
+    }
+}

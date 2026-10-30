@@ -1,0 +1,8 @@
+# Security headers for the admin's own pages. Rendered to
+# /etc/nginx/snippets/clearwood-admin-headers.conf and included in every location that serves files:
+# nginx ignores server-level add_header inside any location that sets one of its own.
+add_header Strict-Transport-Security "max-age=31536000" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "same-origin" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: __MEDIA_HOSTS__; font-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" always;

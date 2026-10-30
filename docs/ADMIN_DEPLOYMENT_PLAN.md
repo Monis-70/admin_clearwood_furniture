@@ -1,6 +1,12 @@
 # ClearWood Admin — Deployment Plan
 
-**Plan only. Nothing has been deployed and no backend setting has been changed.**
+**Runnable kit (30 Oct 2026):** `deploy/` — nginx templates (bootstrap, TLS, headers, vhost) and
+`deploy/scripts/{render-nginx,deploy,rollback}.sh`, laid out like the storefront's kit on the same
+server (`/var/www/clearwood-admin/{releases,current}`). The vhost and the render script were rehearsed
+in a Debian nginx container (redirect, ACME path, every page type, 404 page, headers, a Super Admin
+sign-in through the proxy: 200). Where the sketch in §3 differs, the kit wins: nginx drops
+server-level `add_header` in any location that sets its own, so the kit includes the security
+headers in each location.
 
 ## 1. Target
 

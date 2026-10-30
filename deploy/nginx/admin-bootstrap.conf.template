@@ -1,0 +1,16 @@
+# HTTP only, for the FIRST certificate: answers Let's Encrypt's webroot challenge and nothing else.
+# Replaced by admin.conf.template once the certificate exists (deploy/scripts/render-nginx.sh full).
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __ADMIN_HOST__;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        default_type text/plain;
+    }
+
+    location / {
+        return 503;
+    }
+}
